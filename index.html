@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The B Block Board Game</title>
+<style>
+:root{
+  --felt:#050807;--red:#ef3b3b;--yel:#ffd21f;--grn:#21c55d;--blu:#2f7df6;--pur:#a855f7;--ora:#ff8a1f;--pnk:#ff5fa8;--tea:#14c8b8;
+  --wood:#d9a35f;--wood2:#a86c2c;--cream:#fff6dd;--c:#ffd21f;--ok:#21c55d;--bad:#ef3b3b;
+  --fd:"Segoe UI Black","Arial Black","Segoe UI",Carlito,Calibri,system-ui,sans-serif;
+  --fb:Calibri,Carlito,"Segoe UI",Candara,"Helvetica Neue",Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html{font-size:28px;background:#000;overflow-x:clip}
+body{margin:0;color:#fff;font-family:var(--fb);line-height:1.38;min-height:100vh;overflow-x:hidden;-webkit-text-size-adjust:100%;
+  background:#000 radial-gradient(ellipse at 50% -10%,rgba(33,197,93,.16),transparent 55%) fixed}
+body:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.35;
+  background-image:repeating-radial-gradient(circle at 20% 30%,rgba(255,255,255,.03) 0 2px,transparent 2px 6px)}
+button{font:inherit;font-size:1rem;color:inherit;-webkit-tap-highlight-color:transparent}
+h1,h2,h3,.disp{font-family:var(--fd);font-weight:900;line-height:1.12;margin:.15rem 0;overflow-wrap:anywhere}
+h1{font-size:min(1.45rem,9vw)}h2{font-size:min(1.15rem,7.5vw)}
+p{margin:.35rem 0}
+.mut{color:#d6dbe0}
+
+/* top tray */
+.tray{position:sticky;top:0;z-index:30;display:flex;flex-wrap:wrap;align-items:center;gap:.3rem;padding:.3rem .45rem;background:linear-gradient(#2a1a0c,#160d05);border-bottom:6px solid var(--wood2);box-shadow:0 4px 0 #000}
+.tray .ttl{flex:1 1 auto;min-width:5rem;font-family:var(--fd);font-weight:900;font-size:.82rem;color:var(--cream);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 .2rem}
+.tb{min-height:2.2rem;min-width:2.2rem;padding:.05rem .45rem;border:0;border-radius:.6rem;background:linear-gradient(#f3c98d,var(--wood));color:#3a2108;font-weight:900;cursor:pointer;box-shadow:0 4px 0 var(--wood2);line-height:1}
+.tb:active{transform:translateY(3px);box-shadow:0 1px 0 var(--wood2)}
+.tb.off{filter:grayscale(1)}
+.tb:focus-visible,.btn:focus-visible{outline:4px solid #fff;outline-offset:3px}
+
+main{max-width:1100px;margin:0 auto;padding:.7rem .6rem 4rem;overflow-wrap:break-word}
+.card{position:relative;background:#fff;color:#1d1d1d;border-radius:1.1rem;padding:.75rem .85rem;margin:.75rem .1rem;box-shadow:0 .45rem 0 rgba(0,0,0,.35),0 0 0 .3rem var(--c)}
+.card.dark{background:#121614;color:#fff;box-shadow:0 .45rem 0 rgba(0,0,0,.35),0 0 0 .25rem var(--c)}
+.band{display:flex;align-items:center;gap:.5rem;margin:-.75rem -.85rem .6rem;padding:.45rem .85rem;border-radius:1.1rem 1.1rem 0 0;background:var(--c);color:#111;font-family:var(--fd);font-weight:900}
+.band .be{font-size:min(1.8rem,9vw);line-height:1}
+.band small{display:block;font-family:var(--fb);font-weight:700;font-size:.78rem}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.35rem;min-height:2.3rem;max-width:calc(100% - .4rem);padding:.3rem 1.1rem;margin:.35rem .35rem .35rem 0;border:0;border-radius:2rem;background:var(--c);color:#111;font-family:var(--fd);font-weight:900;cursor:pointer;box-shadow:0 .3rem 0 rgba(0,0,0,.45);overflow-wrap:anywhere;text-align:center}
+.btn:active{transform:translateY(.2rem);box-shadow:0 .1rem 0 rgba(0,0,0,.45)}
+.btn.wood{background:linear-gradient(#f3c98d,var(--wood));color:#3a2108}
+.btn.ghost{background:#2a302d;color:#fff}
+.warn{background:#2a2200;border:3px dashed var(--yel);border-radius:.8rem;padding:.5rem .7rem;margin:.5rem 0;color:#fff2b0}
+.teamin{font:inherit;font-size:1rem;width:100%;max-width:18rem;min-height:2.3rem;padding:.3rem .7rem;border:4px solid var(--wood2);border-radius:.8rem;background:var(--cream);color:#111}
+.big{font-size:1.12rem}
+
+/* cover */
+.boxlid{text-align:center;background:linear-gradient(135deg,var(--red),var(--ora) 30%,var(--yel) 50%,var(--grn) 70%,var(--blu));border-radius:1.4rem;padding:.35rem;margin:.6rem .1rem;box-shadow:0 .6rem 0 rgba(0,0,0,.5)}
+.boxlid .inner{background:#111;border-radius:1.1rem;padding:1rem .7rem}
+.boxlid .t1{font-family:var(--fd);font-weight:900;font-size:min(2rem,10vw);line-height:1.05;color:#fff;text-shadow:0 .2rem 0 var(--red),0 .4rem 0 #000}
+.boxlid .t2{display:inline-block;margin-top:.5rem;background:var(--yel);color:#111;border-radius:2rem;padding:.1rem .8rem;font-weight:900}
+.boxlid .em{font-size:min(2.4rem,12vw)}
+.ages{display:flex;justify-content:center;flex-wrap:wrap;gap:.4rem;margin-top:.5rem;font-size:.8rem}
+.ages span{border:2px solid #fff;border-radius:2rem;padding:0 .6rem}
+
+/* door screen */
+.lockscreen{background:#0b1d2b;border:6px solid #39424a;border-radius:1.2rem;padding:.7rem .8rem;color:#bfe9ff;font-family:Consolas,"Lucida Console","DejaVu Sans Mono",monospace;box-shadow:inset 0 0 1.2rem rgba(0,180,255,.25),0 .4rem 0 #000}
+.lockscreen .lh{display:flex;justify-content:space-between;gap:.4rem;flex-wrap:wrap;border-bottom:2px solid #1f4a66;padding-bottom:.3rem;margin-bottom:.4rem;color:#7fd4ff;font-weight:700}
+.lockscreen p{margin:.35rem 0;overflow-wrap:anywhere}
+.blink{animation:blink 1s infinite}
+.sticky{background:#fff27a;color:#222;border-radius:.2rem;padding:.6rem .8rem;margin:.9rem .4rem;transform:rotate(-1deg);box-shadow:0 .4rem .8rem rgba(0,0,0,.6);overflow-wrap:anywhere}
+.sticky p{margin:.3rem 0}
+
+/* rack */
+.rackwrap{background:#121614;border-radius:1.1rem;padding:.55rem .6rem .7rem;margin:.6rem .1rem;box-shadow:0 0 0 .25rem var(--wood2)}
+.rackhead{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.3rem;align-items:center;font-weight:700;font-size:.85rem}
+.rack{display:flex;flex-wrap:wrap;gap:.25rem;justify-content:center;background:linear-gradient(#b07335,#7a4a1c);border-radius:.4rem;padding:.35rem .3rem .55rem;margin-top:.35rem;box-shadow:inset 0 -.35rem 0 rgba(0,0,0,.3)}
+.tile{position:relative;display:inline-flex;align-items:center;justify-content:center;width:min(2.1rem,11vw);height:min(2.3rem,12vw);border-radius:.3rem;background:linear-gradient(#fff3d6,#f1d9a6);color:#3a2108;font-family:var(--fd);font-weight:900;font-size:min(1.2rem,6.5vw);box-shadow:0 .2rem 0 #b8955a}
+.tile sub{position:absolute;right:.12rem;bottom:.02rem;font-size:.42em;font-family:var(--fb)}
+.tile.empty{background:rgba(0,0,0,.25);box-shadow:inset 0 0 0 2px rgba(255,255,255,.25);color:rgba(255,255,255,.35)}
+.tile.new{animation:drop .6s cubic-bezier(.2,1.5,.4,1)}
+.stars{color:var(--yel);font-weight:900}
+
+/* board */
+.board{position:relative;display:grid;gap:.45rem;padding:.6rem;margin:.4rem .1rem 1rem;border-radius:1.3rem;background:#0a3d22;
+  background-image:radial-gradient(rgba(255,255,255,.05) 1px,transparent 1.5px);background-size:12px 12px;box-shadow:0 0 0 .35rem var(--wood),0 0 0 .6rem var(--wood2),0 .9rem 0 .6rem rgba(0,0,0,.5)}
+.sp{position:relative;min-height:6.4rem;border:0;border-radius:1rem;padding:.4rem .45rem .45rem;cursor:pointer;color:#111;text-align:left;display:flex;flex-direction:column;gap:.05rem;background:var(--c);
+  box-shadow:inset 0 -.35rem 0 rgba(0,0,0,.22),inset 0 .25rem 0 rgba(255,255,255,.35),0 .25rem 0 rgba(0,0,0,.4);overflow:hidden}
+.sp:hover,.sp:focus-visible{outline:4px solid #fff;outline-offset:2px;z-index:2}
+.sp .num{position:absolute;right:.35rem;top:.25rem;width:1.5rem;height:1.5rem;border-radius:50%;background:#fff;color:#111;font-family:var(--fd);font-weight:900;font-size:.8rem;display:flex;align-items:center;justify-content:center}
+.sp .se{font-size:min(1.8rem,9vw);line-height:1}
+.sp .st{font-family:var(--fd);font-weight:900;font-size:min(.95rem,5vw);line-height:1.1;overflow-wrap:anywhere}
+.sp .ss{font-size:.72rem;font-weight:700;margin-top:auto;overflow-wrap:anywhere}
+.sp .tc{display:inline-block;align-self:flex-start;background:#111;color:#fff;border-radius:2rem;padding:0 .4rem;font-size:.66rem;font-weight:700}
+.sp.done{background:#e9e9e9;color:#555}
+.sp.done .ptile{position:absolute;right:.35rem;bottom:.35rem}
+.sp.soon{opacity:.35;cursor:not-allowed}
+.sp.start{background:#fff;cursor:default}
+.sp.door{background:#3b2a1a;color:#fff;background-image:repeating-linear-gradient(90deg,#4a3420 0 14px,#3b2a1a 14px 28px)}
+.sp.door.open{background:var(--grn);color:#111;background-image:none}
+.arrow{position:absolute;font-size:.9rem;color:#fff;opacity:.8;pointer-events:none}
+.pawn{position:absolute;z-index:6;width:2.2rem;height:2.6rem;pointer-events:none;transition:left .17s ease,top .17s ease;filter:drop-shadow(0 .25rem 0 rgba(0,0,0,.5))}
+.pawn i{position:absolute;left:50%;transform:translateX(-50%);border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffe3b0,#c97b2c 60%,#8a4c14)}
+.pawn i.h{top:0;width:1.1rem;height:1.1rem}
+.pawn i.b{top:.9rem;width:1.5rem;height:1.5rem;border-radius:50% 50% .4rem .4rem}
+.pawn.hop{animation:hop .17s infinite alternate}
+.dice{position:fixed;left:50%;top:40%;z-index:50;transform:translate(-50%,-50%);font-size:4.5rem;pointer-events:none;filter:drop-shadow(0 .4rem 0 rgba(0,0,0,.6));animation:roll .7s ease-out}
+.legend{font-size:.8rem;color:#d6dbe0;margin:.2rem .2rem 0}
+
+/* space screen */
+.dots{display:flex;flex-wrap:wrap;gap:.25rem;margin:.4rem .2rem}
+.dots i{width:.85rem;height:.85rem;border-radius:50%;background:#2c332f}
+.dots i.d{background:var(--c)}.dots i.n{background:#fff}
+.q{font-size:1.05rem;font-weight:700;margin:.25rem 0 .5rem;overflow-wrap:anywhere}
+.sit{background:#f3f0e6;border-left:.4rem solid var(--c);border-radius:.4rem;padding:.4rem .6rem;margin:.2rem 0 .45rem;overflow-wrap:anywhere}
+.opts{display:flex;flex-direction:column;gap:.45rem}
+.op{text-align:left;min-height:2.3rem;padding:.4rem .8rem;border:3px solid #d8d2c2;border-radius:.9rem;background:#faf7ef;color:#111;cursor:pointer;line-height:1.3;overflow-wrap:anywhere;box-shadow:0 .2rem 0 #d8d2c2}
+.op:hover:not([disabled]),.op:focus-visible{border-color:var(--c);outline:none;background:#fff}
+.op.x{background:#fde8e8;border-color:var(--bad);color:#8a1c1c;text-decoration:line-through;box-shadow:none}
+.op.ok{background:#dcfce7;border-color:var(--ok);font-weight:700}
+.op[disabled]{cursor:default}
+.switch{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:.5rem}
+.switch .op{text-align:center;font-family:var(--fd);font-weight:900;font-size:1.1rem}
+.gapw{display:inline-block;min-width:3.5rem;border-bottom:3px dashed #999;text-align:center;font-weight:900;color:#2f7df6}
+.fb{border-radius:1rem;padding:.55rem .75rem;margin:.6rem 0;animation:popin .3s;overflow-wrap:anywhere}
+.fb.good{background:#dcfce7;border:3px solid var(--ok);color:#0f3d20}
+.fb.bad{background:#fde8e8;border:3px solid var(--bad);color:#6b1414}
+.fb b.lead{display:block;font-family:var(--fd);font-weight:900}
+.saybtn{display:inline-flex;align-items:center;gap:.2rem;min-height:2.1rem;padding:0 .6rem;border:0;border-radius:2rem;background:#111;color:#fff;cursor:pointer;font-weight:700}
+
+/* memory */
+.mem{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(7.5rem,42%),1fr));gap:.45rem}
+.mc{position:relative;min-height:4.4rem;border:0;padding:0;background:none;cursor:pointer;perspective:800px}
+.mc .in{position:absolute;inset:0;transition:transform .45s;transform-style:preserve-3d}
+.mc.up .in,.mc.got .in{transform:rotateY(180deg)}
+.mc .fr,.mc .bk{position:absolute;inset:0;border-radius:.8rem;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;align-items:center;justify-content:center;padding:.25rem;text-align:center;overflow-wrap:anywhere;font-weight:700;line-height:1.15}
+.mc .fr{background:repeating-linear-gradient(45deg,var(--c) 0 10px,#fff4 10px 20px),var(--c);box-shadow:0 .25rem 0 rgba(0,0,0,.3);font-size:1.6rem}
+.mc .bk{transform:rotateY(180deg);background:#fff;border:3px solid #d8d2c2;font-size:.8rem;color:#111}
+.mc .bk.w{font-family:var(--fd);font-weight:900;font-size:.95rem;color:#2f7df6}
+.mc.got .bk{background:#dcfce7;border-color:var(--ok)}
+.mc.no .bk{background:#fde8e8;border-color:var(--bad)}
+.memstat{font-weight:700;margin:.4rem 0}
+
+/* mail trays */
+.slip{background:#fffef5;border:2px solid #ddd3b5;border-radius:.3rem;padding:.6rem .8rem;margin:.2rem auto .7rem;max-width:30rem;box-shadow:0 .35rem .8rem rgba(0,0,0,.25);transform:rotate(-1deg);font-size:1.05rem;overflow-wrap:anywhere}
+.slip.drop0{animation:toL .55s forwards}.slip.drop1{animation:toM .55s forwards}.slip.drop2{animation:toR .55s forwards}
+.trays{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.45rem}
+.tr{min-height:4.6rem;border:0;border-radius:.4rem .4rem 1rem 1rem;cursor:pointer;color:#111;font-weight:900;padding:.6rem .3rem .3rem;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:.15rem;overflow-wrap:anywhere;text-align:center;
+  background:linear-gradient(180deg,rgba(255,255,255,.35),transparent 30%),var(--tc);box-shadow:inset 0 .6rem 0 rgba(0,0,0,.18),0 .25rem 0 rgba(0,0,0,.35)}
+.tr .te{font-size:1.5rem}
+.tr.x{opacity:.4;text-decoration:line-through}
+.tr.ok{outline:4px solid var(--ok);outline-offset:2px}
+
+/* tone meter */
+.meter{position:relative;max-width:22rem;margin:.2rem auto .4rem;aspect-ratio:2/1.1}
+.meter svg{width:100%;height:100%;display:block}
+.needle{transform-origin:100px 100px;transition:transform .8s cubic-bezier(.3,1.6,.5,1)}
+.lineq{background:#fffef5;border:2px solid #ddd3b5;border-radius:.8rem;padding:.5rem .8rem;margin:.2rem 0 .6rem;font-size:1.1rem;font-weight:700;text-align:center;overflow-wrap:anywhere}
+.tone3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.4rem}
+.tone3 .op{text-align:center;font-weight:900}
+
+/* ladder */
+.ladder{display:flex;flex-direction:column;gap:.4rem;padding:.4rem .9rem;background:linear-gradient(90deg,var(--wood2) 0 .5rem,transparent .5rem calc(100% - .5rem),var(--wood2) calc(100% - .5rem));border-radius:.4rem}
+.rung{min-height:2.7rem;border:0;border-radius:.4rem;background:linear-gradient(#f3c98d,var(--wood));color:#3a2108;font-weight:900;cursor:pointer;box-shadow:0 .2rem 0 var(--wood2);overflow-wrap:anywhere;padding:.2rem .5rem;display:flex;align-items:center;justify-content:center;gap:.4rem}
+.rung.x{opacity:.4;text-decoration:line-through}
+.rung.ok{background:var(--ok);color:#fff}
+
+/* stamp / win */
+.unlock{text-align:center;overflow:hidden}
+.bigtile{display:inline-flex;align-items:center;justify-content:center;width:5rem;height:5.4rem;border-radius:.5rem;background:linear-gradient(#fff3d6,#f1d9a6);color:#3a2108;font-family:var(--fd);font-weight:900;font-size:3.2rem;box-shadow:0 .4rem 0 #b8955a;animation:drop .8s .15s cubic-bezier(.2,1.5,.4,1) both}
+.chance{perspective:900px;max-width:20rem;margin:.6rem auto}
+.chance .ci{position:relative;min-height:8rem;transition:transform .6s;transform-style:preserve-3d}
+.chance.flip .ci{transform:rotateY(180deg)}
+.chance .cf,.chance .cb{position:absolute;inset:0;border-radius:1rem;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:.5rem;text-align:center}
+.chance .cf{background:repeating-linear-gradient(135deg,#ff8a1f 0 12px,#ffd21f 12px 24px);color:#111;font-family:var(--fd);font-weight:900;font-size:1.3rem;cursor:pointer;box-shadow:0 .4rem 0 rgba(0,0,0,.4)}
+.chance .cb{transform:rotateY(180deg);background:#fff;color:#111;border:4px solid var(--ora)}
+.chancebox{background:#fff8e6;color:#111;border:4px solid var(--ora);border-radius:1rem;padding:.6rem .8rem;margin:.6rem 0;text-align:left}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:60}
+.saved{position:fixed;right:.6rem;bottom:.6rem;z-index:40;background:var(--grn);color:#111;border-radius:2rem;font-weight:900;padding:.05rem .7rem;font-size:.75rem;opacity:0;transition:opacity .3s;pointer-events:none}
+.saved.show{opacity:1}
+
+@keyframes blink{50%{opacity:.25}}
+@keyframes hop{to{transform:translateY(-.4rem)}}
+@keyframes roll{0%{transform:translate(-50%,-50%) rotate(0) scale(.4)}60%{transform:translate(-50%,-50%) rotate(540deg) scale(1.2)}100%{transform:translate(-50%,-50%) rotate(720deg) scale(1)}}
+@keyframes drop{0%{transform:translateY(-2.5rem) rotate(-15deg);opacity:0}100%{transform:none;opacity:1}}
+@keyframes popin{from{transform:scale(.85);opacity:0}to{transform:none;opacity:1}}
+@keyframes shake{20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
+@keyframes toL{to{transform:translate(-30%,6rem) scale(.3);opacity:0}}
+@keyframes toM{to{transform:translate(0,6rem) scale(.3);opacity:0}}
+@keyframes toR{to{transform:translate(30%,6rem) scale(.3);opacity:0}}
+.shake{animation:shake .4s}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (max-width:640px){
+  main{padding:.5rem .35rem 3rem}.card{padding:.6rem .6rem}.band{margin:-.6rem -.6rem .5rem;padding:.4rem .6rem}
+  .tray{position:relative}.tray .ttl{order:9;flex-basis:100%}.wide{display:none}
+  .trays,.tone3{grid-template-columns:minmax(0,1fr)}.tr{flex-direction:row;justify-content:center;min-height:2.8rem}
+}
+.dots i.n{background:#fff;box-shadow:0 0 0 3px #111}
+/* ---- Section 2 ---- */
+.slots3{display:flex;flex-wrap:wrap;align-items:stretch;justify-content:center;gap:.3rem;margin:.3rem 0 .6rem}
+.slot3{flex:1 1 7rem;min-width:0;min-height:3.6rem;border:3px dashed #bbb;border-radius:.6rem;padding:.25rem .4rem;display:flex;flex-direction:column;justify-content:center;text-align:center;background:#f7f4ea;overflow-wrap:anywhere}
+.slot3 small{font-size:.62rem;font-weight:900;color:#666}
+.slot3 span{font-weight:900;font-size:1.05rem}
+.slot3.full{border-style:solid;color:#111}
+.slot3.s0.full{background:#dbeafe;border-color:#2f7df6}.slot3.s1.full{background:#fee2e2;border-color:#ef3b3b}.slot3.s2.full{background:#dcfce7;border-color:#21c55d}
+.plus{align-self:center;font-weight:900;font-size:1.2rem;color:#888}
+.blocks{display:flex;flex-wrap:wrap;gap:.45rem;justify-content:center}
+.blk{min-height:2.6rem;max-width:100%;padding:.2rem .9rem;border:0;border-radius:.4rem;background:linear-gradient(#ffb15c,#ff8a1f);color:#3a1a00;font-weight:900;cursor:pointer;box-shadow:0 .3rem 0 #b85c00,inset 0 .2rem 0 rgba(255,255,255,.4);overflow-wrap:anywhere}
+.blk.x{background:linear-gradient(#ff8b8b,#ef3b3b);color:#fff}
+.slots3.demo{pointer-events:none}
+.tm{background:linear-gradient(135deg,#2e1065,#581c87);border-radius:1rem;padding:.6rem;box-shadow:0 .35rem 0 #1e0a40,inset 0 0 1.5rem rgba(168,85,247,.5)}
+.tmscreen{background:#0b0320;color:#e9d5ff;border:3px solid #a855f7;border-radius:.6rem;padding:.6rem .7rem;font-size:1.1rem;font-weight:700;text-align:center;box-shadow:inset 0 0 1rem rgba(168,85,247,.6);overflow-wrap:anywhere;margin-bottom:.6rem}
+.tm.go0 .tmscreen,.tm.go1 .tmscreen,.tm.go2 .tmscreen,.tm.go3 .tmscreen{animation:warp .7s}
+.tmdial{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.45rem}
+.tbtn{min-height:3.6rem;border:3px solid #c084fc;border-radius:.8rem;background:#1a0b33;color:#fff;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:.2rem;overflow-wrap:anywhere;text-align:center}
+.tbtn .te{font-size:1.3rem}.tbtn small{font-size:.7rem;color:#d8b4fe}
+.tbtn.x{opacity:.35;text-decoration:line-through}
+.tbtn.ok{background:#21c55d;border-color:#fff;color:#111}.tbtn.ok small{color:#111}
+.lockbox{display:flex;align-items:center;gap:.6rem;background:#0f2e2b;color:#fff;border-radius:1rem;padding:.6rem .7rem;margin-bottom:.6rem;box-shadow:0 .3rem 0 #072420}
+.lockbox .lk{font-size:min(2.6rem,12vw);line-height:1}
+.lockbox.open .lk{animation:drop .6s}
+.lockbox>div:last-child{min-width:0}
+.job{display:inline-block;background:#14c8b8;color:#062a26;border-radius:2rem;padding:0 .6rem;font-weight:900;font-size:.8rem;margin-bottom:.2rem}
+.ksent{font-size:1.15rem;font-weight:700;overflow-wrap:anywhere}
+.kw{color:#5eead4}
+.keyring{display:flex;flex-wrap:wrap;gap:.45rem;justify-content:center;padding:.4rem;border-radius:1rem;background:radial-gradient(circle,#e5e7eb 0 .3rem,transparent .35rem)}
+.key{min-height:2.6rem;padding:.15rem .8rem .15rem .4rem;border:0;border-radius:2rem;background:linear-gradient(#fde68a,#d4a017);color:#3d2c00;font-weight:900;cursor:pointer;box-shadow:0 .25rem 0 #8a6a00;display:inline-flex;align-items:center;gap:.25rem}
+.key .kh{font-size:1.1rem}
+.key.x{opacity:.35;text-decoration:line-through}
+.key.ok{background:linear-gradient(#86efac,#16a34a);color:#052e14;animation:turn .6s}
+.diary{background:#fffdf4;border-radius:.4rem;box-shadow:0 .3rem .8rem rgba(0,0,0,.25);border-left:1.1rem solid #ff5fa8;overflow:hidden}
+.dhead{display:flex;justify-content:space-between;background:#ffe4f1;padding:.25rem .7rem;font-family:var(--fd);font-weight:900;color:#9d174d}
+.dline{padding:.7rem .8rem;font-size:1.15rem;line-height:2.2;background-image:repeating-linear-gradient(transparent 0 2.1rem,#c7dcff 2.1rem 2.2rem);font-family:"Comic Sans MS","Segoe Print","Bradley Hand",var(--fb);overflow-wrap:anywhere}
+.dgap{display:inline-block;min-width:3.4rem;border-bottom:3px dashed #ff5fa8;text-align:center;color:#ff5fa8}
+.stk{display:inline-block;background:#ffd21f;color:#111;border-radius:.4rem;padding:0 .4rem;font-family:var(--fd);font-weight:900;transform:rotate(-3deg);box-shadow:0 .15rem 0 rgba(0,0,0,.25);animation:drop .5s}
+.stickers{display:flex;flex-wrap:wrap;gap:.45rem;justify-content:center}
+.sticker{min-height:2.6rem;min-width:3.2rem;padding:.1rem .8rem;border:0;border-radius:2rem;font-family:var(--fd);font-weight:900;cursor:pointer;color:#111;box-shadow:0 .25rem 0 rgba(0,0,0,.3)}
+.sticker.c0{background:#fde047}.sticker.c1{background:#86efac}.sticker.c2{background:#7dd3fc}.sticker.c3{background:#fca5a5}.sticker.c4{background:#d8b4fe}.sticker.c5{background:#fdba74}
+.sticker.x{opacity:.3;text-decoration:line-through}
+.sticker.ok{outline:4px solid #111}
+@keyframes warp{0%{filter:hue-rotate(0) blur(0)}50%{filter:hue-rotate(120deg) blur(2px);transform:scale(.95)}100%{filter:none;transform:none}}
+@keyframes turn{0%{transform:rotate(0)}50%{transform:rotate(-90deg)}100%{transform:rotate(0)}}
+/* ---- Section 3 ---- */
+.tcard{background:#f0fdf4;border:3px dashed #21c55d;border-radius:1rem;padding:.6rem .8rem;overflow-wrap:anywhere}
+.tag{display:inline-block;background:#111;color:#fff;border-radius:2rem;padding:0 .6rem;font-weight:700;font-size:.85rem}
+ul.tick{list-style:none;padding-left:0;margin:.4rem 0}ul.tick li{margin:.15rem 0}
+table.plan{border-collapse:collapse;width:100%;table-layout:fixed;margin:.4rem 0;font-size:.9rem}
+table.plan th,table.plan td{border:2px solid #b7e4c7;padding:.2rem .4rem;text-align:left;overflow-wrap:anywhere;vertical-align:top}
+table.plan th{background:#21c55d;color:#fff}
+table.plan td:first-child{font-weight:700;width:38%}
+.phone{max-width:15rem;margin:.4rem auto;background:#1f2937;border-radius:1.6rem;padding:.7rem .6rem .8rem;box-shadow:0 .4rem 0 #000,inset 0 0 0 3px #4b5563}
+.phone.open{background:#14532d}
+.pscreen{display:flex;justify-content:center;align-items:center;gap:.6rem;min-height:2.6rem;background:#0b1220;border-radius:.8rem;margin-bottom:.6rem;color:#86efac;font-family:var(--fd);font-weight:900}
+.pd{width:.9rem;height:.9rem;border-radius:50%;border:3px solid #9ca3af}
+.pd.on{background:#fff;border-color:#fff}
+.pad{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.45rem}
+.pk{min-height:2.7rem;border:0;border-radius:50%;aspect-ratio:1/1;max-width:3.6rem;justify-self:center;width:100%;background:#374151;color:#fff;font-family:var(--fd);font-weight:900;font-size:1.15rem;cursor:pointer;box-shadow:0 .2rem 0 #111}
+.pk.okk{background:#21c55d;color:#052e14}.pk.del{background:#7f1d1d}
+.jig{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:.2rem;margin:.3rem 0 .7rem}
+.jp{display:inline-block;padding:.5rem .8rem;font-weight:700;color:#111;overflow-wrap:anywhere;max-width:100%}
+.jp.left{background:#93c5fd;border-radius:.6rem .2rem .2rem .6rem}
+.jp.right{background:#86efac;border-radius:.2rem .6rem .6rem .2rem}
+.jp.mid{background:#fde047;border:3px dashed #a16207;border-radius:50%/40%;min-width:4.5rem;text-align:center;font-family:var(--fd);font-weight:900}
+.jp.mid.in{border-style:solid;animation:drop .5s}
+.jpieces{display:flex;flex-wrap:wrap;gap:.45rem;justify-content:center}
+.jpc{min-height:2.6rem;padding:.1rem .9rem;border:0;border-radius:1rem .4rem 1rem .4rem;background:#fde047;color:#111;font-family:var(--fd);font-weight:900;cursor:pointer;box-shadow:0 .25rem 0 #a16207}
+.jpc.x{opacity:.35;text-decoration:line-through}.jpc.ok{background:#21c55d;color:#fff}
+.mailbox{background:#fff;border:3px solid #cbd5e1;border-radius:.8rem;overflow:hidden}
+.mbh{background:#2f7df6;color:#fff;font-weight:900;padding:.25rem .7rem}
+.mrow{display:grid;grid-template-columns:auto minmax(0,1fr);gap:0 .5rem;width:100%;text-align:left;padding:.5rem .7rem;border:0;border-bottom:2px solid #e2e8f0;background:#fff;color:#111;cursor:pointer;align-items:center}
+.mrow .star{grid-row:span 2;font-size:1.3rem;color:#f59e0b}
+.mrow .from{font-size:.72rem;color:#64748b;font-weight:700}
+.mrow .subj{font-weight:700;overflow-wrap:anywhere}
+.mrow:hover:not([disabled]){background:#eff6ff}
+.mrow.x{background:#fde8e8;text-decoration:line-through;color:#991b1b}
+.mrow.ok{background:#dcfce7}
+.fridge{background:linear-gradient(90deg,#e5e7eb,#f9fafb 50%,#e5e7eb);border-radius:1rem;padding:.6rem;box-shadow:inset 0 0 0 4px #cbd5e1}
+.email{background:#fff;border-radius:.5rem;padding:.6rem .7rem;line-height:1.75;overflow-wrap:anywhere}
+.mgap{display:inline-block;min-width:4.6rem;text-align:center;border:3px dashed #94a3b8;border-radius:.4rem;color:#94a3b8;font-weight:900}
+.mgap.now{border-color:#2f7df6;color:#2f7df6;animation:blink 1s infinite}
+.mag{display:inline-block;padding:0 .4rem;border-radius:.3rem;font-family:var(--fd);font-weight:900;background:#fde047;transform:rotate(-2deg);box-shadow:0 .15rem 0 rgba(0,0,0,.3)}
+.magnets{display:flex;flex-wrap:wrap;gap:.45rem;justify-content:center;margin-top:.6rem}
+.magb{min-height:2.6rem;padding:.1rem .8rem;border:0;border-radius:.5rem;font-family:var(--fd);font-weight:900;color:#111;cursor:pointer;box-shadow:0 .3rem 0 rgba(0,0,0,.35)}
+.magb.m0{background:#fca5a5}.magb.m1{background:#93c5fd}.magb.m2{background:#86efac}.magb.m3{background:#fde047}.magb.m4{background:#d8b4fe}
+.evid{background:#fffbeb;border:3px solid #f59e0b;border-radius:.8rem;padding:.5rem .7rem;margin-bottom:.6rem}
+.evh{font-weight:900;font-size:.8rem;color:#92400e}
+.evs{font-size:1.15rem;font-weight:700;overflow-wrap:anywhere}
+.evs u{text-decoration:none;background:#fecaca;border-bottom:4px solid #ef3b3b;padding:0 .15rem}
+.fix{margin-top:.3rem;color:#166534;font-weight:700}
+.acts{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(9rem,100%),1fr));gap:.45rem}
+.actb{min-height:3rem;border:3px solid #111;border-radius:.8rem;background:#fff;color:#111;font-weight:900;cursor:pointer;display:flex;align-items:center;gap:.4rem;padding:.2rem .6rem;text-align:left;overflow-wrap:anywhere}
+.actb span{font-size:1.3rem}
+.actb.x{opacity:.35;text-decoration:line-through}
+.codes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(9rem,100%),1fr));gap:.45rem}
+.codeb{min-height:2.7rem;border:3px solid #d8d2c2;border-radius:.6rem;background:#fff;color:#111;cursor:pointer;text-align:left;padding:.2rem .5rem;overflow-wrap:anywhere}
+.codeb b{display:inline-block;background:#ef3b3b;color:#fff;border-radius:.3rem;padding:0 .3rem;margin-right:.2rem}
+.codeb.x{opacity:.35;text-decoration:line-through}.codeb.ok{background:#dcfce7;border-color:#21c55d}
+.cutline{display:flex;flex-wrap:wrap;align-items:center;gap:.1rem;background:#fff;border:3px solid #d8d2c2;border-radius:.8rem;padding:.6rem;font-size:1.1rem;font-weight:700}
+.cw{overflow-wrap:anywhere}
+.cgap{min-width:1.3rem;min-height:2.2rem;border:0;border-left:3px dotted #cbd5e1;background:none;cursor:pointer;padding:0 .2rem}
+.cgap:hover:not([disabled]){border-left-color:#ef3b3b}
+.cgap.x{border-left:3px solid #fca5a5}
+.cgap.snip{border-left:none;font-size:1.1rem}
+.block{background:#fff;border:3px solid #d8d2c2;border-radius:.8rem;padding:.6rem;line-height:1.6}
+.bgreet{font-weight:700;margin-bottom:.3rem}
+.sent{display:inline;border:0;background:none;color:#111;font-size:1rem;cursor:pointer;padding:.1rem .15rem;border-radius:.3rem;text-align:left;line-height:1.6}
+.sent:hover:not([disabled]){background:#e0f2fe}
+.sent.on{background:#bbf7d0;font-weight:700}
+.sent.x{background:#fecaca;text-decoration:line-through}
+.sent.dis{cursor:default}
+.block.split .pbreak{display:block;height:.7rem}
+.sent{display:inline;border:0}
+.block:not(.split) .sent{margin-right:.15rem}
+/* ---- Section 4 ---- */
+.rail{overflow:hidden;padding:.3rem 0 .55rem;margin:.2rem 0 .5rem;background:linear-gradient(transparent calc(100% - .55rem),#6b4a2b calc(100% - .55rem),#6b4a2b calc(100% - .35rem),transparent calc(100% - .35rem)),repeating-linear-gradient(90deg,transparent 0 .9rem,#8b6a45 .9rem 1.2rem) bottom/100% .55rem no-repeat}
+.train{display:flex;flex-wrap:wrap;align-items:flex-end;gap:.25rem .2rem}
+.train.go{animation:chug 1.2s ease-in-out 2}
+.eng{font-size:min(2.4rem,11vw);line-height:1}
+.car{position:relative;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;min-width:3.6rem;max-width:7rem;min-height:3.3rem;padding:.15rem .3rem .45rem;border-radius:.45rem .45rem .2rem .2rem;background:var(--cc);color:#111;text-align:center;box-shadow:inset 0 -.3rem 0 rgba(0,0,0,.2);animation:popin .3s}
+.car:after{content:"";position:absolute;left:.35rem;right:.35rem;bottom:-.3rem;height:.45rem;background:radial-gradient(circle,#222 0 .2rem,transparent .22rem) 0 0/1.1rem .45rem repeat-x}
+.car b{font-family:var(--fd);font-size:.7rem;line-height:1}
+.car .ce{font-size:1rem;line-height:1.1}
+.car .cl{font-size:.56rem;font-weight:900;line-height:1.05;overflow-wrap:anywhere}
+.car.empty{background:repeating-linear-gradient(45deg,#e5e7eb 0 .3rem,#fff .3rem .6rem);border:3px dashed #999;color:#555}
+.yard{background:#fef3c7;border:3px dashed #d97706;border-radius:1rem;padding:.4rem;display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center}
+.yh{flex-basis:100%;text-align:center;font-weight:900;color:#92400e}
+.yc{display:flex;align-items:center;gap:.3rem;min-height:2.6rem;max-width:100%;padding:.15rem .8rem;border:0;border-radius:.5rem;background:var(--cc);color:#111;font-weight:900;cursor:pointer;box-shadow:0 .3rem 0 rgba(0,0,0,.35);text-align:left;overflow-wrap:anywhere}
+.yc .ce{font-size:1.1rem}
+.yc:active{transform:translateY(.2rem);box-shadow:0 .1rem 0 rgba(0,0,0,.35)}
+.crate{background:repeating-linear-gradient(0deg,#e8b77a 0 .5rem,#d9a35f .5rem 1rem);border:4px solid #8a5a22;border-radius:.4rem;padding:.55rem .7rem;margin-bottom:.6rem;color:#2b1704;font-weight:700;font-size:1.08rem;overflow-wrap:anywhere;box-shadow:0 .3rem 0 #5e3b12}
+.crate.loaded{animation:popin .4s;border-color:#16a34a;box-shadow:0 .3rem 0 #0f5f2c}
+.cars{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.4rem}
+.cc{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:3.6rem;padding:.2rem;border:0;border-radius:.5rem;background:var(--cc);color:#111;cursor:pointer;box-shadow:0 .3rem 0 rgba(0,0,0,.35);text-align:center}
+.cc b{font-family:var(--fd);font-size:.75rem}.cc .ce{font-size:1.15rem;line-height:1.1}.cc .cl{font-size:.68rem;font-weight:900;line-height:1.1;overflow-wrap:anywhere}
+.cc.x{opacity:.3;text-decoration:line-through}
+.cc.ok{outline:4px solid #111;animation:drop .5s}
+.mailwin{background:#fff;border:3px solid #cbd5e1;border-radius:.8rem;overflow:hidden;margin-bottom:.6rem;color:#111}
+.mwh{display:flex;justify-content:space-between;align-items:center;background:#1e293b;color:#fff;padding:.25rem .6rem;font-weight:900}
+.dots3 i{display:inline-block;width:.5rem;height:.5rem;border-radius:50%;margin-left:.2rem;background:#ef3b3b}.dots3 i:nth-child(2){background:#ffd21f}.dots3 i:nth-child(3){background:#21c55d}
+.mwf{padding:.25rem .6rem;border-bottom:2px solid #e2e8f0;overflow-wrap:anywhere}
+.mwb{padding:.4rem .6rem}
+.dl{margin:.2rem 0 .45rem;overflow-wrap:anywhere;animation:popin .35s}
+.dnow{display:inline-block;background:#fef9c3;border:2px dashed #eab308;border-radius:.4rem;padding:0 .4rem;font-weight:900;animation:blink 1.4s infinite}
+.mut2{color:#94a3b8}
+.sendrow{text-align:center}
+.sendb{min-height:3rem;padding:.3rem 1.6rem;border:0;border-radius:2rem;background:#2f7df6;color:#fff;font-family:var(--fd);font-size:1.2rem;cursor:pointer;box-shadow:0 .4rem 0 #1d4ea0}
+.sendb:active{transform:translateY(.25rem);box-shadow:0 .15rem 0 #1d4ea0}
+.sentok{position:relative;text-align:center;font-family:var(--fd);font-size:1.15rem;color:#16a34a;margin:.2rem 0 .5rem}
+.sentok .plane{display:inline-block}
+.sentok.fly .plane{animation:fly 1.1s ease-in}
+.reply.late{animation:popin .5s 1s both}
+.rmail{color:#111}
+.msg{display:flex;flex-wrap:wrap;justify-content:center;gap:.4rem .9rem;margin:.4rem 0 .7rem}
+.mword{display:inline-flex;gap:.15rem}
+.msg .tile{width:min(2.3rem,7.4vw);height:min(2.5rem,8vw);font-size:min(1.3rem,5.4vw)}
+.msg .tile.empty{background:#e5e7eb;color:#999;box-shadow:inset 0 0 0 2px #bbb}
+.msg.done .tile{animation:drop .6s}
+.tilepool{display:flex;flex-wrap:wrap;gap:.45rem;justify-content:center;background:#3a2108;border-radius:.6rem;padding:.55rem;box-shadow:inset 0 0 0 4px #a86c2c}
+.ltb{position:relative;width:2.6rem;height:2.8rem;border:0;border-radius:.35rem;background:linear-gradient(#fff3d6,#f1d9a6);color:#3a2108;font-family:var(--fd);font-weight:900;font-size:1.4rem;cursor:pointer;box-shadow:0 .3rem 0 #b8955a}
+.ltb sub{position:absolute;right:.15rem;bottom:.05rem;font-size:.42em;font-family:var(--fb)}
+.ltb:active{transform:translateY(.2rem);box-shadow:0 .1rem 0 #b8955a}
+.winc{background:linear-gradient(#fffbe6,#fff)}
+.opendoor{position:relative;display:inline-block;margin:.2rem auto .4rem}
+.dframe{display:inline-flex;align-items:center;justify-content:center;width:5rem;height:6rem;border-radius:.4rem .4rem 0 0;background:radial-gradient(circle,#fff7c2,#ffd21f);box-shadow:inset 0 0 0 .35rem #8a5a22;perspective:20rem}
+.dleaf{font-size:3.4rem;transform-origin:left center;animation:swing 1.6s ease-out forwards}
+.sun{position:absolute;right:-1.2rem;top:-.6rem;font-size:1.6rem;animation:blink 2s infinite}
+.wint{color:#16a34a;font-size:min(1.9rem,10vw)}
+.wstats{display:flex;flex-wrap:wrap;justify-content:center;gap:.5rem;margin:.4rem 0}
+.wstats span{flex:1 1 8rem;min-width:0;background:#111;color:#fff;border-radius:.7rem;padding:.3rem .6rem;display:flex;justify-content:space-between;align-items:center;gap:.4rem;font-size:.85rem}
+.wstats b{font-family:var(--fd);font-size:1.15rem;white-space:nowrap;color:#ffd21f}
+.wgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(5.2rem,1fr));gap:.35rem;margin:.5rem 0}
+.wsp{display:flex;flex-direction:column;align-items:center;border-radius:.5rem;padding:.2rem;background:#fff;box-shadow:inset 0 0 0 3px var(--c);font-size:.8rem;font-weight:900}
+.wsp b{font-size:.75rem;letter-spacing:-.05em}
+@keyframes chug{0%{transform:translateX(0)}50%{transform:translateX(.6rem)}100%{transform:translateX(0)}}
+@keyframes fly{0%{transform:none;opacity:1}100%{transform:translate(14rem,-6rem) rotate(-20deg) scale(.4);opacity:0}}
+@keyframes swing{0%{transform:rotateY(0)}100%{transform:rotateY(-75deg)}}
+@media (max-width:640px){ .cars{grid-template-columns:repeat(2,minmax(0,1fr))} .car{min-width:3rem} .ltb{width:2.3rem;height:2.5rem;font-size:1.2rem} }
+
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+(function(){
+'use strict';
+/* ===== The B Block Board Game: engine ===== */
+var KEY='vu23521_vu23560_bblock_boardgame_v1';
+var SIZES=[24,28,34,42];
+var PHRASE='CALMANDCLEAR';
+var PTS={C:3,A:1,L:1,M:3,N:1,D:2,E:1,R:1};
+var S, STORE=false, FLASH=null, RESET_ARMED=false, WALKING=false;
+
+function storageOK(){ try{ var k='__t'+Math.random(); localStorage.setItem(k,'1'); localStorage.removeItem(k); return true; }catch(e){ return false; } }
+function fresh(){ return {v:1,team:'',view:'cover',sp:null,spaces:{},tiles:[],t0:0,t1:0,size:1,mute:false,at:0,back:false,newTile:0,bonus:0}; }
+function load(){
+  STORE=storageOK(); S=fresh(); if(!STORE) return;
+  try{ var raw=localStorage.getItem(KEY); if(raw){ var o=JSON.parse(raw); if(o&&o.v===1){ S=o; S.back=(S.view!=='win'&&S.view!=='cover'&&S.view!=='intro'); if(S.view==='space'||S.view==='won') S.view='board'; S.newTile=0; } } }catch(e){}
+}
+var savedT=null;
+function save(show){ if(!STORE) return; try{ localStorage.setItem(KEY,JSON.stringify(S)); if(show){ var el=$('saved'); if(el){ el.className='saved show'; clearTimeout(savedT); savedT=setTimeout(function(){ el.className='saved'; },900); } } }catch(e){} }
+function $(id){ return document.getElementById(id); }
+function shuffle(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+function range(n){ var a=[]; for(var i=0;i<n;i++) a.push(i); return a; }
+function esc(s){ return String(s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function spaceById(id){ for(var i=0;i<SPACES.length;i++) if(SPACES[i].id===id) return SPACES[i]; return null; }
+function hash(s){ var h=0; for(var i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))|0; return Math.abs(h); }
+function reducedMotion(){ try{ return window.matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){ return false; } }
+function fmtTime(ms){ var s=Math.max(0,Math.floor(ms/1000)),m=Math.floor(s/60); s%=60; return (m<10?'0':'')+m+':'+(s<10?'0':'')+s; }
+function tileHtml(l,cls){ return '<span class="tile'+(cls?' '+cls:'')+'">'+l+'<sub>'+(PTS[l]||1)+'</sub></span>'; }
+
+/* ---------- sound ---------- */
+var AC=null;
+function tone(f,t0,d,type,vol){ var o=AC.createOscillator(),g=AC.createGain(); o.type=type||'sine'; o.frequency.value=f; g.gain.setValueAtTime(vol||0.1,AC.currentTime+t0); g.gain.exponentialRampToValueAtTime(0.001,AC.currentTime+t0+d); o.connect(g); g.connect(AC.destination); o.start(AC.currentTime+t0); o.stop(AC.currentTime+t0+d+0.05); }
+function sfx(k){
+  if(S.mute) return;
+  try{ AC=AC||new (window.AudioContext||window.webkitAudioContext)();
+    if(k==='good'){ tone(659,0,.1,'triangle'); tone(880,.09,.18,'triangle'); }
+    else if(k==='bad'){ tone(196,0,.18,'triangle',.12); tone(147,.12,.25,'triangle',.12); }
+    else if(k==='tap'){ tone(600,0,.05,'sine',.06); }
+    else if(k==='hop'){ tone(420+Math.random()*80,0,.06,'square',.03); }
+    else if(k==='dice'){ for(var i=0;i<6;i++) tone(200+Math.random()*300,i*.08,.04,'square',.04); }
+    else if(k==='tile'){ tone(330,0,.08,'square',.08); tone(660,.08,.2,'triangle',.1); }
+    else if(k==='flip'){ tone(800,0,.05,'sine',.05); tone(1000,.05,.05,'sine',.05); }
+    else if(k==='win'){ [523,659,784,1047,784,1047,1319].forEach(function(f,i){ tone(f,i*.12,.3,'triangle',.12); }); }
+  }catch(e){}
+}
+
+/* ---------- space state ---------- */
+function ss(Z){
+  var r=S.spaces[Z.id];
+  if(!r){ var seq=[]; Z.parts.forEach(function(p,pi){ if(p.intro) seq.push('i'+pi); var idx=range(p.steps.length); if(p.shuffle!==false) idx=shuffle(idx); idx.forEach(function(si){ seq.push(pi+'-'+si); }); });
+    r=S.spaces[Z.id]={seq:seq,pos:0,ord:{},cur:{x:[]},miss:0,done:false}; }
+  return r;
+}
+function stepOf(Z,key){ var a=key.split('-'); return {part:Z.parts[+a[0]],step:Z.parts[+a[0]].steps[+a[1]]}; }
+function ordFor(r,key,n){ if(!r.ord[key]||r.ord[key].length!==n) r.ord[key]=shuffle(range(n)); return r.ord[key]; }
+
+/* ---------- bits ---------- */
+function tray(){
+  var t='🎲 The B Block Board Game';
+  if(S.view==='space'){ var Z=spaceById(S.sp); if(Z) t=Z.emo+' Space '+Z.id+': '+Z.name; }
+  return '<div class="tray">'+(S.view!=='cover'&&S.view!=='intro'?'<button class="tb" data-act="board" aria-label="Board">🎲<span class="wide"> Board</span></button>':'')+
+    '<div class="ttl">'+t+'</div><button class="tb" data-act="size-" aria-label="Smaller text">A−</button><button class="tb" data-act="size+" aria-label="Bigger text">A+</button>'+
+    '<button class="tb'+(S.mute?' off':'')+'" data-act="mute" aria-label="Sound">'+(S.mute?'🔇':'🔊')+'</button><button class="tb" data-act="fs" aria-label="Full screen">⛶</button></div>';
+}
+function storeWarn(){ return STORE?'':'<div class="warn">⚠️ This device cannot save your progress. You can still play. Do not close this page.</div>'; }
+var GOOD=['Nice move! 🎯','Great play! 🎲','You got it! ✅','Spot on! ⭐','Yes! 🙌'];
+function fbGood(st,key){ return '<div class="fb good"><b class="lead">'+(st.yes||GOOD[hash(key||'')%GOOD.length])+'</b>'+(st.why||'')+'</div>'; }
+function fbBad(st,extra){ return '<div class="fb bad"><b class="lead">Try again. 🔁</b>'+(extra||st.hint||'Read it again slowly.')+'</div>'; }
+function nextBtn(Z){ return '<button class="btn" style="--c:'+Z.c+'" data-act="next">Next ➜</button>'; }
+
+/* ---------- views ---------- */
+function viewCover(){
+  var h=storeWarn()+'<div class="boxlid"><div class="inner"><div class="em">🎲🏫🔒</div><div class="t1">THE B BLOCK<br>BOARD GAME</div><div><span class="t2">Write your way out of B.1.33!</span></div>'+
+    '<div class="ages"><span>👥 2 to 4 players</span><span>⏱️ 1 to 2 hours</span><span>✉️ Writing to a business</span></div></div></div>';
+  if(!S.team) h+='<div class="card" style="--c:#ffd21f"><div class="band"><span class="be">👥</span><span>Your team</span></div><p>Type a name for your team.</p><input id="team" class="teamin" maxlength="24" autocomplete="off" placeholder="Team name" aria-label="Team name"><div><button class="btn" data-act="team">✔ Save our name</button></div></div>';
+  else h+='<div class="card" style="--c:#21c55d"><p class="big">Hi, <b>'+esc(S.team)+'</b>! 👋</p><button class="btn" data-act="intro">📖 Open the box</button></div>';
+  return h;
+}
+function viewIntro(){
+  return '<div class="card dark" style="--c:#2f7df6"><div class="band"><span class="be">🏫</span><span>Room B.1.33, B Block<small>Monday, 9.02 am</small></span></div>'+
+    '<p>The class is ready for the lesson. Then the door goes <b>click</b>. 🔒 The new smart lock is stuck!</p><p>A small screen on the door lights up.</p>'+
+    '<div class="lockscreen"><div class="lh"><span>🔐 LOCKSMART</span><span>Customer Care</span></div>'+
+    '<p>DOOR B.1.33: <span class="blink">LOCKED</span></p><p>Our system found a problem. We can open the door for you.</p>'+
+    '<p>Please send us a <b>polite, calm and clear</b> email.</p><p>We do not answer rude emails. We do not answer emails with no subject line.</p><p>Dana<br>LockSmart Customer Care</p></div></div>'+
+    '<div class="sticky"><p><b>📌 From Frances</b></p><p>Hi everyone,</p><p>Let\'s play our way out! I made the room into a board game. There are 12 spaces. Each space teaches one part of the email.</p>'+
+    '<p>Finish a space and you win a <b>letter tile</b>. Twelve tiles make a secret message. 🔤</p><p>Two spaces need me. 🧑‍🏫 Write in your notebook and show me. I give you a PIN for the keypad.</p><p>At the door, you write the email to LockSmart. Good luck!</p><p>Frances</p></div>'+
+    '<button class="btn" style="--c:#21c55d" data-act="start">🎲 Open the board</button>';
+}
+function rack(){
+  var h='<div class="rackwrap"><div class="rackhead"><span>🔤 <b>'+esc(S.team)+'</b></span><span>'+S.tiles.length+' of 12 tiles'+(S.bonus?' · <span class="stars">⭐ '+S.bonus+' bonus</span>':'')+'</span><span id="clock">⏱️ '+fmtTime((S.t1||Date.now())-S.t0)+'</span></div><div class="rack">';
+  for(var i=0;i<12;i++){ var T=S.tiles[i]; h+= T?tileHtml(T.l,S.newTile===T.id?'new':''):'<span class="tile empty">?</span>'; }
+  return h+'</div></div>';
+}
+var COLS=4;
+function cellPos(k,cols){ var row=Math.floor(k/cols), col=k%cols; if(row%2===1) col=cols-1-col; return {r:row+1,c:col+1}; }
+function viewBoard(){
+  COLS=(window.innerWidth<640)?2:4;
+  var h=storeWarn();
+  if(S.back) h+='<div class="sticky" style="background:#b8f5c8">👋 <b>Welcome back, '+esc(S.team)+'!</b> Your tiles are safe. Keep playing!</div>';
+  h+=rack()+'<div class="legend">Tap a space. Roll the dice and move your piece. 🎲</div>';
+  h+='<div class="board" id="board" style="grid-template-columns:repeat('+COLS+',minmax(0,1fr))"><div class="pawn" id="pawn"><i class="h"></i><i class="b"></i></div>';
+  var cells=[{start:true}].concat(SPACES);
+  cells.forEach(function(Z,k){ var p=cellPos(k,COLS), pos='grid-row:'+p.r+';grid-column:'+p.c+';';
+    if(Z.start){ h+='<div class="sp start" data-k="0" style="'+pos+'--c:#fff"><span class="se">🚩</span><span class="st">Start</span><span class="ss">Your desk in B.1.33</span></div>'; return; }
+    var n=S.tiles.length;
+    if(Z.door){ var open=n>=12; h+='<button class="sp door'+(open?' open':'')+'" data-k="'+k+'" data-act="space" data-id="'+Z.id+'" style="'+pos+'"><span class="num">🚪</span><span class="se">'+Z.emo+'</span><span class="st">'+Z.name+'</span><span class="ss">'+((S.spaces[Z.id]&&S.spaces[Z.id].done)?'🔓 Open! You escaped!':(open?'You have 12 tiles. Write to LockSmart!':'Locked. You need 12 tiles.'))+'</span></button>'; return; }
+    if(Z.soon){ h+='<div class="sp soon" data-k="'+k+'" style="'+pos+'--c:'+Z.c+'"><span class="num">'+Z.id+'</span><span class="se">'+Z.emo+'</span><span class="st">'+Z.name+'</span><span class="ss">🚧 Coming soon</span></div>'; return; }
+    var r=S.spaces[Z.id], done=r&&r.done, started=r&&!r.done&&r.pos>0;
+    h+='<button class="sp'+(done?' done':'')+'" data-k="'+k+'" data-act="space" data-id="'+Z.id+'" style="'+pos+'--c:'+Z.c+'"><span class="num">'+Z.id+'</span><span class="se">'+Z.emo+'</span><span class="st">'+Z.name+'</span>'+
+      (Z.teacher?'<span class="tc">🧑‍🏫 Teacher check</span>':'')+'<span class="ss">'+(done?'✅ Done':(started?'▶ Keep going ('+r.pos+'/'+r.seq.length+')':'▶ Play'))+'</span>'+(done?'<span class="ptile">'+tileHtml(Z.letter)+'</span>':'')+'</button>';
+  });
+  h+='</div><div><button class="btn ghost" data-act="intro">📖 Read the story again</button><button class="btn ghost" data-act="reset">'+(RESET_ARMED?'⚠️ Tap again to start again':'♻️ Start the whole game again')+'</button></div>';
+  return h;
+}
+function spaceHead(Z,r,label){
+  var h='<div class="card" style="--c:'+Z.c+'"><div class="band"><span class="be">'+Z.emo+'</span><span>Space '+Z.id+': '+Z.name+'<small>'+(label||'')+'</small></span></div>';
+  h+='<div class="dots" style="--c:'+Z.c+'" aria-label="Step '+(r.pos+1)+' of '+r.seq.length+'">'; for(var i=0;i<r.seq.length;i++) h+='<i class="'+(i<r.pos?'d':(i===r.pos?'n':''))+'"></i>'; return h+'</div>';
+}
+function viewSpace(){
+  var Z=spaceById(S.sp), r=ss(Z);
+  if(r.done){ S.view='won'; return viewWon(); }
+  var key=r.seq[r.pos];
+  if(key.charAt(0)==='i'){ var part=Z.parts[+key.slice(1)]; return spaceHead(Z,r,part.label)+part.intro+'<div><button class="btn" style="--c:'+Z.c+'" data-act="next">'+(part.go||'Let\'s play! ➜')+'</button></div></div>'; }
+  var o=stepOf(Z,key);
+  return spaceHead(Z,r,o.part.label)+STEP[o.step.k](Z,r,key,o.step,o.part,r.cur)+'</div>';
+}
+function viewWon(){
+  var Z=spaceById(S.sp), r=ss(Z), ch=r.ch;
+  var h='<div class="card unlock" style="--c:'+Z.c+'"><div class="band"><span class="be">'+Z.emo+'</span><span>Space '+Z.id+' complete!</span></div><p class="big">You win a letter tile! 🔤</p><div class="bigtile">'+Z.letter+'</div>'+
+    '<p class="stars">'+(r.miss<=1?'⭐⭐⭐':(r.miss<=4?'⭐⭐':'⭐'))+'</p><p class="mut" style="color:#555">Mistakes in this space: '+r.miss+'</p>';
+  if(!ch) h+='<div class="chance"><div class="ci"><button class="cf" data-act="chance" style="position:absolute;inset:0;border:0">🃏 CHANCE<br><small style="font-size:.7em">Tap to flip a card</small></button></div></div>';
+  else h+=chanceBody(ch);
+  return h+'<button class="btn wood" data-act="board">🎲 Back to the board</button></div>';
+}
+function chanceBody(ch){
+  var c=CHANCE[ch.i], h='<div class="chancebox"><b>🃏 Chance card</b><br>';
+  if(c.fact) return h+c.fact+'</div>';
+  h+='<div class="q">'+c.q+'</div><div class="opts">';
+  ch.ord.forEach(function(oi,pos){ var cls='op'; if(ch.a!==undefined){ if(oi===0) cls+=' ok'; else if(oi===ch.a) cls+=' x'; } h+='<button class="'+cls+'" data-act="chanceans" data-i="'+pos+'"'+(ch.a!==undefined?' disabled':'')+'>'+c.o[oi]+'</button>'; });
+  h+='</div>';
+  if(ch.a!==undefined) h+=ch.a===0?'<div class="fb good"><b class="lead">Bonus star! ⭐</b>'+c.why+'</div>':'<div class="fb bad"><b class="lead">No bonus this time.</b>'+c.why+'</div>';
+  return h+'</div>';
+}
+
+/* ---------- step types ---------- */
+var STEP={};
+function optsHtml(Z,r,key,st,cur,cls){
+  var ord=ordFor(r,key,st.o.length), h='<div class="'+(cls||'opts')+'">';
+  if(st.fixed){ ord=range(st.o.length); r.ord[key]=ord; }
+  ord.forEach(function(oi,pos){ var c='op'; if(cur.x.indexOf(oi)>=0) c+=' x'; if(cur.ok&&oi===0) c+=' ok'; if(FLASH&&FLASH.pos===pos&&FLASH.k==='bad') c+=' shake';
+    h+='<button class="'+c+'" data-act="pick" data-i="'+pos+'"'+(cur.ok||cur.x.indexOf(oi)>=0?' disabled':'')+'>'+st.o[oi]+'</button>'; });
+  return h+'</div>';
+}
+STEP.pick=function(Z,r,key,st,part,cur){
+  var h=(st.pre||'')+(st.sit?'<div class="sit" style="--c:'+Z.c+'">'+st.sit+'</div>':'')+'<div class="q">'+st.q+'</div>'+optsHtml(Z,r,key,st,cur,st.sw?'switch':'opts');
+  if(cur.ok) h+=fbGood(st,key)+nextBtn(Z); else if(cur.x.length) h+=fbBad(st);
+  return h;
+};
+/* memory: flip two cards to match a word and its meaning */
+STEP.memory=function(Z,r,key,st,part,cur){
+  var cards=[]; st.pairs.forEach(function(p,i){ cards.push({p:i,t:p[0],w:1}); cards.push({p:i,t:p[1],w:0}); });
+  var ord=ordFor(r,key,cards.length); cur.got=cur.got||[]; cur.open=cur.open||[];
+  if(!MEMT&&cur.open.length>=2){ cur.open=[]; cur.no=false; }
+  var h='<div class="q">'+(st.q||'Turn over two cards. Find a word and its meaning.')+'</div><div class="mem">';
+  ord.forEach(function(ci,pos){ var c=cards[ci], got=cur.got.indexOf(c.p)>=0, up=cur.open.indexOf(pos)>=0, cls='mc'+(got?' got':'')+(up?' up':'')+(up&&cur.no?' no':'');
+    h+='<button class="'+cls+'" data-act="mem" data-i="'+pos+'" style="--c:'+Z.c+'"'+(got?' disabled':'')+' aria-label="Card '+(pos+1)+'"><span class="in"><span class="fr">'+Z.emo+'</span><span class="bk'+(c.w?' w':'')+'">'+c.t+'</span></span></button>'; });
+  h+='</div><div class="memstat">Pairs found: '+cur.got.length+' of '+st.pairs.length+'</div>';
+  if(cur.ok) h+=fbGood(st,key)+nextBtn(Z); else if(cur.no) h+='<div class="fb bad"><b class="lead">Not a pair. 🔁</b>Remember where the cards are. Try again.</div>';
+  return h;
+};
+var MEMT=null;
+/* tray: drop the slip in the right mail tray */
+STEP.tray=function(Z,r,key,st,part,cur){
+  var h='<div class="q">'+(part.q||'Which tray?')+'</div><div class="slip'+(cur.ok&&cur.anim?' drop'+st.a:'')+(FLASH&&FLASH.k==='bad'?' shake':'')+'">✉️ '+st.t+'</div><div class="trays">';
+  part.trays.forEach(function(t,i){ var c='tr'; if(cur.x.indexOf(i)>=0) c+=' x'; if(cur.ok&&i===st.a) c+=' ok'; h+='<button class="'+c+'" style="--tc:'+t.c+'" data-act="tray" data-i="'+i+'"'+(cur.ok||cur.x.indexOf(i)>=0?' disabled':'')+'><span class="te">'+t.e+'</span><span>'+t.l+'</span></button>'; });
+  h+='</div>';
+  if(cur.ok) h+=fbGood(st,key)+nextBtn(Z); else if(cur.x.length) h+=fbBad(st);
+  return h;
+};
+/* meter: the tone needle */
+var TONES=[{l:'😡 Too angry',a:-60,c:'#ef3b3b'},{l:'😎 Too casual',a:60,c:'#ff8a1f'},{l:'🙂 Just right',a:0,c:'#21c55d'}];
+STEP.meter=function(Z,r,key,st,part,cur){
+  var ang=cur.ok?TONES[st.a].a:(cur.last!==undefined?TONES[cur.last].a:0);
+  var h='<div class="meter"><svg viewBox="0 0 200 110" aria-hidden="true"><path d="M20 100 A80 80 0 0 1 60 31" stroke="#ef3b3b" stroke-width="18" fill="none"/><path d="M62 30 A80 80 0 0 1 138 30" stroke="#21c55d" stroke-width="18" fill="none"/><path d="M140 31 A80 80 0 0 1 180 100" stroke="#ff8a1f" stroke-width="18" fill="none"/>'+
+    '<text x="22" y="60" font-size="10" fill="#fff">😡</text><text x="94" y="14" font-size="10" fill="#fff">🙂</text><text x="166" y="60" font-size="10" fill="#fff">😎</text>'+
+    '<g class="needle" style="opacity:'+(cur.ok||cur.last!==undefined?1:0)+';transform:rotate('+ang+'deg)"><line x1="100" y1="100" x2="100" y2="34" stroke="#fff" stroke-width="5" stroke-linecap="round"/></g><circle cx="100" cy="100" r="9" fill="#ffd21f"/></svg></div>';
+  h+='<div class="lineq">"'+st.t+'"</div><div class="tone3">';
+  TONES.forEach(function(t,i){ var c='op'; if(cur.x.indexOf(i)>=0) c+=' x'; if(cur.ok&&i===st.a) c+=' ok'; h+='<button class="'+c+'" data-act="tone" data-i="'+i+'"'+(cur.ok||cur.x.indexOf(i)>=0?' disabled':'')+'>'+t.l+'</button>'; });
+  h+='</div>';
+  if(cur.ok) h+=fbGood(st,key)+nextBtn(Z); else if(cur.x.length) h+=fbBad(st);
+  return '<div style="background:#111;border-radius:1rem;padding:.5rem;margin-bottom:.4rem">'+h.split('<div class="lineq">')[0]+'</div><div class="lineq">'+h.split('<div class="lineq">')[1];
+};
+/* ladder: which rung is this line on? */
+var RUNGS=['🔝 A polite request','🙂 A request','😤 An order'];
+STEP.ladder=function(Z,r,key,st,part,cur){
+  var h='<div class="q">Which rung is this line on?</div><div class="lineq">"'+st.t+'"</div><div class="ladder">';
+  RUNGS.forEach(function(l,i){ var c='rung'; if(cur.x.indexOf(i)>=0) c+=' x'; if(cur.ok&&i===st.a) c+=' ok'; if(FLASH&&FLASH.pos===i&&FLASH.k==='bad') c+=' shake'; h+='<button class="'+c+'" data-act="rung" data-i="'+i+'"'+(cur.ok||cur.x.indexOf(i)>=0?' disabled':'')+'>'+l+(cur.ok&&i===st.a?' ⬅ 🧗':'')+'</button>'; });
+  h+='</div>';
+  if(cur.ok) h+=fbGood(st,key)+nextBtn(Z); else if(cur.x.length) h+=fbBad(st);
+  return h;
+};
+
+/* ---------- render ---------- */
+function render(){
+  document.documentElement.style.fontSize=SIZES[S.size]+'px';
+  var h=tray()+'<main id="main">';
+  if(S.view==='cover') h+=viewCover(); else if(S.view==='intro') h+=viewIntro(); else if(S.view==='board') h+=viewBoard();
+  else if(S.view==='space') h+=viewSpace(); else if(S.view==='won') h+=viewWon(); else if(S.view==='win') h+=viewWin();
+  h+='</main><div id="saved" class="saved">💾 Saved</div>';
+  $('app').innerHTML=h; FLASH=null;
+  if(S.view==='board') placePawn(S.at);
+}
+function goTop(){ try{ window.scrollTo(0,0); }catch(e){} }
+function placePawn(k){
+  var b=$('board'), pw=$('pawn'); if(!b||!pw) return; var cell=b.querySelector('[data-k="'+k+'"]'); if(!cell) return;
+  var br=b.getBoundingClientRect(), cr=cell.getBoundingClientRect();
+  pw.style.left=(cr.left-br.left+cr.width-pw.offsetWidth-6)+'px'; pw.style.top=(cr.top-br.top+cr.height-pw.offsetHeight-4)+'px';
+}
+var lastCols=null;
+window.addEventListener('resize',function(){ if(S.view!=='board') return; var c=(window.innerWidth<640)?2:4; if(c!==COLS){ render(); } else placePawn(S.at); });
+
+/* ---------- actions ---------- */
+function ctx(){ var Z=spaceById(S.sp), r=ss(Z), key=r.seq[r.pos]; var o=key.charAt(0)==='i'?null:stepOf(Z,key); return {Z:Z,r:r,key:key,st:o&&o.step,part:o&&o.part}; }
+function right(c){ c.r.cur.ok=true; sfx('good'); }
+function wrong(c,pos,mark){ if(c.r.cur.x.indexOf(mark)<0) c.r.cur.x.push(mark); c.r.miss++; sfx('bad'); FLASH={k:'bad',pos:pos}; }
+function advance(){
+  var c=ctx(); c.r.pos++; c.r.cur={x:[]};
+  if(c.r.pos>=c.r.seq.length){ c.r.done=true;
+    if(c.Z.door){ S.t1=Date.now(); S.view='win'; save(true); render(); goTop(); sfx('win'); startConfetti(); return; }
+    var have=false; S.tiles.forEach(function(x){ if(x.id===c.Z.id) have=true; }); if(!have) S.tiles.push({id:c.Z.id,l:c.Z.letter});
+    S.newTile=c.Z.id; S.view='won'; save(true); render(); goTop(); setTimeout(function(){ sfx('tile'); },250); burst(70,false); return; }
+  save(true); render(); goTop();
+}
+function boardIndex(id){ var cells=[0].concat(SPACES.map(function(z){ return z.id; })); return cells.indexOf(id); }
+var ACT={
+  team:function(){ var v=($('team').value||'').trim(); if(!v){ $('team').focus(); return; } S.team=v.slice(0,24); save(true); render(); },
+  intro:function(){ S.view='intro'; S.back=false; save(); render(); goTop(); },
+  start:function(){ if(!S.t0) S.t0=Date.now(); S.view='board'; save(true); render(); goTop(); },
+  board:function(){ S.view='board'; S.back=false; RESET_ARMED=false; save(); render(); goTop(); setTimeout(function(){ S.newTile=0; },1200); },
+  space:function(el){
+    var Z=spaceById(+el.getAttribute('data-id')); if(!Z||Z.soon||WALKING) return;
+    if(Z.door&&S.tiles.length<12){ sfx('bad'); el.classList.add('shake'); setTimeout(function(){ el.classList.remove('shake'); },450); return; }
+    var target=boardIndex(Z.id);
+    var go=function(){ WALKING=false; if(S.view!=='board') return; S.sp=Z.id; S.back=false; if(Z.door&&S.spaces[Z.id]&&S.spaces[Z.id].done){ S.view='win'; save(); render(); goTop(); return; } S.view='space'; ss(Z); save(); render(); goTop(); };
+    if(reducedMotion()||S.at===target){ S.at=target; go(); return; }
+    WALKING=true;
+    var d=document.createElement('div'); d.className='dice'; d.textContent='⚀'; document.body.appendChild(d); sfx('dice');
+    var faces='⚀⚁⚂⚃⚄⚅', n=0, spin=setInterval(function(){ d.textContent=faces.charAt(Math.floor(Math.random()*6)); if(++n>6){ clearInterval(spin); setTimeout(function(){ d.remove(); hopTo(target,go); },250); } },90);
+  },
+  next:function(){ advance(); },
+  pick:function(el){ var c=ctx(); if(c.r.cur.ok) return; var pos=+el.getAttribute('data-i'), oi=c.r.ord[c.key][pos]; if(oi===0) right(c); else wrong(c,pos,oi); save(true); render(); },
+  tray:function(el){ var c=ctx(); if(c.r.cur.ok) return; var i=+el.getAttribute('data-i'); if(i===c.st.a){ right(c); c.r.cur.anim=true; save(true); render(); c.r.cur.anim=false; return; } wrong(c,i,i); save(true); render(); },
+  tone:function(el){ var c=ctx(); if(c.r.cur.ok) return; var i=+el.getAttribute('data-i'); c.r.cur.last=i; if(i===c.st.a) right(c); else wrong(c,i,i); save(true); render(); },
+  rung:function(el){ var c=ctx(); if(c.r.cur.ok) return; var i=+el.getAttribute('data-i'); if(i===c.st.a) right(c); else wrong(c,i,i); save(true); render(); },
+  mem:function(el){
+    var c=ctx(), cur=c.r.cur; if(cur.ok||MEMT) return; var pos=+el.getAttribute('data-i'); cur.open=cur.open||[]; cur.got=cur.got||[];
+    if(cur.open.length>=2){ cur.open=[]; cur.no=false; }
+    if(cur.open.indexOf(pos)>=0) return;
+    var cards=[]; c.st.pairs.forEach(function(p,i){ cards.push({p:i}); cards.push({p:i}); });
+    cur.open.push(pos); cur.no=false; sfx('flip');
+    if(cur.open.length===2){ var a=cards[c.r.ord[c.key][cur.open[0]]].p, b=cards[c.r.ord[c.key][cur.open[1]]].p;
+      if(a===b){ cur.got.push(a); cur.open=[]; sfx('good'); if(cur.got.length===c.st.pairs.length) right(c); }
+      else { cur.no=true; c.r.miss++; render(); sfx('bad'); MEMT=setTimeout(function(){ MEMT=null; cur.open=[]; cur.no=false; save(); render(); },1100); save(true); return; } }
+    save(true); render(); },
+  chance:function(){ var c=ctxWon(); if(c.r.ch) return; var used=[]; for(var k in S.spaces){ if(S.spaces[k]&&S.spaces[k].ch) used.push(S.spaces[k].ch.i); }
+    var pool=range(CHANCE.length).filter(function(i){ return used.indexOf(i)<0; }); if(!pool.length) pool=range(CHANCE.length);
+    var i=pool[Math.floor(Math.random()*pool.length)]; c.r.ch={i:i,ord:CHANCE[i].o?shuffle(range(CHANCE[i].o.length)):null}; sfx('flip'); save(true); render(); },
+  chanceans:function(el){ var c=ctxWon(), ch=c.r.ch; if(!ch||ch.a!==undefined) return; var oi=ch.ord[+el.getAttribute('data-i')]; ch.a=oi; if(oi===0){ S.bonus++; sfx('good'); } else sfx('bad'); save(true); render(); },
+  'size+':function(){ if(S.size<SIZES.length-1){ S.size++; save(); render(); } },
+  'size-':function(){ if(S.size>0){ S.size--; save(); render(); } },
+  mute:function(){ S.mute=!S.mute; save(); render(); },
+  fs:function(){ try{ if(!document.fullscreenElement) (document.documentElement.requestFullscreen||document.documentElement.webkitRequestFullscreen).call(document.documentElement); else (document.exitFullscreen||document.webkitExitFullscreen).call(document); }catch(e){} },
+  reset:function(){ if(!RESET_ARMED){ RESET_ARMED=true; render(); setTimeout(function(){ RESET_ARMED=false; if(S.view==='board') render(); },4000); return; } RESET_ARMED=false; var k={size:S.size,mute:S.mute}; S=fresh(); S.size=k.size; S.mute=k.mute; save(); render(); goTop(); },
+  again:function(){ var k={size:S.size,mute:S.mute}; S=fresh(); S.size=k.size; S.mute=k.mute; stopConfetti(); save(); render(); goTop(); }
+};
+function ctxWon(){ var Z=spaceById(S.sp); return {Z:Z,r:ss(Z)}; }
+function hopTo(target,done){
+  var path=[], k=S.at, dir=target>k?1:-1; while(k!==target){ k+=dir; path.push(k); }
+  var pw=$('pawn'); if(pw) pw.classList.add('hop');
+  (function step(){ if(!path.length){ if(pw) pw.classList.remove('hop'); setTimeout(done,220); return; } S.at=path.shift(); placePawn(S.at); sfx('hop'); setTimeout(step,180); })();
+}
+document.addEventListener('click',function(e){ var el=e.target.closest('[data-act]'); if(!el||el.disabled) return; var a=el.getAttribute('data-act'); if(ACT[a]){ e.preventDefault(); ACT[a](el); } });
+document.addEventListener('keydown',function(e){ var t=e.target; if((e.key==='Enter'||e.key===' ')&&t&&t.getAttribute&&t.getAttribute('role')==='button'&&t.getAttribute('data-act')&&ACT[t.getAttribute('data-act')]){ e.preventDefault(); ACT[t.getAttribute('data-act')](t); return; } if(e.key==='Enter'&&e.target&&e.target.id==='team') ACT.team(); if(e.key==='Escape'&&(S.view==='space'||S.view==='won')) ACT.board(); });
+setInterval(function(){ var c=$('clock'); if(c&&S.t0) c.textContent='⏱️ '+fmtTime((S.t1||Date.now())-S.t0); },1000);
+setInterval(function(){ save(); },1500);
+window.addEventListener('pagehide',function(){ save(); });
+document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='hidden') save(); });
+
+/* ---------- confetti ---------- */
+var CF=null,CFI=null;
+function cv(){ var c=$('confetti'); if(!c){ c=document.createElement('canvas'); c.id='confetti'; document.body.appendChild(c); } c.width=window.innerWidth; c.height=window.innerHeight; return c; }
+function burst(n,top){ if(reducedMotion()) return; var c=cv(), cols=['#ef3b3b','#ffd21f','#21c55d','#2f7df6','#a855f7','#ff8a1f','#ff5fa8','#14c8b8'], em=['🎲','✉️','🔤','⭐','🎉','🃏'];
+  CF=CF||{p:[],run:false,c:c};
+  for(var i=0;i<n;i++){ var e=Math.random()<.15; CF.p.push({x:top?Math.random()*c.width:c.width/2+(Math.random()-.5)*140,y:top?-30-Math.random()*c.height*.5:c.height*.5,vx:(Math.random()-.5)*(top?3:16),vy:top?2+Math.random()*3:-6-Math.random()*10,r:Math.random()*6.28,vr:(Math.random()-.5)*.3,s:6+Math.random()*9,col:cols[i%cols.length],e:e?em[i%em.length]:null,life:0}); }
+  if(!CF.run){ CF.run=true; requestAnimationFrame(tick); } }
+function tick(){ if(!CF||!CF.run) return; var c=CF.c,x=c.getContext('2d'); x.clearRect(0,0,c.width,c.height); CF.p=CF.p.filter(function(p){ return p.y<c.height+50&&p.life<900; });
+  CF.p.forEach(function(p){ p.life++; p.vy+=.17; p.vx*=.99; p.x+=p.vx; p.y+=p.vy; p.r+=p.vr; x.save(); x.translate(p.x,p.y); x.rotate(p.r); if(p.e){ x.font=(p.s*2.6)+'px serif'; x.fillText(p.e,-p.s,p.s); } else { x.fillStyle=p.col; x.fillRect(-p.s/2,-p.s/4,p.s,p.s/2); } x.restore(); });
+  if(CF.p.length) requestAnimationFrame(tick); else { CF.run=false; x.clearRect(0,0,c.width,c.height); } }
+function startConfetti(){ if(reducedMotion()) return; burst(240,true); burst(120,false); var n=0; clearInterval(CFI); CFI=setInterval(function(){ n++; burst(90,true); if(n>8) clearInterval(CFI); },1300); }
+function stopConfetti(){ clearInterval(CFI); if(CF) CF.p=[]; }
+
+/* ===== Chance cards ===== */
+var CHANCE=[
+ {q:'Which closing is right for an email to a business?',o:['Kind regards,','See ya!','Luv'],why:'<b>Kind regards,</b> then your name on the next line.'},
+ {q:'Which subject line is best?',o:['Request to change my class time','hi','URGENT!!!'],why:'Say what the email is about, in a few words.'},
+ {fact:'💡 Most businesses read the subject line first. A clear subject line gets a faster answer.'},
+ {q:'An email to a business should be ...',o:['polite, calm and clear.','short, funny and full of emojis.','angry, so they answer fast.'],why:'Polite, calm and clear. That is the secret message on your board!'},
+ {q:'Which one is a polite request?',o:['Could you please send me a receipt?','Send me a receipt.','Receipt now.'],why:'<b>Could you please ...?</b> is polite.'},
+ {fact:'💡 Two requests? Put each one in its own paragraph. Then the reader sees both.'},
+ {q:'Where does your name go?',o:['On a new line, under the closing.','On the same line as Kind regards.','In the subject line.'],why:'Kind regards, <br>Name. Two separate lines.'},
+ {q:'Which greeting is good for a business you do not know?',o:['Dear Sir or Madam,','Hey you!','Yo team,'],why:'<b>Dear Sir or Madam</b> works when you do not know the name.'},
+ {fact:'💡 Read your email one more time before you press Send. Most mistakes are easy to see on the second read.'},
+ {q:'"I would really appreciate a reply by Friday." What does it ask for?',o:['an answer before Friday ends','a phone call on Saturday','a meeting next month'],why:'<b>by Friday</b> means on Friday or earlier.'},
+ {q:'Which word goes before bad news?',o:['Unfortunately','Fortunately','Luckily'],why:'<b>Unfortunately</b>, I cannot come on Tuesday.'},
+ {fact:'💡 Emojis are great with friends. In an email to a business, leave them out.'},
+ {q:'Which email is too casual?',o:['Hiya! Quick q about the hall lol','Dear Mr Tan, I would like to ask about the hall.','Dear Sir or Madam, I am writing about my booking.'],why:'"Hiya", "q" and "lol" are for friends.'},
+ {q:'How many ideas go in one paragraph?',o:['one main idea','every idea','no ideas'],why:'One main idea in each paragraph.'}
+];
+
+/* ===== Space 1: Word Cards ===== */
+function SW(s,o,why){ return {k:'pick',sw:true,q:s.replace('__','<span class="gapw">?</span>'),o:o,why:why,hint:'Does the word describe a thing (adjective) or the action (adverb)?'}; }
+var SP1={id:1,name:'Word Cards',emo:'🎴',c:'#ffd21f',letter:'C',skill:'Words for writing to a business',
+ parts:[
+  {label:'Memory match, round 1',
+   intro:'<p class="big">🎴 Turn over two cards. Find a <b style="color:#2f7df6">word</b> and its <b>meaning</b>.</p><p>If they match, they stay. If not, they turn back. Remember where they are!</p>',
+   steps:[{k:'memory',pairs:[['request','a polite ask: you want someone to do something'],['arrange','organise something so it happens'],['confirm','say that something is definitely true or booked'],['available','free, or ready to use'],['suitable','right for the person, the day or the job'],['unfortunately','a polite word before bad news']],why:'Round 1 is done! Six new words. 🎴'}]},
+  {label:'Memory match, round 2',
+   steps:[{k:'memory',pairs:[['appreciate','feel thankful for something'],['in advance','before the day or the time'],['provide','give someone the thing they need'],['respond','answer a message'],['missing','not there when it should be there'],['urgent','it must happen very soon']],why:'Round 2 is done! Twelve new words. 🎴'}]},
+  {label:'Describing words',
+   intro:'<p class="big">🔎 Describing words help the reader.</p><p>An <b>adjective</b> describes a thing: an <b>urgent</b> problem, the room is <b>small</b>.</p><p>An <b>adverb</b> describes the action: reply <b>quickly</b>, I <b>really</b> appreciate it. Many adverbs end in <b>-ly</b>.</p><p>Choose the right word.</p>',
+   steps:[
+    SW('The path is __ when it rains.',['unsafe','unsafely'],'It describes the path (a thing). Adjective: <b>unsafe</b>.'),
+    SW('Could you reply __, please?',['quickly','quick'],'It describes how you reply (the action). Adverb: <b>quickly</b>.'),
+    SW('I have an __ question about my booking.',['urgent','urgently'],'It describes the question (a thing). Adjective: <b>urgent</b>.'),
+    SW('We __ need two more tables.',['really','real'],'It makes the verb "need" stronger. Adverb: <b>really</b>.'),
+    SW('Please pack the cups __.',['carefully','careful'],'It describes how you pack (the action). Adverb: <b>carefully</b>.'),
+    SW('The waiting room is very __ on Mondays.',['busy','busily'],'It describes the room (a thing). Adjective: <b>busy</b>.'),
+    SW('The office answered my email __.',['politely','polite'],'It describes how the office answered. Adverb: <b>politely</b>.'),
+    SW('The new timetable is very __.',['clear','clearly'],'It describes the timetable (a thing). Adjective: <b>clear</b>.')
+   ]}
+ ]};
+
+/* ===== Space 2: Mail Trays ===== */
+var TRAYS=[{e:'💬',l:'Text to a friend',c:'#7dd3fc'},{e:'📧',l:'Email to a business',c:'#86efac'},{e:'📌',l:'Notice on a wall',c:'#fde047'}];
+function T2(t,a,why){ return {k:'tray',t:t,a:a,why:why,hint:'Who are you writing to? How many people need to read it? How well do you know them?'}; }
+var SP2={id:2,name:'Mail Trays',emo:'📬',c:'#2f7df6',letter:'A',skill:'Choose the right text',
+ parts:[
+  {label:'Sort the mail',trays:TRAYS,q:'Which kind of text do you write? Tap the right tray.',
+   intro:'<p class="big">📬 Before you write, choose the right kind of text.</p><p>Ask three questions:</p><p>1. <b>Who</b> am I writing to?<br>2. <b>Why</b> am I writing?<br>3. <b>How well</b> do I know this person?</p>',
+   steps:[
+    T2('You want the dentist to move your appointment to next week.',1,'You do not know the dentist\'s staff well, and you want them to do something. <b>Email to a business</b>.'),
+    T2('You want to tell your sister you are at the shops.',0,'Your sister knows you well. A quick <b>text</b> is fine.'),
+    T2('You want everybody in your class to know the lift is broken.',2,'Many people need to see it. A <b>notice on a wall</b>.'),
+    T2('You want the council to collect an old sofa from your street.',1,'The council is an office. You ask them to do something. <b>Email to a business</b>.'),
+    T2('You want your friend to bring your umbrella back.',0,'A close friend: a short <b>text</b>.'),
+    T2('You want the people in your building to know the water is off on Monday.',2,'Everybody in the building needs to know. A <b>notice</b>.'),
+    T2('You want the gym to send you the new class timetable.',1,'The gym is a business. <b>Email to a business</b>.'),
+    T2('You want your classmate to save you a seat.',0,'A classmate you know: a <b>text</b>.'),
+    T2('You want a computer shop to fix your new laptop for free.',1,'You ask a shop to do something. <b>Email to a business</b>.')
+   ]},
+  {label:'Think first',
+   steps:[
+    {k:'pick',q:'You write to the dentist. You do not know the people at the front desk. Your email should be ...',o:['polite and a bit more formal.','friendly, with lots of emojis.','angry and very short.'],why:'You do not know them, so be <b>polite</b> and a bit <b>more formal</b>.',hint:'How well do you know the reader?'},
+    {k:'pick',q:'"The lift is broken." Why is a notice better than an email?',o:['Many people need to see it.','A notice is more polite.','Emails are always too long.'],why:'A notice on the wall reaches <b>everybody</b> in the building.',hint:'Who needs this information?'},
+    {k:'pick',q:'Which question do you ask yourself before you choose?',o:['How well do I know this person?','What colour is the paper?','How many emojis can I use?'],why:'<b>Who? Why? How well do I know them?</b> These three questions help you choose.',hint:'Think about the reader.'}
+   ]}
+ ]};
+
+/* ===== Space 3: Tone Meter ===== */
+function M3(t,a,why){ return {k:'meter',t:t,a:a,why:why,hint:'Is it angry? Is it like a message to a mate? Or is it polite, calm and clear?'}; }
+function L3(t,a,why){ return {k:'ladder',t:t,a:a,why:why,hint:'Order: no question, no please. Request: a simple question. Polite request: could, would, please, I would like.'}; }
+var SP3={id:3,name:'Tone Meter',emo:'🌡️',c:'#ef3b3b',letter:'L',skill:'Polite, neutral, more formal',
+ parts:[
+  {label:'Check the tone',
+   intro:'<p class="big">🌡️ An email to a business is <b>polite</b>, <b>neutral</b> and a bit <b>more formal</b>.</p><p>😡 <b>Too angry</b>: rude words, orders, threats.<br>😎 <b>Too casual</b>: slang, like a message to a mate.<br>🙂 <b>Just right</b>: polite, calm and clear.</p><p>Read each line. Tap the right part of the meter.</p>',
+   steps:[
+    M3('G\'day mate, can you sort out my booking?',1,'"G\'day mate" and "sort out" are for friends. <b>Too casual</b>.'),
+    M3('This is the third time I asked. Do your job.',0,'It is an order, and it is unkind. <b>Too angry</b>.'),
+    M3('Could you please send me the timetable?',2,'Polite and clear. <b>Just right</b>.'),
+    M3('Your staff are rude and lazy.',0,'It attacks the people, not the problem. <b>Too angry</b>.'),
+    M3('Hiya! Quick one about the parking lol',1,'"Hiya" and "lol" are too relaxed. <b>Too casual</b>.'),
+    M3('Unfortunately, the receipt has the wrong date.',2,'It says the problem calmly. <b>Just right</b>.'),
+    M3('No worries, just flick me the form.',1,'"No worries" and "flick me" are slang. <b>Too casual</b>.'),
+    M3('I would like to ask about the Saturday class.',2,'<b>I would like to ...</b> is polite. <b>Just right</b>.'),
+    M3('If nobody calls me today, I will tell everyone.',0,'It is a threat. <b>Too angry</b>.')
+   ]},
+  {label:'The politeness ladder',
+   intro:'<p class="big">🪜 Climb the ladder!</p><p>😤 <b>An order</b>: Book me a table.<br>🙂 <b>A request</b>: Can you book a table?<br>🔝 <b>A polite request</b>: Could you please book a table for six on Friday?</p><p>In an email to a business, always climb to the top.</p>',
+   steps:[
+    L3('Book me a table for six.',2,'No question and no please. It is <b>an order</b>.'),
+    L3('Can you book a table for six?',1,'A simple question with can. It is <b>a request</b>.'),
+    L3('Could you please book a table for six on Friday?',0,'Could + please + details. It is <b>a polite request</b>.'),
+    L3('Give me the price list.',2,'It tells the reader what to do. <b>An order</b>.'),
+    L3('Do you have a price list?',1,'A simple question. <b>A request</b>.'),
+    L3('I would like to ask for the price list, please.',0,'<b>I would like ...</b> + please. <b>A polite request</b>.'),
+    L3('Would you be able to call me back this afternoon?',0,'<b>Would you be able to ...?</b> is a polite request.'),
+    L3('Call me back.',2,'Two words, no please. <b>An order</b>.')
+   ]},
+  {label:'Make it polite',
+   steps:[
+    {k:'pick',sit:'😤 Fix my heater.',q:'Choose the best polite request.',o:['Would you be able to fix the heater, please?','Fix the heater now, please!','Can you fix it or not?'],why:'<b>Would you be able to ...?</b> + please. Calm and polite.',hint:'Find would or could, and please.'},
+    {k:'pick',sit:'😤 I want a refund.',q:'Choose the best polite request.',o:['I would like to ask for a refund, please.','Give me a refund.','I want a refund now.'],why:'<b>I would like to ask for ...</b> is polite.',hint:'Which one is soft and calm?'},
+    {k:'pick',sit:'😤 Answer me today.',q:'Choose the best polite request.',o:['I would really appreciate a reply today.','You must answer today.','Answer today, OK?'],why:'<b>I would really appreciate a reply ...</b> is polite and clear.',hint:'Look for appreciate.'},
+    {k:'pick',sit:'😤 Send the form.',q:'Choose the best polite request.',o:['Could you please send me the form?','Send the form quickly.','Why didn\'t you send the form?'],why:'<b>Could you please ...?</b> is the top of the ladder.',hint:'Look for could and please.'}
+   ]}
+ ]};
+
+function soon(id,name,emo,c){ return {id:id,name:name,emo:emo,c:c,soon:true,parts:[]}; }
+
+/* ===== Section 2 step types ===== */
+
+/* build: snap Subject + Verb + The rest blocks together */
+var ROLES=['Part 1: SUBJECT','Part 2: VERB','Part 3: THE REST'];
+STEP.build=function(Z,r,key,st,part,cur){
+  var all=st.parts.concat(st.extra), ord=ordFor(r,key,all.length); cur.used=cur.used||[];
+  var h='<div class="q">Build the sentence. Tap the blocks in order: subject, verb, the rest.</div><div class="slots3">';
+  ROLES.forEach(function(rl,i){ var p=cur.used[i]; h+='<div class="slot3 s'+i+(p!==undefined?' full':'')+'"><small>'+rl+'</small><span>'+(p!==undefined?all[ord[p]]:'?')+'</span></div>'+(i<2?'<span class="plus">+</span>':''); });
+  h+='</div>';
+  if(!cur.ok){ h+='<div class="blocks">'; ord.forEach(function(ai,pos){ if(cur.used.indexOf(pos)>=0) return; var c='blk'+(FLASH&&FLASH.pos===pos&&FLASH.k==='bad'?' shake x':''); h+='<button class="'+c+'" data-act="blk" data-i="'+pos+'">'+all[ai]+'</button>'; }); h+='</div>'; }
+  if(cur.ok) h+=fbGood(st,key)+nextBtn(Z); else if(cur.bad) h+=fbBad(st,cur.badWhy);
+  return h;
+};
+ACT.blk=function(el){ var c=ctx(), cur=c.r.cur; if(cur.ok) return; cur.used=cur.used||[]; var pos=+el.getAttribute('data-i'), all=c.st.parts.concat(c.st.extra), w=all[c.r.ord[c.key][pos]], want=c.st.parts[cur.used.length];
+  if(w===want){ cur.used.push(pos); cur.bad=false; sfx('tap'); if(cur.used.length===3) right(c); }
+  else { cur.bad=true; cur.badWhy=(c.st.why2&&c.st.why2[w])||('We need '+['the subject','the verb','the rest'][cur.used.length]+' now.'); c.r.miss++; sfx('bad'); FLASH={k:'bad',pos:pos}; }
+  save(true); render(); };
+
+/* machine: send the sentence to the right time */
+var TIMES=[{e:'⏪',l:'Past',s:'past simple'},{e:'⏺️',l:'Now',s:'simple present'},{e:'📅',l:'Plan',s:'be going to'},{e:'🤝',l:'Promise',s:'will'}];
+STEP.machine=function(Z,r,key,st,part,cur){
+  var h='<div class="tm'+(cur.ok?' go'+st.a:'')+'"><div class="tmscreen">'+st.t+'</div><div class="tmdial">';
+  TIMES.forEach(function(t,i){ var c='tbtn'; if(cur.x.indexOf(i)>=0) c+=' x'; if(cur.ok&&i===st.a) c+=' ok'; if(FLASH&&FLASH.pos===i&&FLASH.k==='bad') c+=' shake'; h+='<button class="'+c+'" data-act="tm" data-i="'+i+'"'+(cur.ok||cur.x.indexOf(i)>=0?' disabled':'')+'><span class="te">'+t.e+'</span><b>'+t.l+'</b><small>'+t.s+'</small></button>'; });
+  h+='</div></div>';
+  if(cur.ok) h+=fbGood(st,key)+nextBtn(Z); else if(cur.x.length) h+=fbBad(st);
+  return '<div class="q">Where does this sentence go? Set the time machine.</div>'+h;
+};
+ACT.tm=function(el){ var c=ctx(); if(c.r.cur.ok) return; var i=+el.getAttribute('data-i'); if(i===c.st.a) right(c); else wrong(c,i,i); save(true); render(); };
+
+/* keys: choose the modal key for the lock */
+var KEYS=['could','would','can','can\'t','will','should','might'];
+STEP.keys=function(Z,r,key,st,part,cur){
+  var ord=ordFor(r,key,KEYS.length), word=cur.ok?'<b class="kw">'+st.a+'</b>':'<span class="gapw">🔑</span>';
+  var h='<div class="lockbox'+(cur.ok?' open':'')+'"><div class="lk">'+(cur.ok?'🔓':'🔒')+'</div><div><div class="job">Job: '+st.job+'</div><div class="ksent">'+st.s.replace('__',word)+'</div></div></div><div class="keyring">';
+  ord.forEach(function(ki,pos){ var k=KEYS[ki], c='key'; if(cur.x.indexOf(k)>=0) c+=' x'; if(cur.ok&&k===st.a) c+=' ok'; if(FLASH&&FLASH.pos===pos&&FLASH.k==='bad') c+=' shake';
+    h+='<button class="'+c+'" data-act="key" data-i="'+pos+'"'+(cur.ok||cur.x.indexOf(k)>=0?' disabled':'')+'><span class="kh">🗝️</span>'+k+'</button>'; });
+  h+='</div>';
+  if(cur.ok) h+=fbGood(st,key)+nextBtn(Z); else if(cur.x.length) h+=fbBad(st);
+  return h;
+};
+ACT.key=function(el){ var c=ctx(); if(c.r.cur.ok) return; var pos=+el.getAttribute('data-i'), k=KEYS[c.r.ord[c.key][pos]]; if(k===c.st.a) right(c); else wrong(c,pos,k); save(true); render(); };
+
+/* diary: stick the preposition on the diary page */
+var STICKERS=['at','on','in','by','before','from ... to'];
+var DAYS=['MON','TUE','WED','THU','FRI','SAT','SUN'];
+STEP.diary=function(Z,r,key,st,part,cur){
+  var ord=ordFor(r,key,STICKERS.length), day=DAYS[hash(key)%7], fill=function(w){ return '<span class="stk">'+w+'</span>'; };
+  var txt=st.s;
+  if(cur.ok){ if(st.a==='from ... to'){ txt=txt.replace('__',fill('from')).replace('__',fill('to')); } else txt=txt.replace('__',fill(st.a)); }
+  else txt=txt.replace(/__/g,'<span class="dgap">✎</span>');
+  var h='<div class="diary"><div class="dhead"><span>'+day+'</span><span>📒 My week</span></div><div class="dline">'+txt+'</div></div><div class="q" style="margin-top:.5rem">Peel off the right sticker.</div><div class="stickers">';
+  ord.forEach(function(si,pos){ var s=STICKERS[si], c='sticker c'+si; if(cur.x.indexOf(s)>=0) c+=' x'; if(cur.ok&&s===st.a) c+=' ok'; if(FLASH&&FLASH.pos===pos&&FLASH.k==='bad') c+=' shake';
+    h+='<button class="'+c+'" data-act="stick" data-i="'+pos+'"'+(cur.ok||cur.x.indexOf(s)>=0?' disabled':'')+'>'+s+'</button>'; });
+  h+='</div>';
+  if(cur.ok) h+=fbGood(st,key)+nextBtn(Z); else if(cur.x.length) h+=fbBad(st);
+  return h;
+};
+ACT.stick=function(el){ var c=ctx(); if(c.r.cur.ok) return; var pos=+el.getAttribute('data-i'), s=STICKERS[c.r.ord[c.key][pos]]; if(s===c.st.a) right(c); else wrong(c,pos,s); save(true); render(); };
+
+/* ===== Space 4: Sentence Builder ===== */
+function B4(parts,extra,why,why2){ return {k:'build',parts:parts,extra:extra,why:why,why2:why2}; }
+var CHK=['Yes. It is a complete sentence.','No. Part 1 (the subject) is missing.','No. Part 2 (the verb) is missing.','No. It has no main idea.'];
+function C4(s,a,why){ var o=[CHK[a]].concat(CHK.filter(function(x,i){ return i!==a; })); return {k:'pick',sit:'"'+s+'"',q:'Is it a complete sentence?',o:o,why:why,hint:'Find the subject (who or what). Find the verb. Is there a main idea, or only "because ..." or "if ..."?'}; }
+function W4(s,o,why,hint){ return {k:'pick',sit:s.replace('^','<span class="gapw">^</span>'),q:'Which small word is missing?',o:o,why:why,hint:hint}; }
+var SP4={id:4,name:'Sentence Builder',emo:'🧱',c:'#ff8a1f',letter:'M',skill:'Complete sentences',
+ parts:[
+  {label:'Snap the blocks',
+   intro:'<p class="big">🧱 Every sentence has three parts.</p><div class="slots3 demo"><div class="slot3 s0 full"><small>Part 1: SUBJECT</small><span>The room</span></div><span class="plus">+</span><div class="slot3 s1 full"><small>Part 2: VERB</small><span>is</span></div><span class="plus">+</span><div class="slot3 s2 full"><small>Part 3: THE REST</small><span>very small.</span></div></div><p>Take away Part 1 or Part 2, and it is not a sentence.</p>',
+   steps:[
+    B4(['The kitchen','has','no kettle.'],['have','Kitchen'],'<b>The kitchen has no kettle.</b> One kitchen: has.',{have:'The kitchen is one thing. Use has, not have.',Kitchen:'We need "The" before kitchen here.'}),
+    B4(['We','will need','six more cups.'],['needs','Us'],'<b>We will need six more cups.</b>',{needs:'We + will need. Not "needs".',Us:'The subject is We, not Us.'}),
+    B4(['My son','starts','swimming in March.'],['start','Him'],'<b>My son starts swimming in March.</b> One son: starts.',{start:'My son is one person. Use starts.',Him:'The subject is My son.'}),
+    B4(['I','paid','for the course last week.'],['Me','pay'],'<b>I paid for the course last week.</b> Last week: paid.',{Me:'The subject is I, not Me.',pay:'"last week" needs the past: paid.'}),
+    B4(['The office','opens','at 8.30 am.'],['open','Office'],'<b>The office opens at 8.30 am.</b>',{open:'The office is one place. Use opens.',Office:'We need "The" before office.'})
+   ]},
+  {label:'Is it a sentence?',
+   intro:'<p class="big">🔍 Check the sentence.</p><p>❌ <b>Because the bus was late.</b> No main idea.<br>❌ <b>Waiting for your reply.</b> No Part 1.<br>❌ <b>The room very small.</b> No Part 2.</p>',
+   steps:[
+    C4('The heater in our room very loud.',2,'There is no verb. Write: The heater in our room <b>is</b> very loud.'),
+    C4('Because the bus was late.',3,'"Because ..." needs a main idea: <b>I missed the class</b> because the bus was late.'),
+    C4('Waiting for your answer.',1,'Who is waiting? Write: <b>I am</b> waiting for your answer.'),
+    C4('The library opens at ten.',0,'Subject + verb + the rest. It is complete. ✅'),
+    C4('If the hall is free on Sunday.',3,'"If ..." needs a main idea: If the hall is free on Sunday, <b>I would like to book it</b>.'),
+    C4('Is very cold in the room.',1,'There is no subject. Write: <b>It</b> is very cold in the room.'),
+    C4('Could you please check my booking?',0,'A polite question is a complete sentence. ✅'),
+    C4('Two people in my family.',2,'There is no verb. Write: Two people in my family <b>need</b> a ticket.')
+   ]},
+  {label:'Find the missing word',
+   steps:[
+    W4('The chairs ^ too small for adults.',['are','is','be'],'Chairs (more than one): <b>are</b>.','One chair or many chairs?'),
+    W4('I ^ like to ask about the parking.',['would','will','am'],'<b>I would like</b> to ask ... is polite.','Polite: I ___ like ...'),
+    W4('^ booked the hall for Friday.',['I','Me','My'],'The subject: <b>I</b> booked ...','Who booked? I, me or my?'),
+    W4('I paid ^ the class on Monday.',['for','to','at'],'We say <b>pay for</b> something.','pay ___ a class'),
+    W4('There ^ only one parking space.',['is','are','am'],'One space: <b>There is</b>.','One or many?'),
+    W4('We are going ^ bring our own food.',['to','for','at'],'<b>be going to</b> + verb.','are going ___ bring')
+   ]}
+ ]};
+
+/* ===== Space 5: Time Machine ===== */
+function T5(t,a,why){ return {k:'machine',t:t,a:a,why:why,hint:'Look at the verb and the time words. Finished? True now? Planned? A promise?'}; }
+var SP5={id:5,name:'Time Machine',emo:'⏳',c:'#a855f7',letter:'A',skill:'Four verb forms',
+ parts:[
+  {label:'Set the time',
+   intro:'<p class="big">⏳ A request email talks about different times.</p><p>⏪ <b>Past</b> (past simple): what you already did. <i>I booked the hall.</i><br>⏺️ <b>Now</b> (simple present): what is true now. <i>The room is small.</i><br>📅 <b>Plan</b> (be going to): a plan you already made. <i>We are going to show a video.</i><br>🤝 <b>Promise</b> (will): a promise. <i>I will pay on Friday.</i></p><p>Your email must show at least two tenses.</p>',
+   steps:[
+    T5('I booked the room two weeks ago.',0,'<b>booked</b> + "two weeks ago": finished. Past simple.'),
+    T5('The centre closes at 5 pm on Fridays.',1,'<b>closes</b>: true every Friday. Simple present.'),
+    T5('We are going to show photos at the party.',2,'<b>are going to</b>: the plan is already made.'),
+    T5('Don\'t worry. I will bring the key back on Monday.',3,'<b>will</b> + "Don\'t worry": a promise.'),
+    T5('My daughter started the class in February.',0,'<b>started</b>: finished. Past simple.'),
+    T5('There are no chairs in the small room.',1,'<b>There are</b>: true now. Simple present.'),
+    T5('My family is going to visit in December.',2,'<b>is going to</b>: a plan.'),
+    T5('I will pay the rest next week. I promise.',3,'<b>will pay</b> + "I promise": a promise.')
+   ]},
+  {label:'Choose the form',
+   steps:[
+    {k:'pick',q:'Yesterday I ______ the office, but nobody answered.',o:['called','call','am going to call'],why:'"Yesterday": finished. <b>called</b>.',hint:'Find the time word.'},
+    {k:'pick',q:'The class ______ every Tuesday at 10 am.',o:['meets','met','will meet'],why:'"every Tuesday" is a habit: <b>meets</b>.',hint:'"every Tuesday" is a habit.'},
+    {k:'pick',q:'Next Saturday we ______ have a picnic. We planned it last month.',o:['are going to','went to','have'],why:'The plan is already made: <b>are going to</b>.',hint:'Is it already planned?'},
+    {k:'pick',q:'Thank you. I ______ send the form tomorrow.',o:['will','sent','sends'],why:'A promise about tomorrow: <b>will send</b>.',hint:'"tomorrow" + a promise.'},
+    {k:'pick',q:'Last month the fee ______ $20. Now it is $25.',o:['was','is','will be'],why:'"Last month": <b>was</b>.',hint:'Find the time words.'},
+    {k:'pick',q:'My son ______ in the under 10s team this year.',o:['plays','played','is going to played'],why:'True now, this year: <b>plays</b>.',hint:'Is it true now?'}
+   ]}
+ ]};
+
+/* ===== Space 6: Key Ring ===== */
+function K6(s,a,job,why){ return {k:'keys',s:s,a:a,job:job,why:why,hint:'Read the job. Which key does that job?'}; }
+var SP6={id:6,name:'Key Ring',emo:'🗝️',c:'#14c8b8',letter:'N',skill:'Modal verbs',
+ parts:[
+  {label:'Find the key',
+   intro:'<p class="big">🗝️ Modal verbs are small keys. They make a request soft.</p><p><b>could</b>: ask politely · <b>would</b>: say what you want politely · <b>can</b>: ask if it is OK · <b>can\'t</b>: say it is not possible · <b>will</b>: promise · <b>should</b>: give advice · <b>might</b>: maybe, not sure</p><p>Read the job. Choose the key.</p>',
+   steps:[
+    K6('__ you please check the heater?','could','ask politely','<b>Could you please ...?</b> asks politely.'),
+    K6('I __ like a quiet room, please.','would','say what you want, politely','<b>I would like ...</b> says what you want politely.'),
+    K6('__ I park behind the hall?','can','ask if it is OK','<b>Can I ...?</b> asks if it is allowed.'),
+    K6('I __ bring the money on Friday. I promise.','will','make a promise','<b>will</b> makes a promise.'),
+    K6('I think you __ call an electrician.','should','give advice','<b>should</b> gives advice.'),
+    K6('The room __ be too small. I am not sure.','might','say maybe, not sure','<b>might</b> means maybe.'),
+    K6('__ you be able to send a receipt?','would','ask politely','<b>Would you be able to ...?</b> is a polite request.'),
+    K6('Unfortunately, I __ come on Monday.','can\'t','say it is not possible','<b>can\'t</b> says it is not possible.')
+   ]},
+  {label:'Soften it',
+   steps:[
+    {k:'pick',sit:'😤 I want a bigger room.',q:'Make it softer with a modal.',o:['I would like a bigger room, please.','I want a bigger room now.','You should give me a bigger room.'],why:'<b>I would like ...</b> is soft and polite.',hint:'Which modal says what you want politely?'},
+    {k:'pick',sit:'😤 Give me a receipt.',q:'Make it softer with a modal.',o:['Could you please give me a receipt?','You might give me a receipt.','You should give me a receipt now.'],why:'<b>Could you please ...?</b> is a polite request.',hint:'Which modal asks politely?'},
+    {k:'pick',sit:'😤 Move my class.',q:'Make it softer with a modal.',o:['Would you be able to move my class to Thursday?','You will move my class.','You can move my class now.'],why:'<b>Would you be able to ...?</b> + a day. Polite and clear.',hint:'Look for would + be able to.'}
+   ]}
+ ]};
+
+/* ===== Space 7: The Diary ===== */
+function D7(s,a,why){ return {k:'diary',s:s,a:a,why:why,hint:'at: a clock time or a street number · on: a day, a date, a phone number · in: a month, a year, inside a place · by: this time or earlier · before: earlier than · from ... to: start and end'}; }
+var SP7={id:7,name:'The Diary',emo:'🗓️',c:'#ff5fa8',letter:'D',skill:'Time and place words',
+ parts:[
+  {label:'Sticker time',
+   intro:'<p class="big">🗓️ Small words carry times and places.</p><p><b>at</b> 9 am · <b>at</b> 14 Miller Street<br><b>on</b> Monday · <b>on</b> 3 May · <b>on</b> 0412 000 000<br><b>in</b> June · <b>in</b> 2027 · <b>in</b> the room<br><b>by</b> Friday (Friday or earlier)<br><b>before</b> the class<br><b>from</b> 10 am <b>to</b> 12 pm</p><p>Get them wrong and the reader comes on the wrong day! 😱</p>',
+   steps:[
+    D7('My appointment is __ 3.15 pm.','at','A clock time: <b>at</b> 3.15 pm.'),
+    D7('The craft market is __ Saturday.','on','A day: <b>on</b> Saturday.'),
+    D7('The swimming course starts __ March.','in','A month: <b>in</b> March.'),
+    D7('Please send the form __ Friday. Friday or earlier is fine.','by','A deadline: <b>by</b> Friday.'),
+    D7('Please arrive ten minutes __ the class.','before','Earlier than the class: <b>before</b>.'),
+    D7('The hall is booked __ 6 pm __ 10 pm.','from ... to','The start and the end: <b>from</b> 6 pm <b>to</b> 10 pm.'),
+    D7('You can call me __ 0412 000 111.','on','A phone number: <b>on</b> 0412 000 111.'),
+    D7('The office is __ 25 Willoughby Road, Crows Nest.','at','A street number: <b>at</b> 25 Willoughby Road.'),
+    D7('There are twelve tables __ the hall.','in','Inside a place: <b>in</b> the hall.'),
+    D7('The course finishes __ 2027.','in','A year: <b>in</b> 2027.')
+   ]}
+ ]};
+
+/* ===== Section 3 step types ===== */
+
+/* pin: the teacher's 4-digit PIN on a phone keypad */
+STEP.pin=function(Z,r,key,st,part,cur){
+  var typed=cur.typed||'';
+  var h='<div class="tcard">'+st.task+'</div><div class="q" style="margin-top:.7rem">🔢 Frances gives you a PIN. Type it on the keypad.</div>';
+  h+='<div class="phone'+(FLASH&&FLASH.k==='bad'?' shake':'')+(cur.ok?' open':'')+'"><div class="pscreen">'+(cur.ok?'🔓 OPEN':[0,1,2,3].map(function(i){ return '<span class="pd'+(typed.charAt(i)?' on':'')+'"></span>'; }).join(''))+'</div>';
+  if(!cur.ok){ h+='<div class="pad">'; ['1','2','3','4','5','6','7','8','9','DEL','0','OK'].forEach(function(k){ h+='<button class="pk'+(k==='OK'?' okk':(k==='DEL'?' del':''))+'" data-act="pinkey" data-k="'+k+'" aria-label="'+(k==='DEL'?'Delete':k)+'">'+(k==='DEL'?'⌫':(k==='OK'?'✔':k))+'</button>'; }); h+='</div>'; }
+  h+='</div>';
+  if(cur.ok) h+=fbGood(st,key)+nextBtn(Z); else if(cur.bad) h+='<div class="fb bad"><b class="lead">That is not the PIN.</b>Show your work to Frances. Frances gives you the PIN.</div>';
+  return h;
+};
+ACT.pinkey=function(el){ var c=ctx(), cur=c.r.cur; if(cur.ok) return; var k=el.getAttribute('data-k'); cur.typed=cur.typed||'';
+  if(k==='DEL'){ cur.typed=cur.typed.slice(0,-1); cur.bad=false; }
+  else if(k==='OK'){ if(cur.typed===c.st.pin){ cur.bad=false; right(c); } else { cur.bad=true; cur.typed=''; sfx('bad'); FLASH={k:'bad'}; } }
+  else if(cur.typed.length<4){ cur.typed+=k; cur.bad=false; sfx('tap'); }
+  save(); render(); };
+
+/* jigsaw: the joining-word piece that fits */
+var JOIN=['and','but','so','because','if','although'];
+STEP.jigsaw=function(Z,r,key,st,part,cur){
+  var ord=ordFor(r,key,JOIN.length), front=(st.a==='if'||st.a==='although');
+  var piece='<span class="jp mid'+(cur.ok?' in':'')+'">'+(cur.ok?(front?st.a.charAt(0).toUpperCase()+st.a.slice(1):st.a):'?')+'</span>';
+  var h='<div class="q">Which piece fits?</div><div class="jig">';
+  if(front) h+=piece+'<span class="jp left">'+st.l+(cur.ok?',':'')+'</span><span class="jp right">'+st.r+'</span>';
+  else h+='<span class="jp left">'+st.l+'</span>'+piece+'<span class="jp right">'+st.r+'</span>';
+  h+='</div><div class="jpieces">';
+  ord.forEach(function(ji,pos){ var w=JOIN[ji], c='jpc'; if(cur.x.indexOf(w)>=0) c+=' x'; if(cur.ok&&w===st.a) c+=' ok'; if(FLASH&&FLASH.pos===pos&&FLASH.k==='bad') c+=' shake';
+    h+='<button class="'+c+'" data-act="jig" data-i="'+pos+'"'+(cur.ok||cur.x.indexOf(w)>=0?' disabled':'')+'>🧩 '+w+'</button>'; });
+  h+='</div>';
+  if(cur.ok) h+=fbGood(st,key)+nextBtn(Z); else if(cur.x.length) h+=fbBad(st);
+  return h;
+};
+ACT.jig=function(el){ var c=ctx(); if(c.r.cur.ok) return; var pos=+el.getAttribute('data-i'), w=JOIN[c.r.ord[c.key][pos]]; if(w===c.st.a) right(c); else wrong(c,pos,w); save(true); render(); };
+
+/* inbox: star the best subject line */
+STEP.inbox=function(Z,r,key,st,part,cur){
+  var ord=ordFor(r,key,st.o.length);
+  var h='<div class="sit" style="--c:'+Z.c+'">📝 '+st.sit+'</div><div class="q">Which subject line is best? Tap it.</div><div class="mailbox"><div class="mbh">📥 Drafts</div>';
+  ord.forEach(function(oi,pos){ var c='mrow'; if(cur.x.indexOf(oi)>=0) c+=' x'; if(cur.ok&&oi===0) c+=' ok'; if(FLASH&&FLASH.pos===pos&&FLASH.k==='bad') c+=' shake';
+    h+='<button class="'+c+'" data-act="pick" data-i="'+pos+'"'+(cur.ok||cur.x.indexOf(oi)>=0?' disabled':'')+'><span class="star">'+(cur.ok&&oi===0?'⭐':'☆')+'</span><span class="from">'+esc(S.team)+'</span><span class="subj">'+st.o[oi]+'</span></button>'; });
+  h+='</div>';
+  if(cur.ok) h+=fbGood(st,key)+nextBtn(Z); else if(cur.x.length) h+=fbBad(st);
+  return h;
+};
+
+/* fridge: put the organising-word magnets in the email, one gap at a time */
+STEP.fridge=function(Z,r,key,st,part,cur){
+  var ans=[]; st.t.replace(/\{([^}]+)\}/g,function(m,a){ ans.push(a); return m; });
+  var n=cur.n||0, ord=ordFor(r,key,ans.length), gi=0;
+  var body=st.t.replace(/\{([^}]+)\}/g,function(m,a){ var i=gi++; if(i<n) return '<span class="mag in">'+a+'</span>'; if(i===n&&!cur.ok) return '<span class="mgap now'+(FLASH&&FLASH.k==='bad'?' shake':'')+'">?</span>'; return '<span class="mgap">'+(i+1)+'</span>'; }).replace(/\n/g,'<br>');
+  var h='<div class="q">'+(cur.ok?'All the magnets are on!':'Which magnet goes in the flashing gap?')+'</div><div class="fridge"><div class="email">'+body+'</div></div>';
+  if(!cur.ok){ h+='<div class="magnets">'; ord.forEach(function(ai,pos){ var w=ans[ai]; var used=ans.indexOf(w)<n; if(used) return; h+='<button class="magb m'+ai+'" data-act="mag" data-i="'+pos+'">'+w+'</button>'; }); h+='</div>'; }
+  if(cur.ok) h+=fbGood(st,key)+nextBtn(Z); else if(cur.bad) h+=fbBad(st,(st.why2&&st.why2[cur.badw])||st.hint);
+  return h;
+};
+ACT.mag=function(el){ var c=ctx(), cur=c.r.cur; if(cur.ok) return; var ans=[]; c.st.t.replace(/\{([^}]+)\}/g,function(m,a){ ans.push(a); return m; });
+  var w=ans[c.r.ord[c.key][+el.getAttribute('data-i')]]; cur.n=cur.n||0;
+  if(w===ans[cur.n]){ cur.n++; cur.bad=false; sfx('tap'); if(cur.n===ans.length) right(c); } else { cur.bad=true; cur.badw=w; c.r.miss++; sfx('bad'); FLASH={k:'bad'}; }
+  save(true); render(); };
+
+/* detect: choose the action, then the code */
+var ACTIONS=[{e:'➕',l:'Put a word in',codes:['MW','A']},{e:'➖',l:'Take a word out',codes:['X']},{e:'🔄',l:'Change one word',codes:['WW','WT','WF','Pr','SV','#','Sp']},{e:'↔️',l:'Move the words',codes:['WO']},{e:'✏️',l:'Change a mark or a letter',codes:['P','C']},{e:'📝',l:'Write it again',codes:['RW','RO','Par']}];
+var CODEM={MW:'missing word',A:'article: a, an, the',X:'extra word',WW:'wrong word',WT:'wrong tense',WF:'wrong form',Pr:'wrong pronoun',SV:'subject verb agreement','#':'number: singular or plural',Sp:'spelling',WO:'word order',P:'punctuation',C:'capital letter',RW:'try re-writing',RO:'run on sentence',Par:'paragraphing'};
+function actOf(code){ for(var i=0;i<ACTIONS.length;i++) if(ACTIONS[i].codes.indexOf(code)>=0) return i; return -1; }
+STEP.detect=function(Z,r,key,st,part,cur){
+  var ai=actOf(st.code), h='<div class="evid"><span class="evh">🔍 Evidence</span><div class="evs">'+st.s.replace(/\[(.+?)\]/,'<u>$1</u>')+'</div>'+(cur.ok?'<div class="fix">✅ '+st.fix+'</div>':'')+'</div>';
+  if(!cur.act&&!cur.ok){
+    h+='<div class="q">Step 1: What action does this mistake need?</div><div class="acts">';
+    ACTIONS.forEach(function(a,i){ var c='actb'; if(cur.xa&&cur.xa.indexOf(i)>=0) c+=' x'; if(FLASH&&FLASH.k==='bad'&&FLASH.pos===i) c+=' shake'; h+='<button class="'+c+'" data-act="detact" data-i="'+i+'"'+(cur.xa&&cur.xa.indexOf(i)>=0?' disabled':'')+'><span>'+a.e+'</span>'+a.l+'</button>'; });
+    h+='</div>';
+    if(cur.xa&&cur.xa.length) h+=fbBad(st,'Look at the underlined part. Do you need to add, take out, change, move, fix a mark, or write it again?');
+    return h;
+  }
+  var codes=ACTIONS[ai].codes;
+  h+='<div class="q">'+(cur.ok?'Case closed! 🕵️':'Step 2: '+ACTIONS[ai].e+' '+ACTIONS[ai].l+'. Which code?')+'</div><div class="codes">';
+  codes.forEach(function(cd,i){ var c='codeb'; if(cur.x.indexOf(cd)>=0) c+=' x'; if(cur.ok&&cd===st.code) c+=' ok'; if(FLASH&&FLASH.k==='bad'&&FLASH.pos===i) c+=' shake'; h+='<button class="'+c+'" data-act="detcode" data-i="'+i+'"'+(cur.ok||cur.x.indexOf(cd)>=0?' disabled':'')+'><b>'+cd+'</b> '+CODEM[cd]+'</button>'; });
+  h+='</div>';
+  if(cur.ok) h+=fbGood(st,key)+nextBtn(Z); else if(cur.x.length) h+=fbBad(st,st.hint||'Read the meanings again.');
+  return h;
+};
+ACT.detact=function(el){ var c=ctx(), cur=c.r.cur; if(cur.ok||cur.act) return; var i=+el.getAttribute('data-i');
+  if(i===actOf(c.st.code)){ cur.act=true; sfx('good'); if(ACTIONS[i].codes.length===1) right(c); } else { cur.xa=cur.xa||[]; cur.xa.push(i); c.r.miss++; sfx('bad'); FLASH={k:'bad',pos:i}; }
+  save(true); render(); };
+ACT.detcode=function(el){ var c=ctx(), cur=c.r.cur; if(cur.ok) return; var i=+el.getAttribute('data-i'), cd=ACTIONS[actOf(c.st.code)].codes[i]; if(cd===c.st.code) right(c); else wrong(c,i,cd); save(true); render(); };
+
+/* cut: scissors for run-on sentences */
+function cutParse(s){ var bits=s.split(' '), words=[], cutAt=-1; bits.forEach(function(b){ if(b==='|'){ cutAt=words.length-1; } else words.push(b); }); return {words:words,cut:cutAt}; }
+STEP.cut=function(Z,r,key,st,part,cur){
+  var P=cutParse(st.s), h='<div class="q">✂️ Cut the run-on sentence into two sentences. Tap the right gap.</div><div class="cutline">';
+  P.words.forEach(function(w,i){
+    var shown=w;
+    if(cur.ok&&i===P.cut) shown=w.replace(/,$/,'')+'.';
+    if(cur.ok&&i===P.cut+1) shown=w.charAt(0).toUpperCase()+w.slice(1);
+    h+='<span class="cw">'+shown+'</span>';
+    if(i<P.words.length-1){ var c='cgap'; if(cur.x.indexOf(i)>=0) c+=' x'; if(cur.ok&&i===P.cut) c+=' snip'; if(FLASH&&FLASH.pos===i&&FLASH.k==='bad') c+=' shake'; h+='<button class="'+c+'" data-act="cutgap" data-i="'+i+'"'+(cur.ok||cur.x.indexOf(i)>=0?' disabled':'')+' aria-label="Gap '+(i+1)+'">'+(cur.ok&&i===P.cut?'✂️':'')+'</button>'; }
+  });
+  h+='</div>';
+  if(cur.ok) h+=fbGood(st,key)+nextBtn(Z); else if(cur.x.length) h+=fbBad(st);
+  return h;
+};
+ACT.cutgap=function(el){ var c=ctx(); if(c.r.cur.ok) return; var i=+el.getAttribute('data-i'); if(i===cutParse(c.st.s).cut) right(c); else wrong(c,i,i); save(true); render(); };
+
+/* para: tap the sentences that start a new paragraph */
+STEP.para=function(Z,r,key,st,part,cur){
+  cur.on=cur.on||[];
+  var need=st.starts.length, h='<div class="q">¶ This email is one long block. Tap each sentence that should START a new paragraph. ('+cur.on.length+' of '+need+')</div>';
+  h+='<div class="block'+(cur.ok?' split':'')+'"><div class="bgreet">'+st.greet+'</div>';
+  st.sents.forEach(function(s,i){ var c='sent'; if(cur.on.indexOf(i)>=0) c+=' on'; if(cur.x.indexOf(i)>=0) c+=' x'; if(FLASH&&FLASH.pos===i&&FLASH.k==='bad') c+=' shake';
+    if(cur.ok&&st.starts.indexOf(i)>=0) h+='<span class="pbreak"></span>';
+    var dis=(cur.ok||cur.on.indexOf(i)>=0||cur.x.indexOf(i)>=0||i===0); if(dis) c+=' dis';
+    h+='<span class="'+c+'" '+(dis?'':'data-act="sent" role="button" tabindex="0" ')+'data-i="'+i+'">'+(cur.on.indexOf(i)>=0?'¶ ':'')+s+'</span> '; });
+  h+='</div>';
+  if(cur.ok) h+=fbGood(st,key)+nextBtn(Z); else if(cur.x.length) h+=fbBad(st);
+  return h;
+};
+ACT.sent=function(el){ var c=ctx(), cur=c.r.cur; if(cur.ok) return; cur.on=cur.on||[]; var i=+el.getAttribute('data-i');
+  if(c.st.starts.indexOf(i)>=0){ cur.on.push(i); sfx('tap'); if(cur.on.length===c.st.starts.length) right(c); } else wrong(c,i,i);
+  save(true); render(); };
+
+/* ===== Space 8: Planning Desk (Teacher check 1) ===== */
+function N8(note,o,why,hint){ return {k:'pick',sit:'🗒️ Note: <b>'+note+'</b>',q:'Which full sentence matches the note?',o:o,why:why,hint:hint||'A full sentence has a subject, a verb, a capital letter and a full stop.'}; }
+var SP8={id:8,name:'Planning Desk',emo:'📝',c:'#21c55d',letter:'C',teacher:true,skill:'Notes to sentences',
+ parts:[
+  {label:'Warm up: notes to sentences',
+   intro:'<p class="big">📝 Good writers plan first.</p><p>A plan has short <b>notes</b>. Then you turn each note into a <b>full sentence</b>: a subject, a verb, the small words, a capital letter and a full stop.</p><p>🗒️ booked / hall / Sat ➜ <b>I booked the hall for Saturday.</b></p>',
+   steps:[
+    N8('booked / party room / Sat 18 Oct',['I booked the party room for Saturday 18 October.','Booked party room Saturday 18 October.','I booking the party room on Saturday 18 October.'],'It has a subject (I), a verb in the past (booked) and the small words (the, for).'),
+    N8('no tables / room / need 4',['There are no tables in the room, so we will need four.','No tables in room need 4.','There is no tables in the room, we need four.'],'<b>There are</b> no tables (plural) + <b>so</b> joins the result.'),
+    N8('2nd thing / music speaker / not work',['Secondly, the music speaker does not work.','Secondly, the music speaker not work.','Secondly, speaker not working.'],'<b>does not work</b>: the verb needs does.'),
+    N8('reply / by Wed 15 Oct',['I would really appreciate a reply by Wednesday 15 October.','Reply Wednesday.','I would really appreciate reply by Wednesday 15 October.'],'Do not forget the small word <b>a</b>: a reply.'),
+    N8('kind regards / my name',['Kind regards,<br>Nan','Kind regards Nan','kind regards, nan'],'The closing and the name go on <b>two lines</b>, with capital letters.','Two lines or one line?')
+   ]},
+  {label:'Teacher check',
+   steps:[{k:'pin',pin:'2580',yes:'The Planning Desk is open!',why:'Great sentences from good notes. 📝✅',
+    task:'<span class="tag">🧑‍🏫 Teacher check 1</span><h2>📝 Turn the notes into an email</h2>'+
+     '<p>Hideko joined the <b>Lane Cove Walking Club</b> last week. Here is the plan. Write a <b>full sentence</b> for every note in your notebook.</p>'+
+     '<table class="plan"><tr><th>Stage</th><th>Notes</th></tr>'+
+     '<tr><td>Subject line</td><td>two questions / welcome pack + Sunday walk</td></tr><tr><td>Greeting</td><td>dear / Ms Fraser</td></tr>'+
+     '<tr><td>Who and why</td><td>joined / walking club / last week / two things to ask</td></tr><tr><td>First thing</td><td>club T-shirt / size L / missing / welcome pack</td></tr>'+
+     '<tr><td>Second thing</td><td>map link / Sunday walk / not open / where / meet?</td></tr><tr><td>When</td><td>reply / by Friday 24 Oct</td></tr>'+
+     '<tr><td>Contact</td><td>phone 0412 345 678 / or email</td></tr><tr><td>Thank you</td><td>thank / help</td></tr><tr><td>Closing and name</td><td>kind regards / Hideko</td></tr></table>'+
+     '<ul class="tick"><li>✔ Every sentence has a subject and a verb</li><li>✔ Capital letters and full stops</li><li>✔ Firstly and Secondly</li><li>✔ A polite request: Could you please ...? / Would you be able to ...?</li><li>✔ Kind regards and the name on two lines</li></ul><p>Show your sentences to Frances. 👀</p>'}]}
+ ]};
+
+/* ===== Space 9: Jigsaw Table ===== */
+function J9(l,a,rr,why){ return {k:'jigsaw',l:l,a:a,r:rr,why:why,hint:'and adds · but shows a difference · so gives the result · because gives the reason · if gives a condition · although shows a surprise'}; }
+var SP9={id:9,name:'Jigsaw Table',emo:'🧩',c:'#ffd21f',letter:'L',skill:'Joining words',
+ parts:[
+  {label:'Fit the piece',
+   intro:'<p class="big">🧩 Joining words put two ideas in one sentence.</p><p><b>and</b> adds · <b>but</b> shows a difference · <b>so</b> gives the result · <b>because</b> gives the reason · <b>if</b> gives a condition · <b>although</b> shows a surprise</p><p>✂️ Comma rule: start with <b>If</b> or <b>Although</b>? Put a comma before the second half.</p>',
+   steps:[
+    J9('The hall is big','and','the price is fair.','Two good things together: <b>and</b>.'),
+    J9('I sent the form on Monday','but','nobody replied.','A difference: I sent it, <b>but</b> nobody replied.'),
+    J9('The list is missing','so','I can\'t buy the food.','The result: <b>so</b> I can\'t buy the food.'),
+    J9('I can\'t come on Tuesday','because','I start work at nine.','The reason: <b>because</b> I start work at nine.'),
+    J9('the room is free on Sunday','if','I would like to book it.','A condition at the front: <b>If</b> the room is free on Sunday, I would like to book it. Note the comma.'),
+    J9('I paid last week','although','I did not get a receipt.','A surprise at the front: <b>Although</b> I paid last week, I did not get a receipt. Note the comma.'),
+    J9('The car park is full on Saturdays','so','we will come by bus.','The result: <b>so</b> we will come by bus.'),
+    J9('My son likes the coach','but','the class finishes too late.','A difference: <b>but</b>.')
+   ]},
+  {label:'The comma rule',
+   steps:[
+    {k:'pick',q:'Which sentence has the comma in the right place?',o:['If the class is full, please tell me.','If the class is full please, tell me.','If, the class is full please tell me.'],why:'<b>If</b> at the front: the comma goes before the second half.',hint:'Where does the first half end?'},
+    {k:'pick',q:'Which sentence is correct?',o:['I can\'t come because I work until six.','I can\'t come, because I work until six.','I can\'t come because, I work until six.'],why:'<b>because</b> in the middle: no comma.',hint:'Do we use a comma before because?'},
+    {k:'pick',q:'Which sentence is correct?',o:['Although I sent a form, nobody answered.','Although I sent a form nobody answered.','Although, I sent a form nobody answered.'],why:'<b>Although</b> at the front: a comma before the second half.',hint:'Where does the first half end?'}
+   ]}
+ ]};
+
+/* ===== Space 10: The Inbox ===== */
+function I10(sit,o,why){ return {k:'inbox',sit:sit,o:o,why:why,hint:'A good subject line says what the email is about, in a few words. No CAPITALS, no "hi", no !!!'}; }
+var SP10={id:10,name:'The Inbox',emo:'📨',c:'#2f7df6',letter:'E',skill:'Subject lines and organising words',
+ parts:[
+  {label:'Star the subject line',
+   intro:'<p class="big">📨 The subject line is the first thing the reader sees.</p><p>✔ Say what the email is about in about 4 to 8 words.<br>✔ Put the important thing first.<br>❌ Never leave it empty.<br>❌ No whole sentences and no CAPITAL LETTERS.</p>',
+   steps:[
+    I10('You want the pool to change your swim lesson time.',['Request to change my swim lesson time','hi there','PLEASE READ NOW!!!'],'It says what you want. Short and clear.'),
+    I10('Your new fridge arrived with a broken door.',['Broken fridge door, order 4471','fridge','I AM VERY UNHAPPY WITH YOUR FRIDGE'],'What is wrong + the order number. Calm and clear.'),
+    I10('You want the library to hold two books for you until Monday.',['Please hold two books until Monday 3 November','Books','Hello from me'],'It says the request and the date.'),
+    I10('You need a receipt for the yoga course you paid for.',['Receipt for yoga course, paid 2 October','money stuff','Question???'],'The thing you need + the course + the date.'),
+    I10('You can\'t attend your English class on 12 November.',['Cannot attend class on 12 November','sorry sorry','Class'],'Short, clear and it has the date.')
+   ]},
+  {label:'Fridge magnets',
+   intro:'<p class="big">🧲 Organising words help the reader.</p><p><b>Firstly</b>: the first request · <b>Secondly</b>: the second request · <b>In addition</b>: one more idea · <b>However</b>: the opposite idea · <b>Finally</b>: the last thing</p>',
+   steps:[{k:'fridge',t:'Dear Mr Patel,\n\nMy son started the Saturday swim class last week. I would like to ask about two things.\n\n{Firstly}, the class finishes at 6 pm, and our bus leaves at 6.05.\n\n{Secondly}, the class list has my old email address.\n\n{In addition}, I would like to know if parents can watch the class. I read the information on your website. {However}, I could not find the answer.\n\n{Finally}, could you please tell me the price for Term 1?\n\nKind regards,\nJenny',
+     why:'Firstly, Secondly, In addition, However, Finally. The reader can follow every idea. 🧲',hint:'Read the sentence around the gap. Is it the first thing, the second thing, one more idea, the opposite, or the last thing?',
+     why2:{Firstly:'Firstly starts the first request.',Secondly:'Secondly starts the second request.','In addition':'In addition adds one more idea.',However:'However shows the opposite idea.',Finally:'Finally starts the last thing.'}}]}
+ ]};
+
+/* ===== Space 11: Code Detective ===== */
+function E11(s,code,fix,hint){ return {k:'detect',s:s,code:code,fix:fix,why:'Code: <b>'+code+'</b> ('+CODEM[code]+').',hint:hint}; }
+var SP11={id:11,name:'Code Detective',emo:'🔍',c:'#ef3b3b',letter:'A',skill:'Error correction code',
+ parts:[
+  {label:'Solve the case',
+   intro:'<p class="big">🕵️ Frances writes a code next to each mistake. Every code asks for one of six actions.</p><p>➕ Put a word in: <b>MW, A</b><br>➖ Take a word out: <b>X</b><br>🔄 Change one word: <b>WW, WT, WF, Pr, SV, #, Sp</b><br>↔️ Move the words: <b>WO</b><br>✏️ Change a mark or a letter: <b>P, C</b><br>📝 Write it again: <b>RW, RO, Par</b></p><p>Find the action first. Then find the code.</p>',
+   steps:[
+    E11('I booked the room for three [hour].','#','I booked the room for three hours.'),
+    E11('[the] party starts at seven.','C','The party starts at seven.'),
+    E11('Could you please [to] send the receipt?','X','Could you please send the receipt?'),
+    E11('The gym [open] at six.','SV','The gym opens at six.'),
+    E11('I [recieved] the form on Monday.','Sp','I received the form on Monday.'),
+    E11('Please call me [⌃] Friday.','MW','Please call me on Friday.'),
+    E11('Last week I [pay] for the course.','WT','Last week I paid for the course.'),
+    E11('I would like [⌃] receipt for my course.','A','I would like a receipt for my course.'),
+    E11('I [on Friday will pay].','WO','I will pay on Friday.'),
+    E11('[Please send the list I need it today.]','RO','Please send the list. I need it today.'),
+    E11('The hall is big. [They] has ten tables.','Pr','The hall is big. It has ten tables.'),
+    E11('Could you check my booking[⌃]','P','Could you check my booking?')
+   ]},
+  {label:'Scissors for run-ons',
+   steps:[
+    {k:'cut',s:'I paid the fee on Monday | I did not get a receipt.',why:'Two ideas, two sentences: I paid the fee on Monday. I did not get a receipt.',hint:'Find where the first idea ends.'},
+    {k:'cut',s:'The room is too small, | my group has twelve people.',why:'A comma cannot join two sentences. Use a full stop.',hint:'Find where the first idea ends.'},
+    {k:'cut',s:'Please send the timetable | I need it for my boss.',why:'Please send the timetable. I need it for my boss.',hint:'Find where the first idea ends.'},
+    {k:'cut',s:'The gate was locked, | nobody could get in.',why:'The gate was locked. Nobody could get in.',hint:'Find where the first idea ends.'}
+   ]},
+  {label:'Paragraph breaks',
+   steps:[{k:'para',greet:'Dear Mrs Wong,',sents:['I booked the community hall for Saturday 22 November.','I would like to ask about two things.','Firstly, the hall has no projector, so we will need one.','Secondly, the side door does not lock.','Could you please arrange these two things before Friday?','You can call me on 0411 222 333.','Thank you for your help.'],starts:[2,3,4,6],
+     why:'Who and why · the first thing · the second thing · when and contact · thank you. One idea in each paragraph. ¶',hint:'New paragraph for each new idea: the first thing, the second thing, the request, the thank you.'}]}
+ ]};
+
+/* ===== Section 4 step types ===== */
+var STAGES=[{e:'🏷️',l:'Subject line'},{e:'👋',l:'Greeting'},{e:'🙋',l:'Who you are, and why'},{e:'1️⃣',l:'The first thing'},{e:'2️⃣',l:'The second thing'},{e:'📅',l:'When you need it'},{e:'📞',l:'How to contact you'},{e:'🙏',l:'Thank you'},{e:'✍️',l:'Closing and your name'}];
+var CARC=['#ef3b3b','#ff8a1f','#ffd21f','#21c55d','#14c8b8','#2f7df6','#a855f7','#ff5fa8','#d9a35f'];
+function carHtml(i,extra){ return '<span class="car" style="--cc:'+CARC[i]+'"'+(extra||'')+'><b>'+(i+1)+'</b><span class="ce">'+STAGES[i].e+'</span><span class="cl">'+STAGES[i].l+'</span></span>'; }
+
+/* train: couple the nine stage carriages in order */
+STEP.train=function(Z,r,key,st,part,cur){
+  var n=cur.n||0, ord=ordFor(r,key,STAGES.length);
+  var h='<div class="q">'+(cur.ok?'All aboard! The email train is ready. 🚂':'Which carriage comes next? Tap it in the yard. ('+n+' of 9)')+'</div>';
+  h+='<div class="rail"><div class="train'+(cur.ok?' go':'')+'"><span class="eng">🚂</span>';
+  for(var i=0;i<n;i++) h+=carHtml(i);
+  if(!cur.ok) h+='<span class="car empty'+(FLASH&&FLASH.k==='bad'?' shake':'')+'"><b>'+(n+1)+'</b><span class="ce">❓</span></span>';
+  h+='</div></div>';
+  if(!cur.ok){ h+='<div class="yard"><div class="yh">🏗️ The yard</div>'; ord.forEach(function(si,pos){ if(si<n) return; h+='<button class="yc" data-act="couple" data-i="'+pos+'" style="--cc:'+CARC[si]+'"><span class="ce">'+STAGES[si].e+'</span>'+STAGES[si].l+'</button>'; }); h+='</div>'; }
+  if(cur.ok) h+=fbGood(st,key)+nextBtn(Z); else if(cur.bad) h+=fbBad(st,n?'Think: what comes after <b>'+STAGES[n-1].l+'</b>?':'What does the reader see first, before they open the email?');
+  return h;
+};
+ACT.couple=function(el){ var c=ctx(), cur=c.r.cur; if(cur.ok) return; cur.n=cur.n||0; var si=c.r.ord[c.key][+el.getAttribute('data-i')];
+  if(si===cur.n){ cur.n++; cur.bad=false; sfx('tap'); if(cur.n===STAGES.length) right(c); } else { cur.bad=true; c.r.miss++; sfx('bad'); FLASH={k:'bad'}; }
+  save(true); render(); };
+
+/* cargo: load the sentence into the right carriage */
+STEP.cargo=function(Z,r,key,st,part,cur){
+  var h=(part.who?'<div class="sit" style="--c:'+Z.c+'">'+part.who+'</div>':'')+'<div class="q">Which carriage does this sentence go in?</div>';
+  h+='<div class="crate'+(cur.ok?' loaded':'')+(FLASH&&FLASH.k==='bad'?' shake':'')+'">📦 '+st.t+'</div><div class="cars">';
+  STAGES.forEach(function(s,i){ var c='cc'; if(cur.x.indexOf(i)>=0) c+=' x'; if(cur.ok&&i===st.a) c+=' ok';
+    h+='<button class="'+c+'" style="--cc:'+CARC[i]+'" data-act="cargo" data-i="'+i+'"'+(cur.ok||cur.x.indexOf(i)>=0?' disabled':'')+'><b>'+(i+1)+'</b><span class="ce">'+(cur.ok&&i===st.a?'📦':s.e)+'</span><span class="cl">'+s.l+'</span></button>'; });
+  h+='</div>';
+  if(cur.ok) h+=fbGood(st,key)+nextBtn(Z); else if(cur.x.length) h+=fbBad(st);
+  return h;
+};
+ACT.cargo=function(el){ var c=ctx(); if(c.r.cur.ok) return; var i=+el.getAttribute('data-i'); if(i===c.st.a) right(c); else wrong(c,i,i); save(true); render(); };
+
+/* compose: choose the best line for each stage of the LockSmart email */
+function teamSub(s){ return String(s).replace(/\{TEAM\}/g,esc(S.team||'Our team')); }
+function draftHtml(steps,upto,now){
+  var subj='', body='';
+  for(var j=0;j<upto;j++){ var line=teamSub(steps[j].o[0]); if(j===0) subj=line; else body+='<div class="dl">'+line+'</div>'; }
+  if(now!==undefined){ var ph='<span class="dnow">✨ '+STAGES[now].e+' '+STAGES[now].l+'</span>'; if(now===0) subj=ph; else body+='<div class="dl">'+ph+'</div>'; }
+  return '<div class="mailwin"><div class="mwh"><span>✉️ New email</span><span class="dots3"><i></i><i></i><i></i></span></div><div class="mwf"><b>To:</b> care@locksmart.com.au</div><div class="mwf"><b>Subject:</b> '+(subj||'<span class="mut2">...</span>')+'</div><div class="mwb">'+(body||'<span class="mut2">...</span>')+'</div></div>';
+}
+STEP.compose=function(Z,r,key,st,part,cur){
+  var si=+key.split('-')[1];
+  var h='<div class="q">Stage '+(si+1)+' of 9: '+STAGES[si].e+' <b>'+STAGES[si].l+'</b>. Which line is polite, calm and clear?</div>';
+  h+=draftHtml(part.steps,cur.ok?si+1:si,cur.ok?undefined:si);
+  var st2={o:st.o.map(teamSub)};
+  h+=optsHtml(Z,r,key,st2,cur);
+  if(cur.ok) h+=fbGood(st,key)+nextBtn(Z); else if(cur.x.length) h+=fbBad(st);
+  return h;
+};
+
+/* send: press Send, then read the reply */
+STEP.send=function(Z,r,key,st,part,cur){
+  var steps=Z.parts[0].steps, h='';
+  if(!cur.ok){
+    h+='<div class="q">Your email is ready. Read it one more time. Then press Send. 📨</div>'+draftHtml(steps,steps.length)+'<div class="sendrow"><button class="sendb" data-act="send">📨 Send</button></div>';
+    return h;
+  }
+  h+='<div class="sentok'+(cur.fly?' fly':'')+'"><span class="plane">✈️</span> Sent to LockSmart!</div>';
+  h+='<div class="mailbox reply'+(cur.fly?' late':'')+'"><div class="mbh">📥 Inbox: 1 new email</div><div class="rmail"><div class="mwf"><b>From:</b> Dana, LockSmart Customer Care</div><div class="mwf"><b>Subject:</b> Re: '+teamSub(steps[0].o[0])+'</div><div class="mwb">'+teamSub(st.reply)+'</div></div></div>';
+  return h+fbGood(st,key)+nextBtn(Z);
+};
+ACT.send=function(){ var c=ctx(), cur=c.r.cur; if(cur.ok) return; cur.fly=true; right(c); save(true); render(); cur.fly=false; burst(40,false); };
+
+/* tiles: put the twelve tiles in order to make the secret message */
+var WORDS=[4,3,5];
+STEP.tiles=function(Z,r,key,st,part,cur){
+  var n=cur.n||0, used=cur.used||[], ord=ordFor(r,key,PHRASE.length), k=0;
+  var h='<div class="q">'+(cur.ok?'The secret message! 🔤':'Tap the tiles in order. Make the secret message. ('+n+' of 12)')+'</div><div class="msg'+(cur.ok?' done':'')+'">';
+  WORDS.forEach(function(len){ h+='<span class="mword">'; for(var i=0;i<len;i++,k++){ h+=k<n?tileHtml(PHRASE.charAt(k),k===n-1&&!cur.ok?'new':''):'<span class="tile empty'+(k===n&&FLASH&&FLASH.k==='bad'?' shake':'')+'">'+(k===n?'?':'')+'</span>'; } h+='</span>'; });
+  h+='</div>';
+  if(!cur.ok){ h+='<div class="tilepool">'; ord.forEach(function(li,pos){ if(used.indexOf(pos)>=0) return; var L=PHRASE.charAt(li); h+='<button class="ltb" data-act="ltile" data-i="'+pos+'" aria-label="Tile '+L+'">'+L+'<sub>'+(PTS[L]||1)+'</sub></button>'; }); h+='</div>'; }
+  if(cur.ok) h+=fbGood(st,key)+'<button class="btn" style="--c:#21c55d" data-act="next">🚪 Open the door!</button>';
+  else if(cur.bad) h+=fbBad(st,st.hint);
+  return h;
+};
+ACT.ltile=function(el){ var c=ctx(), cur=c.r.cur; if(cur.ok) return; cur.n=cur.n||0; cur.used=cur.used||[]; var pos=+el.getAttribute('data-i');
+  if(cur.used.indexOf(pos)>=0) return; var L=PHRASE.charAt(c.r.ord[c.key][pos]);
+  if(L===PHRASE.charAt(cur.n)){ cur.used.push(pos); cur.n++; cur.bad=false; sfx('tile'); if(cur.n===PHRASE.length) right(c); } else { cur.bad=true; c.r.miss++; sfx('bad'); FLASH={k:'bad'}; }
+  save(true); render(); };
+
+/* ===== Space 12: Email Train (Teacher check 2) ===== */
+function C12(t,a,why){ return {k:'cargo',t:t,a:a,why:why,hint:'Look at the words. A name after Dear? A date? A phone number? Firstly or Secondly?'}; }
+function M12(mail,o,why){ return {k:'pick',pre:'<div class="fridge"><div class="email">'+mail+'</div></div>',q:'One carriage is missing. Which one?',o:o,why:why,hint:'Go through the nine carriages, 1 to 9. Which one can you not find?'}; }
+var SP12={id:12,name:'Email Train',emo:'🚂',c:'#ff8a1f',letter:'R',teacher:true,skill:'The nine stages of a request email',
+ parts:[
+  {label:'Couple the carriages',
+   intro:'<p class="big">🚂 A request email is like a train. It has <b>nine carriages</b>, always in the same order.</p><div class="rail"><div class="train"><span class="eng">🚂</span>'+STAGES.map(function(s,i){ return carHtml(i); }).join('')+'</div></div><p>Look carefully. Then the carriages go to the yard, and you put the train together again! 🏗️</p>',
+   go:'I remember! ➜',
+   steps:[{k:'train',why:'Subject line, greeting, who and why, the first thing, the second thing, when, contact, thank you, closing and name. 🚂💨',hint:'Look at the order again.'}]},
+  {label:'Load the cargo',
+   who:'✉️ Xia is writing to Ms Larkin at the <b>Crows Nest Pottery Studio</b>.',
+   intro:'<p class="big">📦 Every sentence has a home in the train.</p><p>Xia is writing to a pottery studio. Read each sentence. Put it in the right carriage.</p>',
+   steps:[
+    C12('Two questions about the Thursday pottery class',0,'It is short and says what the email is about: the <b>subject line</b>.'),
+    C12('Dear Ms Larkin,',1,'<b>Dear</b> + the name: the greeting.'),
+    C12('I paid for the Thursday pottery class last week, and I would like to ask about two things.',2,'Who Xia is (she paid for the class) and why she is writing.'),
+    C12('Firstly, my apron was not in the welcome bag. Could you please give me one?',3,'<b>Firstly</b> starts the first thing.'),
+    C12('Secondly, would you be able to send me the list of tools for the class?',4,'<b>Secondly</b> starts the second thing.'),
+    C12('I would appreciate a reply by Tuesday 4 November.',5,'A real date: <b>when</b> Xia needs it.'),
+    C12('You can call me on 0491 570 110 or reply to this email.',6,'A phone number and email: <b>how to contact</b> Xia.'),
+    C12('Thank you for your time.',7,'One short line to say <b>thank you</b>.'),
+    C12('Kind regards,<br>Xia',8,'The closing and the name, on <b>two lines</b>.')
+   ]},
+  {label:'The missing carriage',
+   steps:[
+    M12('<b>Subject:</b> Two things about my Monday swim lesson<br><br>I booked the Monday swim lesson at 10 am. I would like to ask about two things.<br>Firstly, the pool is very cold. Could you please check the heater?<br>Secondly, would you be able to move me to the 11 am lesson?<br>I would appreciate a reply by Friday 7 November.<br>You can call me on 0491 570 118 or reply to this email.<br>Thank you for your help.<br><br>Kind regards,<br>Jiao',['👋 Greeting','📞 How to contact you','🏷️ Subject line'],'There is no <b>Dear ...,</b> at the top. Always greet the person.'),
+    M12('<b>Subject:</b> Two things about my gym card<br><br>Dear Mr Hall,<br>I joined the gym on 1 October. I would like to ask about two things.<br>Firstly, my card does not open the door. Could you please check it?<br>Secondly, would you be able to send me the class times?<br>You can call me on 0491 570 113.<br>Thank you for your help.<br><br>Kind regards,<br>Gang',['📅 When you need it','2️⃣ The second thing','🙏 Thank you'],'There is no date. A request with no date can wait a long time.'),
+    M12('Dear Ms Rossi,<br>I booked the community room for Saturday 15 November. I would like to ask for two things.<br>Firstly, there are only ten chairs. Could you please bring ten more?<br>Secondly, would you be able to leave the kitchen open?<br>Could you please reply by Wednesday 12 November?<br>You can call me on 0491 570 116.<br>Thank you very much for your help.<br><br>Kind regards,<br>Annie',['🏷️ Subject line','✍️ Closing and your name','🙋 Who you are, and why'],'There is no <b>Subject:</b> line. Dana does not answer emails with no subject line!')
+   ]},
+  {label:'Teacher check',
+   steps:[{k:'pin',pin:'7319',yes:'All aboard! The Email Train is open!',why:'Nine carriages, all in the right order. 🚂✅',
+    task:'<span class="tag">🧑‍🏫 Teacher check 2</span><h2>🚂 Write the whole train</h2>'+
+     '<p>Alan joined the Tuesday computer class at the <b>Hornsby Seniors Tech Club</b>. There are two problems:</p>'+
+     '<ul><li>🔑 The password for the class website does not work.</li><li>📘 The class book was not in the welcome bag.</li></ul>'+
+     '<p>Write Alan\'s email to <b>Mr Okafor</b> in your notebook. Use all <b>nine carriages</b>. Alan needs a reply by <b>Monday 10 November</b>. His phone is <b>0491 570 157</b>.</p>'+
+     '<ul class="tick"><li>✔ All nine stages, in order</li><li>✔ A short, clear subject line</li><li>✔ Dear + the name</li><li>✔ Firstly and Secondly, in new paragraphs</li><li>✔ A polite request: Could you please ...? / Would you be able to ...?</li><li>✔ A real date and a phone number</li><li>✔ Thank you, then Kind regards and Alan on two lines</li></ul><p>Show your email to Frances. 👀</p>'}]}
+ ]};
+
+/* ===== The Door: write to LockSmart ===== */
+function D(o,why,hint){ return {k:'compose',o:o,why:why,hint:hint||'Polite, calm and clear. No shouting, no rude words, no texting words.'}; }
+var DOOR={id:13,name:'The Door',emo:'🚪',c:'#21c55d',door:true,skill:'Write the email',
+ parts:[
+  {label:'Write to LockSmart',shuffle:false,
+   intro:'<p class="big">🚪 You have twelve tiles. Now write to LockSmart!</p><div class="lockscreen"><div class="lh"><span>🔐 LOCKSMART</span><span>Customer Care</span></div><p>Please send us a <b>polite, calm and clear</b> email. We do not answer rude emails. We do not answer emails with no subject line.</p></div><p>Build the email one carriage at a time. For each stage, choose the best line. ✉️</p>',
+   go:'Start writing ✏️',
+   steps:[
+    D(['Door B.1.33 is locked, please help','HELP!!! OPEN THE DOOR NOW','hi dana'],'Short and clear: the problem and the room. No CAPITALS and no !!!'),
+    D(['Dear Dana,','Hey you,','DANA!!!'],'<b>Dear</b> + the name and a comma.'),
+    D(['We are an English class in Room B.1.33, B Block. We would like to ask for two things.','Your lock is rubbish and we are very angry.','we r stuck lol'],'Say who you are and that you have two things to ask. Calm, full sentences.'),
+    D(['Firstly, the smart lock on our door is stuck, so we cannot get out. Could you please open it?','Firstly, open the door. Now.','Firstly the lock stuck can you open'],'The problem + a polite request: <b>Could you please ...?</b>'),
+    D(['Secondly, the screen on the door shows an error. Would you be able to check it?','Secondly, fix your silly screen.','Secondly, screen error, whatever.'],'A new paragraph and a polite request: <b>Would you be able to ...?</b>'),
+    D(['Could you please open the door before 12 pm today? Our class finishes at 12.','Open it when you like.','DO IT RIGHT NOW OR ELSE!!!'],'A real time, and the reason. Calm, not angry.'),
+    D(['You can call Frances on 0491 570 159 or reply to this email.','Call us. You know the number.','dont call just open it'],'A phone number and another way to reply.'),
+    D(['Thank you very much for your help.','Thanks, I guess.','You should say sorry to us.'],'One short, kind line.'),
+    D(['Kind regards,<br>{TEAM}','bye','From the angry class'],'<b>Kind regards</b> and your name on <b>two lines</b>.')
+   ]},
+  {label:'Send it',
+   steps:[{k:'send',yes:'Dana replied! 📬',why:'A polite, calm and clear email gets an answer. 😊',
+    reply:'<div class="dl">Dear {TEAM},</div><div class="dl">Thank you for your polite, calm and clear email. 😊 We checked the lock, and we fixed the problem.</div><div class="dl">To open the door, please put your twelve letter tiles in order. They make our number one rule for emails.</div><div class="dl">Kind regards,<br>Dana<br>LockSmart Customer Care</div>'}]},
+  {label:'The secret message',
+   steps:[{k:'tiles',yes:'CALM AND CLEAR! 🔓',why:'Calm and clear: the number one rule for writing to a business. 🔤✨',hint:'Read the LockSmart screen again: a polite, ____ and ____ email. Three words: 4 letters, 3 letters, 5 letters.'}]}
+ ]};
+
+/* ===== The win screen ===== */
+var AGAIN_ARMED=false;
+function viewWin(){
+  var miss=0, rows=''; SPACES.forEach(function(Z){ var r=S.spaces[Z.id]; if(r) miss+=r.miss||0; if(Z.door) return; var m=r?r.miss:0;
+    rows+='<span class="wsp" style="--c:'+Z.c+'"><span>'+Z.emo+' '+Z.id+'</span><b>'+(m<=1?'⭐⭐⭐':(m<=4?'⭐⭐':'⭐'))+'</b></span>'; });
+  var k=0, msg=''; WORDS.forEach(function(len){ msg+='<span class="mword">'; for(var i=0;i<len;i++,k++) msg+=tileHtml(PHRASE.charAt(k)); msg+='</span>'; });
+  var h='<div class="card unlock winc" style="--c:#21c55d"><div class="opendoor"><span class="dframe"><span class="dleaf">🚪</span></span><span class="sun">☀️</span></div>'+
+    '<h1 class="wint">YOU ESCAPED! 🎉</h1><p class="big"><b>'+esc(S.team)+'</b>, the door of B.1.33 is open!</p><div class="msg done">'+msg+'</div>'+
+    '<div class="wstats"><span>⏱️ Time<b>'+fmtTime((S.t1||Date.now())-S.t0)+'</b></span><span>🔁 Mistakes<b>'+miss+'</b></span><span>⭐ Bonus stars<b>'+(S.bonus||0)+'</b></span></div>'+
+    '<div class="wgrid">'+rows+'</div>'+
+    '<div class="sticky" style="text-align:left"><p><b>📌 From Frances</b></p><p>Well done, everyone! 👏 You can now write a request email to a business: nine stages, polite requests, joining words and organising words. Calm and clear, every time!</p><p>Frances</p></div>'+
+    '<div><button class="btn" style="--c:#ffd21f" data-act="confetti">🎉 More confetti</button><button class="btn wood" data-act="board">🎲 Look at the board</button><button class="btn ghost" data-act="again">'+(AGAIN_ARMED?'⚠️ Tap again to start a new game':'♻️ Play again')+'</button></div></div>';
+  return h;
+}
+ACT.confetti=function(){ stopConfetti(); startConfetti(); sfx('win'); };
+(function(){ var old=ACT.again; ACT.again=function(){ if(!AGAIN_ARMED){ AGAIN_ARMED=true; render(); setTimeout(function(){ AGAIN_ARMED=false; if(S.view==='win') render(); },4000); return; } AGAIN_ARMED=false; old(); }; })();
+
+/* ===== Space list ===== */
+var SPACES=[SP1,SP2,SP3,SP4,SP5,SP6,SP7,SP8,SP9,SP10,SP11,SP12,DOOR];
+
+load(); render();
+if(S.view==='win'){ setTimeout(startConfetti,300); }
+})();
+</script>
+</body>
+</html>
