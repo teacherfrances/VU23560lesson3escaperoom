@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>After Hours at the Library</title>
+<style>
+:root{
+  --ink:#000;--paper:#fffbe8;--yel:#ffe600;--cya:#00e5ff;--mag:#ff2bd6;--lim:#b6ff00;--ora:#ff8a00;--red:#ff3355;--vio:#9d7bff;--grn:#2ee86a;
+  --c:#ffe600;
+  --fd:"Segoe UI Black","Arial Black","Segoe UI",Carlito,Calibri,system-ui,sans-serif;
+  --fb:Calibri,Carlito,"Segoe UI",Candara,"Helvetica Neue",Arial,sans-serif;
+  --fm:Consolas,"Lucida Console","DejaVu Sans Mono","Courier New",monospace;
+}
+*{box-sizing:border-box}
+html{font-size:28px;background:#000}
+body{margin:0;color:#fff;font-family:var(--fb);line-height:1.38;min-height:100vh;overflow-x:hidden;-webkit-text-size-adjust:100%;
+  background-color:#000;
+  background-image:radial-gradient(rgba(255,43,214,.22) 1.6px,transparent 1.8px),radial-gradient(rgba(0,229,255,.18) 1.6px,transparent 1.8px);
+  background-size:22px 22px,22px 22px;background-position:0 0,11px 11px}
+button{font:inherit;font-size:1rem;color:inherit;-webkit-tap-highlight-color:transparent}
+.disp{font-family:var(--fd);font-weight:900;letter-spacing:.01em;line-height:1.08}
+h1,h2,h3{font-family:var(--fd);font-weight:900;line-height:1.1;margin:.15rem 0}
+h1{font-size:1.5rem}h2{font-size:1.15rem}
+p{margin:.35rem 0}
+.mut{color:#d8d8e8}
+
+/* top strip */
+.strip{position:sticky;top:0;z-index:30;display:flex;flex-wrap:wrap;align-items:center;gap:.25rem;padding:.25rem .4rem;background:var(--yel);color:#000;border-bottom:5px solid #000;box-shadow:0 5px 0 var(--mag)}
+.strip .ttl{flex:1 1 auto;min-width:5rem;font-family:var(--fd);font-weight:900;font-size:.85rem;font-style:italic;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 .2rem}
+.sb{min-height:2.2rem;min-width:2.2rem;padding:.05rem .4rem;border:3px solid #000;border-radius:.3rem;background:#fff;color:#000;font-weight:900;cursor:pointer;box-shadow:3px 3px 0 #000;line-height:1}
+.sb:active{transform:translate(2px,2px);box-shadow:1px 1px 0 #000}
+.sb.off{background:#ccc}
+
+main{max-width:1100px;margin:0 auto;padding:.7rem .6rem 4rem;overflow-wrap:break-word}
+
+/* comic panels */
+.panel{position:relative;background:#111;border:4px solid #fff;border-radius:.2rem;padding:.7rem .8rem;margin:.7rem .2rem;box-shadow:7px 7px 0 var(--c)}
+.panel.tilt{transform:rotate(-.5deg)}
+.panel.paper{background:var(--paper);color:#111;border-color:#000;box-shadow:7px 7px 0 var(--c)}
+.cap{display:inline-block;background:var(--c);color:#000;font-family:var(--fd);font-weight:900;font-size:.8rem;padding:.05rem .5rem;border:3px solid #000;transform:skew(-8deg);margin-bottom:.3rem}
+.big{font-size:1.15rem}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.35rem;min-height:2.3rem;padding:.3rem 1rem;margin:.35rem .4rem .35rem 0;border:4px solid #000;border-radius:.3rem;background:var(--c);color:#000;font-family:var(--fd);font-weight:900;cursor:pointer;box-shadow:5px 5px 0 #fff;transform:skew(-6deg);text-align:center}
+.btn>span{display:inline-block;transform:skew(6deg)}
+.btn:active{transform:skew(-6deg) translate(3px,3px);box-shadow:2px 2px 0 #fff}
+.btn.white{background:#fff}
+.btn.dark{background:#222;color:#fff;border-color:#fff;box-shadow:5px 5px 0 var(--c)}
+.btn:focus-visible,.sb:focus-visible{outline:4px solid var(--cya);outline-offset:3px}
+.warn{background:#2a2100;border:3px dashed var(--yel);padding:.5rem .7rem;margin:.5rem 0;color:#fff2a8}
+.teamin{font:inherit;font-size:1rem;width:100%;max-width:18rem;min-height:2.3rem;padding:.3rem .6rem;border:4px solid #000;background:#fff;color:#000;box-shadow:4px 4px 0 var(--mag)}
+
+/* cover */
+.cover{text-align:center;padding:1rem .6rem}
+.cover .t1{font-family:var(--fd);font-weight:900;font-style:italic;font-size:2.1rem;line-height:1;color:var(--yel);text-shadow:4px 4px 0 var(--mag),8px 8px 0 #000;transform:rotate(-3deg);display:inline-block;margin:.4rem 0}
+.cover .t2{display:inline-block;background:var(--cya);color:#000;font-family:var(--fd);font-weight:900;padding:.1rem .6rem;border:4px solid #000;transform:rotate(2deg)}
+.cover .em{font-size:2.4rem}
+
+/* Libby */
+.libby{display:flex;gap:.6rem;align-items:flex-start;margin:.4rem 0}
+.libby .bot{font-size:2.6rem;line-height:1;flex:0 0 auto;filter:drop-shadow(3px 3px 0 var(--cya))}
+.libby.talk .bot{animation:talk .25s infinite alternate}
+.bub{position:relative;flex:1 1 auto;background:#fff;color:#000;border:4px solid #000;border-radius:1.2rem;padding:.45rem .8rem;box-shadow:5px 5px 0 var(--cya)}
+.bub:before{content:"";position:absolute;left:-1.05rem;top:.8rem;border:.55rem solid transparent;border-right:.75rem solid #000}
+.bub .who{display:block;font-family:var(--fd);font-weight:900;font-size:.78rem;color:#7a00a8}
+.bub .hid{filter:blur(6px);user-select:none}
+.ctrls{display:flex;flex-wrap:wrap;gap:.35rem;margin:.35rem 0 .2rem}
+.cb{min-height:2.2rem;padding:.1rem .6rem;border:3px solid #fff;border-radius:2rem;background:#1b1b28;color:#fff;cursor:pointer;font-weight:700}
+.cb.on{background:var(--cya);color:#000;border-color:#000}
+
+/* note from librarian */
+.note{background:#fff7a8;color:#222;border:0;padding:.7rem .9rem;transform:rotate(1.2deg);box-shadow:6px 6px 0 rgba(0,0,0,.6),0 0 0 4px #000;font-family:var(--fb);margin:.8rem .3rem}
+.note p{margin:.3rem 0}
+
+/* borrower card */
+.card{background:var(--paper);color:#222;border:4px solid #000;border-radius:.5rem;padding:.5rem .7rem;box-shadow:7px 7px 0 var(--mag);margin:.5rem .2rem .8rem}
+.card .ch{display:flex;justify-content:space-between;flex-wrap:wrap;gap:.3rem;border-bottom:3px double #000;padding-bottom:.2rem;margin-bottom:.4rem}
+.card .ch b{font-family:var(--fd);font-weight:900;letter-spacing:.06em}
+.slots{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:.3rem}
+.slot{aspect-ratio:1/1;border:2px dashed #9a8f6b;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-weight:900;color:#c9bf9e;font-size:.8rem;max-width:3.2rem;width:100%;justify-self:center}
+.slot.st{border:4px solid #d1003f;color:#d1003f;font-size:1.25rem;transform:rotate(-12deg);background:rgba(209,0,63,.07)}
+.slot.st.new{animation:stamp .7s cubic-bezier(.2,1.6,.4,1)}
+.clock{font-family:var(--fm);font-weight:700}
+
+/* floor plan */
+.plan{position:relative;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:0;border:6px solid #fff;background:#0b0b10;margin:.3rem .2rem 1rem;box-shadow:8px 8px 0 var(--cya)}
+.zone{position:relative;grid-column:span 2;min-height:6.4rem;border:3px solid #fff;margin:-1.5px;background:var(--c);color:#000;cursor:pointer;text-align:left;padding:.4rem .5rem;display:flex;flex-direction:column;gap:.05rem;overflow:hidden;
+  background-image:radial-gradient(rgba(0,0,0,.16) 1.5px,transparent 1.7px);background-size:10px 10px}
+.zone.w3{grid-column:span 3}.zone.w4{grid-column:span 4}.zone.w6{grid-column:span 6}
+.zone .ze{font-size:1.9rem;line-height:1}
+.zone .zn{font-size:.75rem;font-weight:900;font-family:var(--fd)}
+.zone .zt{font-family:var(--fd);font-weight:900;font-size:.98rem;line-height:1.1}
+.zone .zs{font-size:.78rem;font-weight:700;margin-top:auto}
+.zone .tc{display:inline-block;background:#000;color:#fff;font-size:.7rem;padding:0 .3rem;align-self:flex-start;font-weight:700}
+.zone .zl{position:absolute;right:.35rem;top:.3rem;font-size:1.3rem}
+.zone:hover,.zone:focus-visible{outline:5px solid #fff;outline-offset:-8px;z-index:2}
+.zone.done{background:#1a1a1a;color:#fff;background-image:none}
+.zone.done .zs{color:var(--grn)}
+.zone .stampz{position:absolute;right:.4rem;bottom:.4rem;width:2.4rem;height:2.4rem;border:4px solid #ff3d6e;border-radius:50%;color:#ff3d6e;display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-weight:900;font-size:1.2rem;transform:rotate(-14deg)}
+.zone.exit{min-height:5rem;background:#222;color:#fff;background-image:repeating-linear-gradient(45deg,#222 0 18px,#2d2d2d 18px 36px)}
+.zone.exit.open{background:var(--grn);color:#000;background-image:none}
+.zone.soon{opacity:.35;cursor:not-allowed}
+.avatar{position:absolute;z-index:5;font-size:1.8rem;line-height:1;pointer-events:none;transition:left .6s ease,top .6s ease;filter:drop-shadow(2px 2px 0 #000)}
+.avatar.walk{animation:hop .2s infinite alternate}
+.legend{font-size:.78rem;color:#ddd}
+
+/* zone screen */
+.zhead{display:flex;gap:.6rem;align-items:center;background:var(--c);color:#000;border:4px solid #000;padding:.4rem .7rem;margin:.3rem .2rem .2rem;box-shadow:7px 7px 0 #fff;transform:skew(-3deg)}
+.zhead>*{transform:skew(3deg)}
+.zhead .ze{font-size:2.4rem;line-height:1}
+.zhead .zn{font-size:.8rem;font-weight:900}
+.pages{display:flex;flex-wrap:wrap;gap:.2rem;margin:.6rem .2rem .2rem}
+.pages i{width:.8rem;height:.8rem;border:2px solid #fff;transform:skew(-10deg);background:#222}
+.pages i.d{background:var(--c)}
+.pages i.n{background:#fff}
+.q{font-size:1.05rem;font-weight:700;margin:.25rem 0 .5rem}
+.sit{background:#222;border-left:8px solid var(--c);padding:.35rem .6rem;margin:.2rem 0 .4rem}
+
+/* pick bubbles */
+.picks{display:flex;flex-direction:column;gap:.45rem}
+.pk{position:relative;text-align:left;min-height:2.3rem;padding:.4rem .8rem;border:4px solid #000;border-radius:1.1rem;background:#fff;color:#000;cursor:pointer;box-shadow:4px 4px 0 var(--c);line-height:1.3;overflow-wrap:anywhere}
+.pk:hover:not([disabled]),.pk:focus-visible{background:#fffbd0;outline:3px solid var(--cya)}
+.pk.x{background:#3a0b16;color:#ff9db0;border-color:var(--red);text-decoration:line-through;box-shadow:none}
+.pk.ok{background:var(--grn);border-color:#000;font-weight:700}
+.pk[disabled]{cursor:default}
+.arrows{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.arw{min-height:4.2rem;border:5px solid #000;background:#fff;color:#000;font-family:var(--fd);font-weight:900;font-size:1.6rem;cursor:pointer;box-shadow:6px 6px 0 var(--c);border-radius:.4rem}
+.arw small{display:block;font-size:.7rem;font-family:var(--fb)}
+.arw.x{background:#3a0b16;color:#ff9db0;border-color:var(--red)}
+.arw.ok{background:var(--grn)}
+.qline{font-family:var(--fd);font-weight:900;font-size:1.35rem;text-align:center;background:#fff;color:#000;border:4px solid #000;padding:.4rem .6rem;margin:.3rem 0 .6rem;box-shadow:5px 5px 0 var(--c)}
+svg.voice{display:block;width:100%;height:3rem;margin:.2rem 0}
+
+/* linking */
+.lk{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:.1rem;font-family:var(--fd);font-weight:900;font-size:1.5rem;background:#fff;color:#000;border:4px solid #000;padding:.6rem .4rem;box-shadow:5px 5px 0 var(--c);margin:.3rem 0 .5rem}
+.gapb{min-width:2.1rem;min-height:2.3rem;border:3px dashed #888;border-radius:.4rem;background:#f1f1f1;cursor:pointer;color:var(--mag);font-size:1.3rem;font-weight:900;padding:0}
+.gapb.on{border:3px solid var(--mag);background:#ffe3fa}
+.gapb.x{border-color:var(--red);background:#ffd6dd}
+
+/* swipe */
+.deck{position:relative;height:11rem;margin:.4rem 0 .6rem;touch-action:pan-y}
+.scard{position:absolute;inset:0;margin:auto;max-width:20rem;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:.3rem;background:#fff;color:#000;border:5px solid #000;border-radius:1rem;padding:.6rem;box-shadow:7px 7px 0 var(--c);font-weight:700;font-size:1.05rem;cursor:grab;user-select:none;touch-action:none;transition:transform .25s}
+.scard .se{font-size:2.2rem;line-height:1}
+.scard.drag{transition:none;cursor:grabbing}
+.scard.flyL{transform:translateX(-160%) rotate(-25deg)!important;opacity:0;transition:transform .45s,opacity .45s}
+.scard.flyR{transform:translateX(160%) rotate(25deg)!important;opacity:0;transition:transform .45s,opacity .45s}
+.scard.under{transform:scale(.94) translateY(.5rem);opacity:.6;cursor:default}
+.sides{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}
+.side{min-height:2.8rem;border:4px solid #000;font-weight:900;cursor:pointer;border-radius:.4rem;padding:.2rem .4rem;box-shadow:4px 4px 0 #fff}
+.side.l{background:#ff9db0;color:#000}.side.r{background:var(--grn);color:#000}
+.side.x{opacity:.5;text-decoration:line-through}
+
+/* feedback bursts */
+.fb{display:flex;gap:.6rem;align-items:center;margin:.6rem 0;animation:popin .35s}
+.burst{flex:0 0 auto;width:5.2rem;height:5.2rem;display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-weight:900;font-style:italic;font-size:1.05rem;color:#000;background:var(--yel);
+  clip-path:polygon(50% 0,61% 22%,85% 8%,78% 33%,100% 40%,80% 56%,95% 80%,68% 74%,60% 100%,47% 79%,27% 96%,27% 70%,3% 76%,17% 55%,0 38%,24% 32%,14% 8%,39% 22%);transform:rotate(-8deg)}
+.fb.bad .burst{background:var(--red);color:#fff}
+.fb .fbt{flex:1 1 auto;background:#fff;color:#000;border:4px solid #000;padding:.4rem .7rem;box-shadow:4px 4px 0 var(--yel)}
+.fb.bad .fbt{box-shadow:4px 4px 0 var(--red)}
+
+/* unlock */
+.unlock{text-align:center}
+.bigstamp{display:inline-flex;align-items:center;justify-content:center;width:6rem;height:6rem;border:8px solid #ff3d6e;border-radius:50%;color:#ff3d6e;font-family:var(--fd);font-weight:900;font-size:3.4rem;transform:rotate(-14deg);animation:stamp .8s .2s cubic-bezier(.2,1.6,.4,1) both;background:rgba(255,61,110,.08)}
+.stars{font-size:1.6rem}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:60}
+.saved{position:fixed;right:.6rem;bottom:.6rem;z-index:40;background:var(--grn);color:#000;border:3px solid #000;font-weight:900;padding:.05rem .6rem;font-size:.75rem;opacity:0;transition:opacity .3s}
+.saved.show{opacity:1}
+
+/* web page mockup */
+.web{background:#fff;color:#111;border:4px solid #000;box-shadow:6px 6px 0 var(--c);margin:.3rem 0 .5rem;font-size:.85rem}
+.web .wbar{background:#ddd;border-bottom:3px solid #000;padding:.2rem .5rem;font-family:var(--fm);font-size:.8rem;overflow-wrap:anywhere}
+.web .wb{padding:.4rem .6rem}
+.web .wt{font-family:var(--fd);font-weight:900;font-size:1.25rem;color:#7a00a8}
+details.again summary{cursor:pointer;min-height:2.2rem;display:inline-flex;align-items:center;padding:.1rem .7rem;border:3px solid #fff;border-radius:2rem;font-weight:700;background:#1b1b28}
+
+@keyframes talk{to{transform:translateY(-3px) rotate(3deg)}}
+@keyframes hop{to{transform:translateY(-5px)}}
+@keyframes stamp{0%{transform:scale(3) rotate(-30deg);opacity:0}60%{opacity:1}100%{transform:scale(1) rotate(-14deg)}}
+@keyframes popin{from{transform:scale(.6);opacity:0}to{transform:none;opacity:1}}
+@keyframes shake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+.shake{animation:shake .4s}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (max-width:640px){
+  main{padding:.5rem .35rem 3rem}.panel{padding:.55rem .6rem;margin:.6rem .15rem}
+  .plan{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .zone,.zone.w3,.zone.w4{grid-column:span 1}.zone.w6{grid-column:span 2}
+  .zone .zt{font-size:.85rem;overflow-wrap:anywhere}
+  .strip .ttl{order:9;flex-basis:100%}.wide{display:none}
+  .slots{grid-template-columns:repeat(6,minmax(0,1fr))}
+  .burst{width:4.2rem;height:4.2rem;font-size:.85rem}
+}
+
+.zone.here .zl{visibility:hidden}
+.avatar{font-size:1.5rem}
+.lbc{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.35rem}
+.lbc .cb{border-radius:.8rem;text-align:left;padding:.2rem .5rem}
+@media (min-width:900px){.lbc{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media (max-width:380px){.lbc{grid-template-columns:1fr}}
+/* ---- Section 2 ---- */
+.vb{background:var(--yel);color:#000;padding:0 .3rem;font-family:var(--fd)}
+.shelf{position:relative;display:flex;align-items:flex-end;justify-content:center;gap:.35rem;flex-wrap:wrap;min-height:13rem;padding:.8rem .5rem .4rem;background:#3b2414;border:5px solid #000;box-shadow:6px 6px 0 var(--c);
+  background-image:linear-gradient(#5a3a22 0 0);background-size:100% .5rem;background-position:bottom;background-repeat:no-repeat;touch-action:none;overflow:hidden}
+.spine{position:relative;width:3.1rem;height:11rem;max-height:calc(var(--h)*12rem/100*1.5);border:3px solid #000;border-radius:.3rem .3rem 0 0;background:var(--b);color:#fff;cursor:pointer;padding:.3rem 0;display:flex;align-items:center;justify-content:center;box-shadow:inset -6px 0 0 rgba(0,0,0,.25)}
+.spine span{writing-mode:vertical-rl;transform:rotate(180deg);font-family:var(--fd);font-weight:900;font-size:1rem;text-shadow:2px 2px 0 #000;white-space:nowrap}
+.spine.x{opacity:.35;text-decoration:line-through}
+.spine.ok{outline:5px solid var(--grn);outline-offset:2px}
+.shelf .dark{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at var(--x) var(--y),rgba(255,240,170,.18) 0,rgba(0,0,0,0) 5rem,rgba(0,0,0,.95) 7.4rem);transition:background .05s}
+.shelf.lit .dark{display:none}
+.drawer{background:#3d2a12;border:5px solid #000;padding:.6rem;box-shadow:6px 6px 0 var(--c);display:flex;flex-direction:column;gap:.7rem}
+.dline{background:var(--paper);color:#111;border:3px solid #000;padding:.5rem .6rem;line-height:2.4;font-size:1.05rem}
+.dial{display:inline-flex;align-items:center;gap:.15rem;vertical-align:middle;background:#222;border:3px solid #000;border-radius:.5rem;padding:.1rem;margin:0 .15rem}
+.dbtn{min-width:2.2rem;min-height:2.2rem;border:2px solid #000;background:var(--c);color:#000;font-weight:900;cursor:pointer;border-radius:.3rem;padding:0}
+.dwin{display:inline-block;min-width:4.5rem;text-align:center;background:#fff;color:#000;font-family:var(--fd);font-weight:900;padding:.05rem .4rem;border:2px solid #000;line-height:1.4}
+.dial.ok .dwin{background:var(--grn)}
+.dial.bad{background:var(--red)}
+.slip{background:#fff7a8;color:#222;border:3px solid #000;padding:.4rem .7rem;transform:rotate(-1deg);box-shadow:4px 4px 0 #000;margin:.2rem 0 .7rem}
+.pbox{background:#f3f3f3;color:#111;border:4px solid #000;box-shadow:6px 6px 0 var(--c)}
+.ptitle{background:#222;color:#fff;font-family:var(--fd);font-weight:900;padding:.2rem .6rem}
+.pgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:.6rem;padding:.6rem}
+.prev{display:flex;flex-direction:column;align-items:center;gap:.2rem}
+.pp{width:100%;max-width:7rem;aspect-ratio:3/4;background:#fff;border:2px solid #999;padding:.3rem;font-size:.6rem;display:flex;flex-direction:column;gap:.2rem;box-shadow:3px 3px 0 #bbb}
+.pp i{display:block;height:.25rem;background:#9ab}
+.pp .pic{font-size:1.2rem;text-align:center}
+.prev.bw .pp{filter:grayscale(1)}
+.pcount{font-size:.75rem;font-weight:700}
+.pset{display:flex;flex-direction:column;gap:.35rem}
+.prow{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.3rem;border:2px solid #ccc;background:#fff;padding:.2rem .4rem;border-radius:.3rem}
+.prow.bad{border-color:var(--red);background:#ffe0e5}
+.prow.ok{border-color:#1a9c47}
+.pl{font-weight:900;font-size:.85rem}
+.pctl{display:inline-flex;align-items:center;gap:.2rem}
+.pbtn{min-width:2.1rem;min-height:2.1rem;border:2px solid #000;background:#ddd;cursor:pointer;border-radius:.3rem;font-weight:900}
+.pval{min-width:5.5rem;text-align:center;font-weight:700;font-size:.9rem}
+.pfoot{display:flex;justify-content:flex-end;flex-wrap:wrap;padding:.2rem .6rem .5rem}
+.paperout{text-align:center;font-size:2.4rem;animation:paper 1s ease}
+@keyframes paper{from{transform:translateY(-2.5rem);opacity:0}to{transform:none;opacity:1}}
+.pc{background:#d6d6d6;color:#111;border:5px solid #000;box-shadow:6px 6px 0 var(--c);font-size:.82rem}
+.pc .hs{cursor:pointer;border:3px solid transparent;border-radius:.3rem}
+.pc .hs:hover,.pc .hs:focus-visible{border-color:#ff8a00;outline:none}
+.pc .hs.hok{border-color:#1a9c47!important;box-shadow:0 0 0 4px #1a9c47;background:#c9f7d6!important}
+.pc .hs.hbad{border-color:var(--red)!important;box-shadow:0 0 0 4px var(--red);animation:shake .4s}
+.pc-tabs{display:flex;align-items:flex-end;gap:.2rem;background:#9a9a9a;padding:.25rem .25rem 0;flex-wrap:wrap}
+.pc-tab{background:#c8c8c8;padding:.1rem .5rem;border-radius:.4rem .4rem 0 0}
+.pc-tab.on{background:#fff}
+.pc-tabs .sp{flex:1 1 auto}
+.pc-x{font-weight:900;padding:0 .45rem;background:#e44;color:#fff;margin-bottom:.15rem}
+.pc-bar{display:flex;flex-wrap:wrap;gap:.2rem;align-items:center;background:#fff;padding:.25rem;border-bottom:2px solid #999}
+.pc-lock{color:#0a7a33;font-weight:700;padding:0 .2rem}
+.pc-url{overflow-wrap:anywhere;padding:0 .2rem}
+.pc-body{position:relative;background:#fff;min-height:15rem;padding:.4rem}
+.pc-page{max-width:60%}
+.pc-page p{margin:.25rem 0}
+.pc-link{display:inline-block;color:#1d4ed8;text-decoration:underline;padding:.05rem .2rem}
+.pc-row{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.5rem}
+.pc-chk{padding:.1rem .3rem;background:#eee}
+.pc-btn{padding:.1rem .6rem;background:#1d4ed8;color:#fff;font-weight:700}
+.pop{position:absolute;background:#fff;border:3px solid #000;box-shadow:4px 4px 0 rgba(0,0,0,.4);width:46%;padding:.3rem;animation:popin .5s both}
+.pop.p1{right:.4rem;top:.4rem;transform:rotate(2deg)}
+.pop.p2{right:1rem;bottom:.4rem;transform:rotate(-2deg);animation-delay:.4s;background:#fff3c4}
+.poph{display:flex;justify-content:space-between;align-items:center;font-weight:900;background:#ffe600;margin:-.3rem -.3rem .2rem;padding:.1rem .3rem}
+.pop-x{font-weight:900;padding:0 .4rem;background:#fff}
+.pop-btn{display:inline-block;background:#e11d48;color:#fff;font-weight:900;padding:.1rem .5rem;margin-top:.2rem}
+.pop-btn.dl{background:#16a34a}
+.pop p{margin:.1rem 0;font-weight:700}
+@media (max-width:640px){.pgrid{grid-template-columns:1fr}.pp{max-width:5rem}.pc-page{max-width:100%}.pop{position:relative;width:auto;right:auto!important;top:auto!important;bottom:auto!important;margin-top:.4rem}.spine{width:2.6rem}}
+.shelf{flex-wrap:nowrap}
+.spine{flex:1 1 0;min-width:0;max-width:3.4rem}
+@media (max-width:640px){.spine span{font-size:.85rem}}
+/* ---- Section 3 ---- */
+.tcard{background:#fff;color:#111;border:4px solid #000;padding:.6rem .8rem;box-shadow:6px 6px 0 var(--mag)}
+.tcard h2{color:#000}
+ul.tick{list-style:none;padding-left:0;margin:.3rem 0}
+ul.tick li{margin:.2rem 0}
+.dlock{display:flex;flex-wrap:wrap;justify-content:center;gap:.35rem;background:linear-gradient(#c9a227,#8a6b10);border:5px solid #000;border-radius:1rem;padding:.6rem;box-shadow:6px 6px 0 #fff;margin:.3rem 0 .4rem}
+.dlock.open{background:linear-gradient(#5be38a,#1f9a4c)}
+.ldial{display:flex;flex-direction:column;align-items:center;gap:.15rem}
+.lwin{display:flex;align-items:center;justify-content:center;width:2.3rem;height:2.5rem;background:#111;color:var(--yel);font-family:var(--fd);font-weight:900;font-size:1.4rem;border:3px solid #000;border-radius:.4rem;box-shadow:inset 0 .3rem 0 rgba(255,255,255,.12)}
+.ldial .dbtn{min-width:2.3rem}
+.player{background:#1b0d1f;border:4px solid #fff;border-radius:1rem;padding:.5rem .7rem;margin:.2rem 0 .7rem;box-shadow:6px 6px 0 var(--c)}
+.ph{font-size:.85rem}
+.ptrack{height:.6rem;background:#444;border-radius:1rem;overflow:hidden;margin:.35rem 0 .15rem}
+.ptrack i{display:block;height:100%;background:var(--c);transition:width .3s}
+.ptime{font-size:.75rem;color:#ddd}
+.pctl2{display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;margin-top:.3rem}
+.pb{min-width:2.6rem;min-height:2.6rem;border:3px solid #000;border-radius:50%;background:#fff;color:#000;font-weight:900;cursor:pointer;box-shadow:3px 3px 0 var(--c)}
+.pb.big{min-width:3.3rem;min-height:3.3rem;font-size:1.3rem;background:var(--c)}
+.pb.spd{border-radius:2rem;padding:0 .6rem}
+.pb.spd.on{background:var(--yel)}
+.gtext,.msg{background:var(--paper);color:#111;border:4px solid #000;padding:.6rem .8rem;line-height:2.3;box-shadow:6px 6px 0 var(--c)}
+.msg{font-family:var(--fb);background:#fff;line-height:2.2}
+.gp{min-width:4.2rem;min-height:2.1rem;vertical-align:middle;border:3px dashed #555;background:#f3f3f3;border-radius:.4rem;cursor:pointer;font-weight:900;color:#111;padding:0 .4rem;margin:0 .1rem}
+.gp small{color:#888;font-size:.7rem}
+.gp.full{border:3px solid #1a9c47;background:#d8f8e2}
+.gp.sgap{min-width:3.6rem}
+.gp.sgap.full{background:#fff;border:3px solid #c1121f;transform:rotate(-3deg)}
+.ink{color:#c1121f;font-family:var(--fd);font-weight:900;letter-spacing:.03em;animation:stamp .5s cubic-bezier(.2,1.6,.4,1)}
+.chips,.pads{display:flex;flex-wrap:wrap;gap:.45rem;margin:.7rem 0 .3rem}
+.chip{min-height:2.3rem;padding:.2rem .8rem;border:3px solid #000;border-radius:2rem;background:#fff;color:#000;font-weight:900;cursor:pointer;box-shadow:3px 3px 0 var(--c)}
+.chip.sel,.pad.sel{background:var(--c);transform:translateY(-4px);box-shadow:3px 7px 0 #fff}
+.pad{min-height:2.6rem;padding:.2rem .7rem;border:4px solid #000;border-radius:.4rem;background:#c1121f;color:#fff;font-family:var(--fd);font-weight:900;cursor:pointer;box-shadow:4px 4px 0 #fff}
+.pad.sel{color:#000}
+.slotm{position:relative;background:linear-gradient(#ff3d6e,#a5003a);border:6px solid #000;border-radius:1.2rem;padding:.5rem .6rem .7rem;box-shadow:7px 7px 0 var(--c);margin:.3rem 0}
+.slotm.jackpot{background:linear-gradient(#ffe600,#ff8a00)}
+.slotlights{text-align:center;letter-spacing:.3rem;font-size:.9rem}
+.slotm.jackpot .slotlights{animation:blink .3s infinite alternate}
+.reels{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.35rem;background:#111;border:4px solid #000;border-radius:.6rem;padding:.35rem}
+.reel{display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(#bbb,#fff 30%,#fff 70%,#bbb);border:3px solid #000;border-radius:.4rem;cursor:pointer;color:#000;padding:.2rem .1rem;min-height:6.2rem;overflow:hidden}
+.reel span{display:block;text-align:center;overflow-wrap:anywhere}
+.rprev,.rnext{font-size:.75rem;color:#777}
+.rcur{font-family:var(--fd);font-weight:900;font-size:1.1rem;padding:.2rem 0;border-top:2px solid #c1121f;border-bottom:2px solid #c1121f;width:100%}
+.reel.spin .rcur{animation:spin .25s}
+.reel.bad{border-color:var(--red);box-shadow:0 0 0 4px var(--red)}
+.slotm.jackpot .rcur{background:var(--grn)}
+.lever{display:block;margin:.5rem auto 0;min-height:2.6rem;padding:.2rem 1.2rem;border:4px solid #000;border-radius:2rem;background:var(--yel);color:#000;font-family:var(--fd);font-weight:900;cursor:pointer;box-shadow:4px 4px 0 #000}
+.lever:active{transform:translateY(4px)}
+@keyframes spin{from{transform:translateY(-1.2rem);opacity:.2}to{transform:none;opacity:1}}
+@keyframes blink{to{opacity:.3}}
+@media (max-width:640px){.rcur{font-size:.9rem}.lwin{width:2rem}.ldial .dbtn{min-width:2rem}}
+.reel span{overflow-wrap:normal;word-break:normal;hyphens:none}
+.reels{gap:.25rem;padding:.25rem}
+@media (max-width:640px){.rcur{font-size:.82rem}.slotm{padding:.4rem .35rem .6rem}}
+/* ---- Section 4 ---- */
+.eslip{position:relative;background:#fff;color:#111;border:4px solid #000;padding:.6rem .8rem 1.2rem;box-shadow:6px 6px 0 var(--c);min-height:6rem;margin:.2rem 0 .7rem;transform:rotate(-.6deg)}
+.ehead{display:block;font-size:.75rem;font-weight:900;color:#666}
+.etext{display:block;font-size:1.15rem;font-weight:700;margin-top:.2rem}
+.emark{position:absolute;right:.6rem;bottom:.3rem;border:4px solid;border-radius:.4rem;padding:0 .4rem;font-family:var(--fd);font-weight:900;font-size:1rem;transform:rotate(-12deg);animation:stamp .5s cubic-bezier(.2,1.6,.4,1);background:rgba(255,255,255,.7)}
+.emark.m0{color:#15803d;border-color:#15803d}.emark.m1{color:#b45309;border-color:#b45309}.emark.m2{color:#c1121f;border-color:#c1121f}
+.smudge{position:absolute;right:.6rem;bottom:.2rem;font-size:1.3rem;opacity:.6}
+.spads{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.45rem}
+.spad{min-height:3.6rem;border:4px solid #000;border-radius:.5rem;font-family:var(--fd);font-weight:900;font-size:.85rem;cursor:pointer;box-shadow:4px 4px 0 #fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.1rem;color:#fff;padding:.2rem}
+.spad .se2{font-size:1.5rem}
+.spad.m0{background:#15803d}.spad.m1{background:#b45309}.spad.m2{background:#c1121f}
+.spad.used{opacity:.35;text-decoration:line-through}
+.draft{background:#fffdf0;color:#111;border:4px solid #000;padding:.6rem;line-height:2.5;box-shadow:6px 6px 0 var(--c);background-image:repeating-linear-gradient(transparent 0 2.3rem,#b9d4ff 2.3rem 2.4rem)}
+.mw{border:2px dashed transparent;background:none;color:#111;font-size:1.15rem;cursor:pointer;padding:.05rem .2rem;border-radius:.3rem;font-family:"Comic Sans MS","Segoe Print","Bradley Hand",var(--fb)}
+.mw:hover:not([disabled]){border-color:#888;background:#ffffcc}
+.mw.hit{background:#ffe600;border:3px solid #c1121f;color:#c1121f;font-weight:900}
+.mw.nope{text-decoration:line-through;color:#999}
+.codes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(9rem,100%),1fr));gap:.45rem;margin-top:.7rem}
+.codeb{min-height:2.6rem;border:4px solid #000;background:#fff;color:#000;border-radius:.5rem;cursor:pointer;box-shadow:4px 4px 0 var(--c);text-align:left;padding:.2rem .5rem}
+.codeb b{display:inline-block;background:#c1121f;color:#fff;padding:0 .3rem;border-radius:.2rem;margin-right:.2rem}
+.codeb.x{opacity:.4;text-decoration:line-through}
+.codeb.ok{background:var(--grn)}
+.probs2{display:flex;flex-direction:column;gap:.3rem;margin:.3rem 0}
+.probs2 span{background:#f3e8ff;border:2px solid #7a00a8;border-radius:.4rem;padding:.15rem .5rem}
+.spell{display:flex;flex-wrap:wrap;justify-content:center;gap:.4rem .9rem;margin:.6rem 0}
+.sword{display:inline-flex;gap:.2rem}
+.sl{display:inline-flex;align-items:center;justify-content:center;width:2rem;height:2.4rem;border:3px dashed #888;border-radius:.3rem;font-family:var(--fd);font-weight:900;font-size:1.2rem;background:#111}
+.sl.in{border:4px solid #ff3d6e;color:#ff3d6e;background:var(--paper);border-radius:50%;transform:rotate(-8deg);animation:stamp .4s}
+.ltiles{display:flex;flex-wrap:wrap;justify-content:center;gap:.4rem;margin:.5rem 0}
+.ltile{width:2.6rem;height:2.6rem;border:4px solid #ff3d6e;border-radius:50%;background:var(--paper);color:#ff3d6e;font-family:var(--fd);font-weight:900;font-size:1.2rem;cursor:pointer;transform:rotate(-8deg);box-shadow:3px 3px 0 #fff}
+.ltile.used{visibility:hidden}
+.wstats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.5rem;margin:.6rem 0}
+.wstats span{background:#fff;color:#000;border:4px solid #000;padding:.4rem;box-shadow:4px 4px 0 var(--mag);font-size:.85rem}
+.wstats b{font-size:1.2rem;font-family:var(--fd)}
+.win2 .card{text-align:left}
+@media (max-width:640px){.spads{grid-template-columns:1fr}.spad{flex-direction:row;min-height:2.8rem}.sl{width:1.7rem;height:2.1rem}}
+.wstats span{font-size:.75rem;overflow-wrap:normal;word-break:normal;padding:.35rem .2rem}
+.wstats b{white-space:nowrap;font-size:1.05rem}
+.wstats b.st3{font-size:.8rem;white-space:normal}
+.saved{pointer-events:none}
+@media (max-width:640px){.strip{position:relative}}
+/* ---- small-screen fit (bug check) ---- */
+h1{font-size:min(1.5rem,9vw);overflow-wrap:anywhere}
+h2{font-size:min(1.15rem,7.5vw);overflow-wrap:anywhere}
+.zhead>div{min-width:0}
+.zhead .ze{font-size:min(2.4rem,11vw)}
+.zhead .zn{overflow-wrap:anywhere}
+.cover .t1{font-size:min(2.1rem,10.5vw);overflow-wrap:anywhere}
+.libby .bot{font-size:min(2.6rem,11vw)}
+.libby .bub{min-width:0;overflow-wrap:anywhere}
+.dial{flex-direction:column;vertical-align:middle}
+.dial .dbtn{min-height:1.6rem;width:100%}
+.dwin{min-width:0;max-width:60vw;overflow-wrap:anywhere;white-space:normal}
+.dline{line-height:1.6}
+.dline>span{vertical-align:middle}
+.prow{flex-direction:column;align-items:stretch}
+.pctl{width:100%;justify-content:space-between}
+.pval{flex:1 1 auto;min-width:0;overflow-wrap:anywhere}
+.spad{min-width:0;overflow-wrap:anywhere}
+.pc{font-size:min(.82rem,4.4vw)}
+.web{font-size:min(.85rem,4.6vw)}
+.lbc .cb{min-width:0;overflow-wrap:anywhere}
+.qline,.lk{overflow-wrap:anywhere}
+.sit,.q,.fbt,.tcard,.note,.card{overflow-wrap:anywhere}
+.card .ch{min-width:0}
+.reels{min-width:0}
+@media (max-width:640px){.pgrid{grid-template-columns:minmax(0,1fr);padding:.35rem}.note{margin:.8rem .5rem;transform:rotate(.6deg)}}
+.pbox,.pset,.prev{min-width:0}
+.panel.unlock,.eslip{overflow:hidden}
+.sides{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.side{min-width:0;overflow-wrap:anywhere}
+.fb .fbt{min-width:0}
+.ltiles,.spell{max-width:100%}
+.pc{overflow:hidden}
+.spell{overflow:hidden;padding:.3rem 0}
+.sl{width:min(2rem,13vw)!important;height:min(2.4rem,15vw)!important;font-size:min(1.2rem,7vw)}
+.ltile{width:min(2.6rem,15vw);height:min(2.6rem,15vw);font-size:min(1.2rem,7vw)}
+.btn{max-width:calc(100% - .6rem);overflow-wrap:anywhere}
+.wstats span{min-width:0;overflow:hidden}
+.wstats b.st3{font-size:min(.8rem,4.5vw);letter-spacing:-.1em;overflow-wrap:anywhere;word-break:break-all}
+.deck{overflow:hidden;padding:0 .5rem}
+html{overflow-x:clip}
+
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+(function(){
+'use strict';
+/* ===== After Hours at the Library: engine ===== */
+var KEY='vu23560_l3_after_hours_library_v2';
+var SIZES=[24,28,34,42];
+var PHRASE='SLOWDOWNABIT';
+var S, STORE=false, FLASH=null, RESET_ARMED=false, REVEAL={};
+
+function storageOK(){ try{ var k='__t'+Math.random(); localStorage.setItem(k,'1'); localStorage.removeItem(k); return true; }catch(e){ return false; } }
+function fresh(){ return {v:1,team:'',view:'cover',zone:null,zones:{},letters:[],t0:0,t1:0,size:1,mute:false,at:0,back:false,newStamp:0}; }
+function load(){
+  STORE=storageOK(); S=fresh(); if(!STORE) return;
+  try{ var raw=localStorage.getItem(KEY); if(raw){ var o=JSON.parse(raw); if(o&&o.v===1){ S=o; S.back=(S.view!=='win'&&S.view!=='cover'&&S.view!=='intro'); if(S.view==='zone'||S.view==='stamp') S.view='plan'; S.newStamp=0; } } }catch(e){}
+}
+var savedT=null;
+function save(show){ if(!STORE) return; try{ localStorage.setItem(KEY,JSON.stringify(S)); if(show){ var el=$('saved'); if(el){ el.className='saved show'; clearTimeout(savedT); savedT=setTimeout(function(){ el.className='saved'; },900); } } }catch(e){} }
+function $(id){ return document.getElementById(id); }
+function shuffle(a){ a=a.slice(); for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+function range(n){ var a=[]; for(var i=0;i<n;i++) a.push(i); return a; }
+function esc(s){ return String(s).replace(/[&<>"']/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function zoneById(id){ for(var i=0;i<ZONES.length;i++) if(ZONES[i].id===id) return ZONES[i]; return null; }
+function hash(s){ var h=0; for(var i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))|0; return Math.abs(h); }
+function reducedMotion(){ try{ return window.matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){ return false; } }
+
+/* ---------- sound ---------- */
+var AC=null;
+function tone(f,t0,d,type,vol){ var o=AC.createOscillator(),g=AC.createGain(); o.type=type||'sine'; o.frequency.value=f; g.gain.setValueAtTime(vol||0.12,AC.currentTime+t0); g.gain.exponentialRampToValueAtTime(0.001,AC.currentTime+t0+d); o.connect(g); g.connect(AC.destination); o.start(AC.currentTime+t0); o.stop(AC.currentTime+t0+d+0.05); }
+function sfx(k){
+  if(S.mute) return;
+  try{ AC=AC||new (window.AudioContext||window.webkitAudioContext)();
+    if(k==='good'){ tone(523,0,.1,'square',.06); tone(784,.08,.1,'square',.06); tone(1047,.16,.18,'square',.06); }
+    else if(k==='bad'){ tone(220,0,.15,'sawtooth',.06); tone(160,.14,.25,'sawtooth',.06); }
+    else if(k==='tap'){ tone(700,0,.05,'triangle',.05); }
+    else if(k==='stamp'){ tone(90,0,.18,'square',.2); tone(60,.05,.2,'sine',.25); }
+    else if(k==='walk'){ [0,.12,.24,.36].forEach(function(t){ tone(300,t,.05,'triangle',.04); }); }
+    else if(k==='win'){ [392,523,659,784,659,784,1047].forEach(function(f,i){ tone(f,i*.12,.3,'square',.07); }); }
+  }catch(e){}
+}
+
+/* ---------- Libby's voice ---------- */
+var VOICE=null;
+function pickVoice(){ try{ var vs=speechSynthesis.getVoices(), pref=['en-AU','en_AU','en-GB','en_GB','en-US','en_US']; for(var p=0;p<pref.length;p++) for(var i=0;i<vs.length;i++) if(vs[i].lang===pref[p]) return vs[i]; for(var j=0;j<vs.length;j++) if(/^en/i.test(vs[j].lang)) return vs[j]; }catch(e){} return null; }
+var SPK=0;
+function stopPlayer(){ if(typeof PLAYER!=='undefined') PLAYER.on=false; stopSpeech(); }
+function stopSpeech(){ SPK++; try{ if(window.speechSynthesis) speechSynthesis.cancel(); }catch(e){} }
+function speak(t,rate,onEnd){
+  try{ if(!window.speechSynthesis){ return; } var my=++SPK; speechSynthesis.cancel(); var u=new SpeechSynthesisUtterance(t); VOICE=VOICE||pickVoice(); if(VOICE){ u.voice=VOICE; u.lang=VOICE.lang; } else u.lang='en-AU'; u.rate=rate||1; u.pitch=1.15;
+    var lb=document.querySelector('.libby'); if(lb) lb.classList.add('talk');
+    u.onend=function(){ var l=document.querySelector('.libby'); if(l) l.classList.remove('talk'); if(my!==SPK) return; if(onEnd) onEnd(); };
+    u.onerror=function(){ var l=document.querySelector('.libby'); if(l) l.classList.remove('talk'); };
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+if(window.speechSynthesis){ try{ speechSynthesis.onvoiceschanged=function(){ VOICE=pickVoice(); }; }catch(e){} }
+var RATE={fast:1.35,again:1.15,slow:0.7};
+/* Libby box: who says it, the words, and the replay buttons */
+function libbyBox(text,id,who){
+  var shown=REVEAL[id];
+  return '<div class="libby"><div class="bot">'+(who&&who.e||'🤖')+'</div><div class="bub"><span class="who">'+(who&&who.n||'Libby')+'</span>'+
+    (shown?text:'<span class="hid" aria-hidden="true">'+text+'</span>')+'</div></div>'+
+    '<div class="ctrls lbc"><button class="cb" data-act="lb" data-m="fast" data-id="'+id+'">▶️ Listen</button>'+
+    '<button class="cb" data-act="lb" data-m="again" data-id="'+id+'">🔁 Sorry, I didn\'t catch that.</button>'+
+    '<button class="cb" data-act="lb" data-m="slow" data-id="'+id+'">🐢 Could you slow down a bit?</button>'+
+    '<button class="cb'+(shown?' on':'')+'" data-act="lb" data-m="show" data-id="'+id+'">👀 Show the words</button></div>';
+}
+var LINES={};
+function line(id,text){ LINES[id]=text.replace(/<[^>]+>/g,''); return id; }
+
+/* ---------- zone state ---------- */
+function zs(Z){
+  var r=S.zones[Z.id];
+  if(!r){ var seq=[]; Z.parts.forEach(function(p,pi){ if(p.intro) seq.push('i'+pi); var idx=range(p.steps.length); if(p.shuffle!==false) idx=shuffle(idx); idx.forEach(function(si){ seq.push(pi+'-'+si); }); });
+    r=S.zones[Z.id]={seq:seq,pos:0,ord:{},cur:{x:[]},miss:0,done:false}; }
+  return r;
+}
+function stepOf(Z,key){ var a=key.split('-'); return {part:Z.parts[+a[0]],step:Z.parts[+a[0]].steps[+a[1]]}; }
+function ordFor(r,key,n){ if(!r.ord[key]||r.ord[key].length!==n) r.ord[key]=shuffle(range(n)); return r.ord[key]; }
+
+/* ---------- common bits ---------- */
+function strip(){
+  var t='🌙 After Hours at the Library';
+  if(S.view==='zone'){ var Z=zoneById(S.zone); if(Z) t=Z.emo+' '+Z.name; }
+  return '<div class="strip">'+(S.view!=='cover'&&S.view!=='intro'?'<button class="sb" data-act="plan" aria-label="Floor plan">🗺️<span class="wide"> Plan</span></button>':'')+
+    '<div class="ttl">'+t+'</div><button class="sb" data-act="size-" aria-label="Smaller text">A−</button><button class="sb" data-act="size+" aria-label="Bigger text">A+</button>'+
+    '<button class="sb'+(S.mute?' off':'')+'" data-act="mute" aria-label="Sound">'+(S.mute?'🔇':'🔊')+'</button><button class="sb" data-act="fs" aria-label="Full screen">⛶</button></div>';
+}
+function storeWarn(){ return STORE?'':'<div class="warn">⚠️ This device cannot save your progress. You can still play. Do not close this page.</div>'; }
+var GOOD=['POW!','ZAP!','BOOM!','YES!','WHAM!','KAPOW!'];
+function fbGood(st,key){ return '<div class="fb good"><div class="burst">'+GOOD[hash(key||'')%GOOD.length]+'</div><div class="fbt"><b>'+(st.yes||'That\'s right!')+'</b> '+(st.why||'')+'</div></div>'; }
+function fbBad(st,extra){ return '<div class="fb bad"><div class="burst">OOPS!</div><div class="fbt"><b>Not this one. Try again.</b> '+(extra||st.hint||'Read it again slowly.')+'</div></div>'; }
+function nextBtn(){ return '<button class="btn" data-act="next"><span>Next panel ➜</span></button>'; }
+function fmtTime(ms){ var s=Math.max(0,Math.floor(ms/1000)),m=Math.floor(s/60); s%=60; return (m<10?'0':'')+m+':'+(s<10?'0':'')+s; }
+
+/* ---------- views ---------- */
+function viewCover(){
+  var h=storeWarn()+'<div class="panel cover" style="--c:#ff2bd6"><div class="em">📚🌙🤖</div><div class="t1">AFTER HOURS<br>AT THE LIBRARY</div><div><span class="t2">An escape room · Learn English online</span></div></div>';
+  if(!S.team){
+    h+='<div class="panel tilt" style="--c:#00e5ff"><span class="cap">Your team</span><p>Type a name for your team.</p><input id="team" class="teamin" maxlength="24" autocomplete="off" placeholder="Team name" aria-label="Team name"><div><button class="btn" data-act="team"><span>✔ Save our name</span></button></div></div>';
+  } else h+='<div class="panel" style="--c:#00e5ff"><p class="big">Hi, <b>'+esc(S.team)+'</b>! 👋</p><button class="btn" data-act="intro"><span>📖 Start the story</span></button></div>';
+  return h;
+}
+var INTRO='Attention please! The library is now closed. All doors are locked. The code for the doors has twelve letters. Have a nice night!';
+function viewIntro(){
+  line('intro',INTRO);
+  return '<div class="panel" style="--c:#ffe600"><span class="cap">Page 1 · 8.01 pm</span><h2>The class stays late in the library. 🌙</h2><p>You are practising English on the library computers. Then the lights go down. 💡</p>'+
+    '<p>Libby, the self-checkout robot, starts to talk. Libby talks very fast! Tap <b>Listen</b>.</p>'+libbyBox(INTRO,'intro')+'</div>'+
+    '<div class="note"><p><b>📌 A note on the front desk</b></p><p>Hi everyone,</p><p>Libby locked the doors again! 🙄 I left the code in 12 zones of the library. Each zone gives you one letter. Collect the letters on your library card. Then go to the exit and talk to Libby.</p><p>Two zones need your teacher. 🧑‍🏫 Show your work to Frances. Frances gives you a code for the dial lock.</p><p>Work together. Good luck!</p><p>Bev</p><p class="mut" style="color:#555">Night librarian</p></div>'+
+    '<button class="btn" data-act="start"><span>🗺️ Look at the floor plan</span></button>';
+}
+function card(){
+  var h='<div class="card"><div class="ch"><b>📚 LIBRARY CARD</b><span>Borrower: <b>'+esc(S.team)+'</b></span><span class="clock" id="clock">⏱️ '+fmtTime((S.t1||Date.now())-S.t0)+'</span></div><div class="slots">';
+  for(var i=0;i<12;i++){ var L=S.letters[i]; h+= L?'<div class="slot st'+(S.newStamp===L.id?' new':'')+'">'+L.l+'</div>':'<div class="slot">'+(i+1)+'</div>'; }
+  return h+'</div><div class="mut" style="color:#555;font-size:.8rem;margin-top:.3rem">'+S.letters.length+' of 12 stamps</div></div>';
+}
+function viewPlan(){
+  var n=S.letters.length, h=storeWarn();
+  if(S.back) h+='<div class="note" style="background:#b6ff00">👋 <b>Welcome back, '+esc(S.team)+'!</b> Your stamps are safe. Keep going!</div>';
+  h+=card();
+  h+='<div class="legend">Tap a zone. Your team walks there. 🧑‍🎓</div><div class="plan" id="plan"><div class="avatar" id="avatar">🧑‍🎓</div>';
+  ZONES.forEach(function(Z){
+    var r=S.zones[Z.id];
+    if(Z.exit){ var open=n>=12; h+='<button class="zone exit w6'+(open?' open':'')+'" data-act="zone" data-id="'+Z.id+'"><span class="zl">'+(open?'🔓':'⛓️🔒')+'</span><span class="ze">'+Z.emo+'</span><span class="zt">'+Z.name+'</span><span class="zs">'+(open?'You have 12 stamps. Talk to Libby!':'Locked. You need 12 stamps.')+'</span></button>'; return; }
+    if(Z.soon){ h+='<div class="zone '+(Z.w||'')+' soon" style="--c:'+Z.c+'"><span class="zl">🚧</span><span class="ze">'+Z.emo+'</span><span class="zn">Zone '+Z.id+'</span><span class="zt">'+Z.name+'</span><span class="zs">Coming soon</span></div>'; return; }
+    var done=r&&r.done, started=r&&!r.done&&r.pos>0;
+    h+='<button class="zone '+(Z.w||'')+(done?' done':'')+(S.at===Z.id?' here':'')+'" style="--c:'+Z.c+'" data-act="zone" data-id="'+Z.id+'"><span class="zl">'+(done?'':'🔒')+'</span><span class="ze">'+Z.emo+'</span><span class="zn">Zone '+Z.id+'</span><span class="zt">'+Z.name+'</span>'+
+      (Z.teacher?'<span class="tc">🧑‍🏫 Teacher check</span>':'')+'<span class="zs">'+(done?'✅ Stamped':(started?'▶️ Keep going ('+r.pos+'/'+r.seq.length+')':'▶️ Start'))+'</span>'+(done?'<span class="stampz">'+Z.letter+'</span>':'')+'</button>';
+  });
+  h+='</div><div class="row"><button class="btn dark" data-act="intro"><span>📖 Read the story again</span></button><button class="btn white" style="--c:#ff3355" data-act="reset"><span>'+(RESET_ARMED?'⚠️ Tap again to start again':'♻️ Start the whole game again')+'</span></button></div>';
+  return h;
+}
+function zoneHead(Z,r,label){
+  var h='<div class="zhead" style="--c:'+Z.c+'"><div class="ze">'+Z.emo+'</div><div><div class="zn">Zone '+Z.id+(label?' · '+label:'')+'</div><h1>'+Z.name+'</h1></div></div><div class="pages" style="--c:'+Z.c+'" aria-label="Panel '+(r.pos+1)+' of '+r.seq.length+'">';
+  for(var i=0;i<r.seq.length;i++) h+='<i class="'+(i<r.pos?'d':(i===r.pos?'n':''))+'"></i>';
+  return h+'</div>';
+}
+function viewZone(){
+  var Z=zoneById(S.zone), r=zs(Z);
+  if(r.done){ S.view='stamp'; return viewStamp(); }
+  var key=r.seq[r.pos];
+  if(key.charAt(0)==='i'){ var part=Z.parts[+key.slice(1)];
+    return zoneHead(Z,r,part.label)+'<div class="panel tilt" style="--c:'+Z.c+'"><span class="cap">'+part.label+'</span>'+part.intro+'<div><button class="btn" style="--c:'+Z.c+'" data-act="next"><span>'+(part.go||'Let\'s go! ➜')+'</span></button></div></div>'; }
+  var o=stepOf(Z,key);
+  return zoneHead(Z,r,o.part.label)+'<div class="panel" style="--c:'+Z.c+'">'+STEP[o.step.k](Z,r,key,o.step,o.part,r.cur)+'</div>';
+}
+function viewStamp(){
+  var Z=zoneById(S.zone), r=zs(Z);
+  return '<div class="panel unlock" style="--c:'+Z.c+'"><span class="cap">Zone '+Z.id+' is open!</span><h1>'+Z.emo+' '+Z.name+'</h1><p class="big">Bev\'s stamp is here. Put it on your library card!</p>'+
+    '<div class="bigstamp">'+Z.letter+'</div><div class="stars">'+(r.miss<=1?'⭐⭐⭐':(r.miss<=4?'⭐⭐':'⭐'))+'</div><p class="mut">Mistakes in this zone: '+r.miss+'</p>'+
+    '<button class="btn" style="--c:#b6ff00" data-act="plan"><span>🗺️ Back to the floor plan</span></button></div>';
+}
+
+/* ---------- step types ---------- */
+var STEP={};
+function picks(Z,r,key,st,cur,cls){
+  var ord=ordFor(r,key,st.o.length), h='<div class="picks">';
+  ord.forEach(function(oi,pos){ var c='pk'; if(cur.x.indexOf(oi)>=0) c+=' x'; if(cur.ok&&oi===0) c+=' ok'; if(FLASH&&FLASH.pos===pos) c+=FLASH.k==='bad'?' shake':'';
+    h+='<button class="'+c+'" style="--c:'+Z.c+'" data-act="pick" data-i="'+pos+'"'+(cur.ok||cur.x.indexOf(oi)>=0?' disabled':'')+'>'+st.o[oi]+'</button>'; });
+  return h+'</div>';
+}
+STEP.pick=function(Z,r,key,st,part,cur){
+  var h='';
+  if(st.pre) h+=st.pre;
+  if(st.sit) h+='<div class="sit" style="--c:'+Z.c+'">'+st.sit+'</div>';
+  if(st.libby) h+=libbyBox(st.libby,line(key,st.say||st.libby),st.who);
+  h+='<div class="q">'+st.q+'</div>'+picks(Z,r,key,st,cur);
+  if(cur.ok) h+=fbGood(st,key)+nextBtn(); else if(cur.x.length) h+=fbBad(st);
+  return h;
+};
+STEP.flick=function(Z,r,key,st,part,cur){
+  line(key,st.t);
+  var h='<div class="qline" style="--c:'+Z.c+'">'+st.t+'</div><div class="ctrls"><button class="cb" data-act="lb" data-m="again" data-id="'+key+'">🔊 Listen</button><button class="cb" data-act="lb" data-m="slow" data-id="'+key+'">🐢 Slowly</button></div>';
+  h+='<div class="q">Does the voice go up ↗ or down ↘ at the end?</div>';
+  if(cur.ok) h+='<svg class="voice" viewBox="0 0 300 50" preserveAspectRatio="none"><path d="'+(st.a===0?'M5 35 L200 35 Q260 35 295 5':'M5 15 L200 15 Q260 15 295 45')+'" stroke="#ffe600" stroke-width="6" fill="none" stroke-linecap="round"/></svg>';
+  h+='<div class="arrows">';
+  [['↗','Up'],['↘','Down']].forEach(function(a,i){ var c='arw'; if(cur.x.indexOf(i)>=0) c+=' x'; if(cur.ok&&st.a===i) c+=' ok'; if(FLASH&&FLASH.pos===i&&FLASH.k==='bad') c+=' shake';
+    h+='<button class="'+c+'" style="--c:'+Z.c+'" data-act="arrow" data-i="'+i+'"'+(cur.ok||cur.x.indexOf(i)>=0?' disabled':'')+'>'+a[0]+'<small>'+a[1]+'</small></button>'; });
+  h+='</div>';
+  if(cur.ok) h+=fbGood(st,key)+nextBtn(); else if(cur.x.length) h+=fbBad(st);
+  return h;
+};
+function parseLinks(p){ var words=[],links=[],w=''; for(var i=0;i<p.length;i++){ var c=p.charAt(i); if(c===' '||c==='‿'){ words.push(w); w=''; links.push(c==='‿'); } else w+=c; } words.push(w); return {words:words,links:links}; }
+STEP.link=function(Z,r,key,st,part,cur){
+  var L=parseLinks(st.p); cur.on=cur.on||[];
+  line(key,L.words.join(' '));
+  var h='<div class="q">'+(part.q||'Tap the places where the words join ‿.')+'</div><div class="lk" style="--c:'+Z.c+'">';
+  L.words.forEach(function(w,i){ h+='<span>'+w+'</span>'; if(i<L.links.length){ var c='gapb'; if(cur.on.indexOf(i)>=0) c+=' on'; if(cur.x.indexOf(i)>=0) c+=' x'; if(FLASH&&FLASH.pos===i&&FLASH.k==='bad') c+=' shake';
+    h+='<button class="'+c+'" data-act="gap" data-i="'+i+'" aria-label="Gap '+(i+1)+'"'+(cur.ok?' disabled':'')+'>'+(cur.on.indexOf(i)>=0?'‿':(cur.x.indexOf(i)>=0?'✖':''))+'</button>'; } });
+  h+='</div><div class="ctrls"><button class="cb" data-act="lb" data-m="again" data-id="'+key+'">🔊 Listen</button></div>';
+  var need=L.links.filter(function(x){ return x; }).length;
+  if(!cur.ok) h+='<p class="mut">Links found: '+cur.on.length+' of '+need+'</p>';
+  if(cur.ok) h+=fbGood(st,key)+nextBtn(); else if(cur.bad) h+=fbBad(st);
+  return h;
+};
+STEP.swipe=function(Z,r,key,st,part,cur){
+  var sides=part.sides;
+  var h='<div class="q">'+(part.q||'Swipe the card, or tap a button.')+'</div><div class="deck" id="deck"><div class="scard under" aria-hidden="true"></div>';
+  if(!cur.ok) h+='<div class="scard'+(FLASH&&FLASH.k==='bad'?' shake':'')+'" id="scard" style="--c:'+Z.c+'"><span class="se">'+(st.e||'📄')+'</span><span>'+st.t+'</span></div>';
+  else h+='<div class="scard" style="--c:'+Z.c+';opacity:.25"><span class="se">'+(st.e||'📄')+'</span><span>'+st.t+'</span></div>';
+  h+='</div><div class="sides">';
+  sides.forEach(function(s,i){ var c='side '+(i?'r':'l'); if(cur.x.indexOf(i)>=0) c+=' x'; h+='<button class="'+c+'" data-act="side" data-i="'+i+'"'+(cur.ok||cur.x.indexOf(i)>=0?' disabled':'')+'>'+(i?'':'👈 ')+s+(i?' 👉':'')+'</button>'; });
+  h+='</div>';
+  if(cur.ok) h+=fbGood(st,key)+nextBtn(); else if(cur.x.length) h+=fbBad(st);
+  return h;
+};
+function setupSwipe(){
+  var c=$('scard'); if(!c) return; var x0=null,dx=0;
+  c.addEventListener('pointerdown',function(e){ x0=e.clientX; dx=0; c.classList.add('drag'); try{ c.setPointerCapture(e.pointerId); }catch(er){} });
+  c.addEventListener('pointermove',function(e){ if(x0===null) return; dx=e.clientX-x0; c.style.transform='translateX('+dx+'px) rotate('+(dx/14)+'deg)'; });
+  function up(){ if(x0===null) return; c.classList.remove('drag'); x0=null; if(Math.abs(dx)>80){ ACT.side(null,dx>0?1:0); } else c.style.transform=''; }
+  c.addEventListener('pointerup',up); c.addEventListener('pointercancel',up);
+}
+
+/* ---------- render ---------- */
+function render(){
+  document.documentElement.style.fontSize=SIZES[S.size]+'px';
+  var h=strip()+'<main id="main">';
+  if(S.view==='cover') h+=viewCover(); else if(S.view==='intro') h+=viewIntro(); else if(S.view==='plan') h+=viewPlan();
+  else if(S.view==='zone') h+=viewZone(); else if(S.view==='stamp') h+=viewStamp(); else if(S.view==='win') h+=viewWin();
+  h+='</main><div id="saved" class="saved">💾 Saved</div>';
+  $('app').innerHTML=h; FLASH=null;
+  if(S.view==='plan') placeAvatar(S.at,false);
+  if(S.view==='zone'){ setupSwipe(); if(typeof setupTorch==='function') setupTorch(); }
+  if(AFTER){ var f=AFTER; AFTER=null; f(); }
+}
+var AFTER=null, WALKING=false;
+function goTop(){ try{ window.scrollTo(0,0); }catch(e){} }
+function placeAvatar(id,anim){
+  var plan=$('plan'), av=$('avatar'); if(!plan||!av) return;
+  var el=plan.querySelector('[data-id="'+id+'"]'), pr=plan.getBoundingClientRect(), x, y;
+  if(el){ var r=el.getBoundingClientRect(); x=r.right-pr.left-24; y=r.top-pr.top+26; } else { x=pr.width/2; y=pr.height-30; }
+  if(!anim){ av.style.transition='none'; }
+  av.style.left=(x-18)+'px'; av.style.top=(y-18)+'px';
+  if(!anim){ void av.offsetWidth; av.style.transition=''; }
+}
+
+/* ---------- actions ---------- */
+function ctx(){ var Z=zoneById(S.zone), r=zs(Z), key=r.seq[r.pos]; var o=key.charAt(0)==='i'?null:stepOf(Z,key); return {Z:Z,r:r,key:key,st:o&&o.step,part:o&&o.part}; }
+function right(c){ c.r.cur.ok=true; sfx('good'); }
+function wrong(c,pos,mark){ if(c.r.cur.x.indexOf(mark)<0) c.r.cur.x.push(mark); c.r.miss++; sfx('bad'); FLASH={k:'bad',pos:pos}; }
+function advance(){
+  var c=ctx(); stopPlayer();
+  c.r.pos++; c.r.cur={x:[]};
+  if(c.r.pos>=c.r.seq.length){ c.r.done=true;
+    if(c.Z.exit){ S.t1=Date.now(); S.view='win'; save(true); render(); goTop(); sfx('win'); startConfetti(); return; }
+    var have=false; S.letters.forEach(function(x){ if(x.id===c.Z.id) have=true; }); if(!have) S.letters.push({id:c.Z.id,l:c.Z.letter});
+    S.newStamp=c.Z.id; S.view='stamp'; save(true); render(); goTop(); setTimeout(function(){ sfx('stamp'); },300); return; }
+  save(true); render(); goTop();
+}
+var ACT={
+  team:function(){ var v=($('team').value||'').trim(); if(!v){ $('team').focus(); return; } S.team=v.slice(0,24); save(true); render(); },
+  intro:function(){ S.view='intro'; S.back=false; save(); render(); goTop(); },
+  start:function(){ if(!S.t0) S.t0=Date.now(); stopPlayer(); S.view='plan'; save(true); render(); goTop(); },
+  plan:function(){ stopPlayer(); S.view='plan'; S.back=false; RESET_ARMED=false; save(); render(); goTop(); setTimeout(function(){ S.newStamp=0; },1200); },
+  zone:function(el){
+    var Z=zoneById(+el.getAttribute('data-id')); if(!Z||Z.soon) return;
+    if(Z.exit&&S.letters.length<12){ sfx('bad'); el.classList.add('shake'); setTimeout(function(){ el.classList.remove('shake'); },450); return; }
+    if(WALKING) return; var go=function(){ WALKING=false; S.zone=Z.id; S.back=false; S.view='zone'; zs(Z); save(); render(); goTop(); };
+    if(reducedMotion()||S.at===Z.id){ S.at=Z.id; go(); return; }
+    WALKING=true; S.at=Z.id; el.classList.add('here'); var av=$('avatar'); if(av) av.classList.add('walk'); sfx('walk'); placeAvatar(Z.id,true); setTimeout(go,650);
+  },
+  next:function(){ advance(); },
+  pick:function(el){ var c=ctx(); if(c.r.cur.ok) return; var pos=+el.getAttribute('data-i'), oi=c.r.ord[c.key][pos]; if(oi===0){ right(c); } else wrong(c,pos,oi); save(true); render(); },
+  arrow:function(el){ var c=ctx(); if(c.r.cur.ok) return; var i=+el.getAttribute('data-i'); if(i===c.st.a) right(c); else wrong(c,i,i); save(true); render(); },
+  gap:function(el){ var c=ctx(), cur=c.r.cur; if(cur.ok) return; cur.on=cur.on||[]; var i=+el.getAttribute('data-i'), L=parseLinks(c.st.p);
+    if(cur.on.indexOf(i)>=0||cur.x.indexOf(i)>=0) return;
+    if(L.links[i]){ cur.on.push(i); cur.bad=false; sfx('tap'); var need=L.links.filter(function(x){ return x; }).length; if(cur.on.length===need) right(c); }
+    else { cur.bad=true; wrong(c,i,i); }
+    save(true); render(); },
+  side:function(el,forced){ var c=ctx(); if(c.r.cur.ok) return; var i=forced!==undefined&&forced!==null?forced:+el.getAttribute('data-i');
+    if(i===c.st.a){ var card=$('scard'); if(card&&!reducedMotion()){ card.classList.add(i?'flyR':'flyL'); right(c); save(true); setTimeout(render,420); return; } right(c); }
+    else { if(c.r.cur.x.indexOf(i)<0) c.r.cur.x.push(i); c.r.miss++; sfx('bad'); FLASH={k:'bad',pos:i}; }
+    save(true); render(); },
+  lb:function(el){ var m=el.getAttribute('data-m'), id=el.getAttribute('data-id'), t=LINES[id]||'';
+    if(m==='show'){ REVEAL[id]=!REVEAL[id]; render(); return; }
+    speak(t,RATE[m]); },
+  'size+':function(){ if(S.size<SIZES.length-1){ S.size++; save(); render(); } },
+  'size-':function(){ if(S.size>0){ S.size--; save(); render(); } },
+  mute:function(){ S.mute=!S.mute; save(); render(); },
+  fs:function(){ try{ if(!document.fullscreenElement) (document.documentElement.requestFullscreen||document.documentElement.webkitRequestFullscreen).call(document.documentElement); else (document.exitFullscreen||document.webkitExitFullscreen).call(document); }catch(e){} },
+  reset:function(){ if(!RESET_ARMED){ RESET_ARMED=true; render(); setTimeout(function(){ RESET_ARMED=false; if(S.view==='plan') render(); },4000); return; } RESET_ARMED=false; var k={size:S.size,mute:S.mute}; S=fresh(); S.size=k.size; S.mute=k.mute; save(); render(); goTop(); },
+  again:function(){ var k={size:S.size,mute:S.mute}; S=fresh(); S.size=k.size; S.mute=k.mute; stopConfetti(); save(); render(); goTop(); }
+};
+document.addEventListener('click',function(e){ var el=e.target.closest('[data-act]'); if(!el||el.disabled) return; var a=el.getAttribute('data-act'); if(ACT[a]){ e.preventDefault(); ACT[a](el); } });
+document.addEventListener('keydown',function(e){ if(e.key==='Enter'&&e.target&&e.target.id==='team'){ ACT.team(); } if(e.key==='Escape'&&(S.view==='zone'||S.view==='stamp')) ACT.plan(); });
+window.addEventListener('resize',function(){ if(S.view==='plan') placeAvatar(S.at,false); });
+setInterval(function(){ var c=$('clock'); if(c&&S.t0) c.textContent='⏱️ '+fmtTime((S.t1||Date.now())-S.t0); },1000);
+setInterval(function(){ save(); },1500);
+window.addEventListener('pagehide',function(){ save(); });
+document.addEventListener('visibilitychange',function(){ if(document.visibilityState==='hidden') save(); });
+
+/* ---------- confetti and falling books ---------- */
+var CF=null,CFI=null;
+function cv(){ var c=$('confetti'); if(!c){ c=document.createElement('canvas'); c.id='confetti'; document.body.appendChild(c); } c.width=window.innerWidth; c.height=window.innerHeight; return c; }
+function burst(n,top){ var c=cv(), cols=['#ffe600','#00e5ff','#ff2bd6','#b6ff00','#ff8a00','#9d7bff','#2ee86a','#ff3355'], em=['📚','📖','📕','📗','📘','🎉','⭐','💥'];
+  CF=CF||{p:[],run:false,c:c};
+  for(var i=0;i<n;i++){ var e=Math.random()<.18; CF.p.push({x:top?Math.random()*c.width:c.width/2+(Math.random()-.5)*140,y:top?-30-Math.random()*c.height*.5:c.height*.5,vx:(Math.random()-.5)*(top?3:16),vy:top?2+Math.random()*3:-6-Math.random()*10,r:Math.random()*6.28,vr:(Math.random()-.5)*.3,s:6+Math.random()*9,col:cols[i%cols.length],e:e?em[i%em.length]:null,life:0}); }
+  if(!CF.run){ CF.run=true; requestAnimationFrame(tick); } }
+function tick(){ if(!CF||!CF.run) return; var c=CF.c,x=c.getContext('2d'); x.clearRect(0,0,c.width,c.height); CF.p=CF.p.filter(function(p){ return p.y<c.height+50&&p.life<900; });
+  CF.p.forEach(function(p){ p.life++; p.vy+=.17; p.vx*=.99; p.x+=p.vx; p.y+=p.vy; p.r+=p.vr; x.save(); x.translate(p.x,p.y); x.rotate(p.r); if(p.e){ x.font=(p.s*2.6)+'px serif'; x.fillText(p.e,-p.s,p.s); } else { x.fillStyle=p.col; x.fillRect(-p.s/2,-p.s/4,p.s,p.s/2); } x.restore(); });
+  if(CF.p.length) requestAnimationFrame(tick); else { CF.run=false; x.clearRect(0,0,c.width,c.height); } }
+function startConfetti(){ if(reducedMotion()) return; burst(240,true); burst(120,false); var n=0; clearInterval(CFI); CFI=setInterval(function(){ n++; burst(90,true); if(n>8) clearInterval(CFI); },1300); }
+function stopConfetti(){ clearInterval(CFI); if(CF) CF.p=[]; }
+function viewWin(){ return '<div class="panel">Escape screen: coming in Section 4.</div>'; }
+
+/* ===== Zone 1: The Self-Checkout ===== */
+function L1(libby,sit,o,why,hint,say){ return {k:'pick',libby:libby,say:say,sit:sit,q:'What do you say?',o:o,why:why,hint:hint}; }
+var Z1={id:1,name:'The Self-Checkout',emo:'🤖',c:'#ffe600',letter:'S',w:'',skill:'Ask for a replay',
+ parts:[
+  {label:'Ask for a replay',
+   intro:'<h2>Libby talks too fast! 🤖💨</h2><p>You can\'t pause a robot. But you can ask for a replay.</p><p><b>1.</b> Say what you missed.<br><b>2.</b> Ask for help.</p>'+
+     '<p>🗣️ Sorry, I didn\'t catch the address. Could you say it again?<br>🗣️ Sorry, could you slow down a bit?<br>🗣️ Sorry, could you spell it, please?</p><p>Tap ▶️ Listen. Use the replay buttons too. They work!</p>',
+   steps:[
+    L1('The free English website is www.learneasyenglish.org.au','Libby says a web address very fast. You miss it.',['Sorry, I didn\'t catch the address. Could you say it again?','Better safe than sorry.','It\'s worth a try.'],'Say what you missed (the address). Then ask: Could you say it again?','You missed something. Which answer asks for it again?','The free English website is double u double u double u dot learn easy english dot org dot A U.'),
+    L1('Podcasts are on Level 2, e-books are on Level 1, and the computers close at a quarter to nine.','Libby talks too fast for you.',['Sorry, could you slow down a bit?','Sorry, could you speed up a bit?','There\'s heaps on there.'],'Too fast? Ask: Could you slow down a bit?','Libby is too fast. Do you want faster or slower?'),
+    L1('Try the podcast called Wattle Talk.','You don\'t know how to spell the name.',['Sorry, could you spell it, please?','Good to know. Bye!','Could you speak louder, please?'],'You need the letters. Ask: Could you spell it, please?','You hear it. You can\'t write it. What do you need?'),
+    L1('Your laptop is due back at 5.15, not 5.50.','You hear the time, but you are not sure. Is it 5.15 or 5.50?',['Sorry, was that 5.15 or 5.50?','Sorry, I didn\'t catch the first part.','It\'s worth a try.'],'Say the two times you think you heard. Then Libby can say the right one.','You are not sure about the number.','Your laptop is due back at five fifteen, not five fifty.'),
+    L1('Go to the front desk, take a number, wait for your name, and then show your library card.','You understand the first part. You miss the rest.',['Sorry, I missed the last part. Could you say it again?','Sorry, I missed the first part. Could you say it again?','Thanks. Good to know.'],'You got the start. You missed the end. Say: I missed the last part.','Which part did you miss: the start or the end?')
+   ]},
+  {label:'Say the right thing',
+   intro:'<h2>Talk back to Libby 💬</h2><p>Use these expressions:</p><p>👍 <b>It\'s worth a try.</b> You can try it. It might help.<br>📦 <b>There\'s heaps on there.</b> The website has a lot of things.<br>💡 <b>Good to know.</b> Thanks. That is useful.<br>🛡️ <b>Better safe than sorry.</b> Be careful now, so there is no problem later.</p>',
+   steps:[
+    {k:'pick',libby:'The library app has 2,000 e-books, 300 podcasts and 50 English courses.',q:'What do you say?',o:['Wow, there\'s heaps on there!','It\'s worth a try.','Better safe than sorry.'],why:'The app has a lot of things. "There\'s heaps on there" means it has a lot.',hint:'Libby talks about a big number of things.'},
+    {k:'pick',libby:'Our new English chat club starts next week. It\'s free. Why not try it?',q:'What do you say?',o:['OK, it\'s worth a try.','There\'s heaps on there.','Better safe than sorry.'],why:'Libby says "try it". You agree: it\'s worth a try.',hint:'Libby wants you to try something.'},
+    {k:'pick',libby:'The library opens at 10 am on Sundays, not 9 am.',q:'What do you say?',o:['Good to know. Thanks!','It\'s worth a try.','There\'s heaps on there.'],why:'This is useful information. Say: Good to know.',hint:'Libby gives you useful information.'},
+    {k:'pick',libby:'Always log out when you finish on a library computer.',q:'What do you say?',o:['Yes. Better safe than sorry.','There\'s heaps on there.','It\'s worth a try.'],why:'Logging out keeps you safe. Better safe than sorry!',hint:'Libby talks about being careful.'},
+    {k:'pick',q:'You say to a tutor: "Sorry, I didn\'t quite catch that. Could you slow down a bit?" Is it OK?',o:['Yes. It is polite and clear.','No. It is rude to ask a tutor.','Only with your friends.'],why:'Sorry + Could you ...? is polite. Tutors and librarians are happy to help.',hint:'Look for "Sorry" and "Could you". Are they polite?'}
+   ]}
+ ]};
+
+/* ===== Zone 2: The Listening Booth ===== */
+function F2(t,a){ return {k:'flick',t:t,a:a,why:a===0?'This is a yes / no question. The voice goes <b>up ↗</b> at the end.':'This question starts with a <b>wh-</b> word (who, what, where, when, how, which). The voice goes <b>down ↘</b>.',hint:'Can you answer it with yes or no? Or does it start with a wh- word?'}; }
+function K2(p,say){ return {k:'link',p:p,why:'A consonant sound joins the next vowel sound. Say it smoothly: <b>'+say+'</b>.',hint:'Find a word that ends in a consonant sound. Does the next word start with a vowel sound (a, e, i, o, u)?'}; }
+var Z2={id:2,name:'The Listening Booth',emo:'🎧',c:'#00e5ff',letter:'L',w:'',skill:'Questions up or down, linking',
+ parts:[
+  {label:'Up or down?',
+   intro:'<h2>The booth only opens for good listeners. 🎧</h2><p><b>Yes / no questions</b> usually go <b>up ↗</b> at the end.<br>Is it free ↗?</p><p><b>Wh- questions</b> (who, what, where, when, how, which) usually go <b>down ↘</b>.<br>Where do I log in ↘?</p>',
+   steps:[F2('Is the library open on Sunday?',0),F2('Where do I log in?',1),F2('Can I borrow a laptop?',0),F2('What time does it close?',1),F2('Did you sign up?',0),F2('How much is the course?',1),F2('Which level did you choose?',1),F2('Are the podcasts free?',0)]},
+  {label:'Join the words',q:'Tap the places where the words join ‿.',
+   intro:'<h2>Smooth talking ‿</h2><p>A word ends in a <b>consonant sound</b>. The next word starts with a <b>vowel sound</b>. We join them.</p><p>log‿out sounds like "lo-gout".</p><p>Tap the gap between two words to join them. Find all the links.</p>',
+   steps:[K2('log‿in‿again','lo-gi-nagain'),K2('pick‿it‿up','pi-ki-tup'),K2('turn‿it‿off','tur-ni-toff'),K2('check‿out‿a book','che-kou-ta book'),K2('print‿it for me','prin-tit for me'),K2('fill‿in‿a form','fi-lli-na form')]}
+ ]};
+
+/* ===== Zone 3: The Magazine Rack ===== */
+function W3(t,e,a,why){ return {k:'swipe',t:t,e:e,a:a,why:why,hint:'Does it use English words you can hear or read?'}; }
+var PAGE3='<div class="web"><div class="wbar">🔒 www.englishcorner.org.au/about</div><div class="wb"><div class="wt">📗 About English Corner</div>'+
+ '<p>English Corner is a free website for adults who learn English. A group of librarians started it in 2021.</p>'+
+ '<p>You can find stories, podcasts and grammar games. Each story has three levels: Easy, Medium and Hard. You can read a story online, or you can print it out.</p>'+
+ '<p>You need a library card number to sign up. You don\'t need to pay. We never ask for your bank details.</p></div></div>';
+function R3(q,o,why,hint){ return {k:'pick',pre:'<details class="again"><summary>📗 Read the page again</summary>'+PAGE3+'</details>',q:q,o:o,why:why,hint:hint||'Read the page again. Find the key word.'}; }
+var Z3={id:3,name:'The Magazine Rack',emo:'📰',c:'#ff2bd6',letter:'O',w:'',skill:'Websites that help you learn',
+ parts:[
+  {label:'Swipe the rack',sides:['Does not help much','Helps with English'],q:'Does it help you learn English? Swipe the card, or tap a button.',
+   intro:'<h2>Magazines everywhere! 📰📰📰</h2><p>Some things help you learn English. Some things do not help much.</p><p>Swipe each card. 👉 Right: <b>helps with English</b>. 👈 Left: <b>does not help much</b>.</p>',
+   steps:[
+    W3('a podcast in slow English','🎙️',1,'You hear clear, slow English. It helps.'),
+    W3('a library e-book with audio','📖',1,'You read and listen at the same time. It helps.'),
+    W3('a news app for English learners','📰',1,'Easy news in English. It helps.'),
+    W3('a TV show with English subtitles','📺',1,'You hear and read English together. It helps.'),
+    W3('an online picture dictionary','🖼️',1,'Pictures and English words together. It helps.'),
+    W3('a cooking video with no talking','🍳',0,'There is no English to hear or read. It does not help much.'),
+    W3('a phone game with only numbers','🔢',0,'Numbers only, no English words. It does not help much.'),
+    W3('a radio show in your first language','📻',0,'It is not in English. It does not help much with English.'),
+    W3('a photo app for funny filters','🤳',0,'It is fun, but there is no English. It does not help much.')
+   ]},
+  {label:'Read the About page',
+   intro:'<h2>A page falls out of a magazine. 📄</h2><p>Read the About page. Then answer the questions.</p>'+PAGE3,
+   steps:[
+    R3('Who is English Corner for?',['adults who learn English','children at school','librarians only'],'"A free website for <b>adults who learn English</b>."','Find "for".'),
+    R3('When did English Corner start?',['in 2021','in 2012','last week'],'"A group of librarians <b>started</b> it <b>in 2021</b>." Started is past simple.','Find the year.'),
+    R3('Which thing is NOT on the website?',['video calls with a teacher','stories','grammar games'],'The page says stories, podcasts and grammar games. It does not say video calls.','Read the list of things on the website.'),
+    R3('What do you need to sign up?',['a library card number','a bank card','$5'],'"You need a <b>library card number</b> to sign up."','Find "sign up".'),
+    R3('Hideko finds the Hard stories difficult. What can Hideko do?',['Choose an Easy or Medium story.','Pay for a teacher.','Stop using the website.'],'Each story has three levels. Hideko can choose an easier level.','Each story has three ...'),
+    R3('An email from "English Corner" asks for your bank details. Is it real?',['No. They never ask for bank details.','Yes. It is from the website.','Yes, but only on Mondays.'],'"We never ask for your bank details." So the email is fake. ⚠️','Read the last sentence of the page.')
+   ]}
+ ]};
+
+function soon(id,name,emo,c,w){ return {id:id,name:name,emo:emo,c:c,w:w,soon:true,parts:[]}; }
+
+/* ===== Section 2 step types ===== */
+
+/* --- torch: find the right book spine in the dark --- */
+var TORCH={key:null,x:60,y:60};
+STEP.torch=function(Z,r,key,st,part,cur){
+  if(TORCH.key!==key){ TORCH={key:key,x:60,y:60}; }
+  var ord=ordFor(r,key,st.o.length);
+  var h='<div class="q">🔦 '+st.q+'</div><div class="shelf'+(cur.ok?' lit':'')+'" id="shelf" style="--c:'+Z.c+';--x:'+TORCH.x+'px;--y:'+TORCH.y+'px">';
+  ord.forEach(function(oi,pos){ var c='spine'; if(cur.x.indexOf(oi)>=0) c+=' x'; if(cur.ok&&oi===0) c+=' ok'; if(FLASH&&FLASH.pos===pos&&FLASH.k==='bad') c+=' shake';
+    h+='<button class="'+c+'" data-act="spine" data-i="'+pos+'" style="--h:'+(66+(hash(key+pos)%30))+'%;--b:'+SPINE[(hash(key)+pos)%SPINE.length]+'"'+(cur.ok||cur.x.indexOf(oi)>=0?' disabled':'')+'><span>'+st.o[oi]+'</span></button>'; });
+  h+='<div class="dark"></div></div><p class="mut">Move the torch: drag on the shelf, or tap a book. Tap a lit book to choose it.</p>';
+  if(cur.ok) h+=fbGood(st,key)+nextBtn(); else if(cur.x.length) h+=fbBad(st);
+  return h;
+};
+var SPINE=['#e63946','#2a9d8f','#e9c46a','#8338ec','#3a86ff','#fb5607','#06d6a0','#ff006e'];
+function setupTorch(){
+  var sh=$('shelf'); if(!sh||sh.classList.contains('lit')) return;
+  function mv(e){ var r=sh.getBoundingClientRect(); TORCH.x=Math.round(e.clientX-r.left); TORCH.y=Math.round(e.clientY-r.top); sh.style.setProperty('--x',TORCH.x+'px'); sh.style.setProperty('--y',TORCH.y+'px'); }
+  sh.addEventListener('pointermove',function(e){ if(e.pointerType==='mouse'||e.buttons) mv(e); });
+  sh.addEventListener('pointerdown',function(e){ if(!e.target.closest('.spine')) mv(e); });
+}
+ACT.spine=function(el){
+  var c=ctx(); if(c.r.cur.ok) return; var sh=$('shelf'), r=sh.getBoundingClientRect(), b=el.getBoundingClientRect();
+  var cx=b.left-r.left+b.width/2, cy=b.top-r.top+b.height/2, d=Math.sqrt(Math.pow(cx-TORCH.x,2)+Math.pow(cy-TORCH.y,2));
+  if(d>Math.max(70,b.width*1.1)){ TORCH.x=Math.round(cx); TORCH.y=Math.round(cy); sh.style.setProperty('--x',TORCH.x+'px'); sh.style.setProperty('--y',TORCH.y+'px'); sfx('tap'); return; }
+  var pos=+el.getAttribute('data-i'), oi=c.r.ord[c.key][pos];
+  if(oi===0) right(c); else wrong(c,pos,oi);
+  save(true); render();
+};
+
+/* --- dial: turn drums to the right verb form --- */
+function dialSegs(st){ var d=[]; st.lines.forEach(function(l){ l.forEach(function(s){ if(typeof s!=='string') d.push(s); }); }); return d; }
+STEP.dial=function(Z,r,key,st,part,cur){
+  var dials=dialSegs(st);
+  if(!cur.d){ cur.d=dials.map(function(o,j){ var ord=ordFor(r,key+'d'+j,o.length); return ord[0]===0?1:0; }); }
+  var h='<div class="q">'+(part.q||'Turn the dials. Then try the lock.')+'</div><div class="drawer" style="--c:'+Z.c+'">', j=0;
+  st.lines.forEach(function(l){ h+='<div class="dline">'; l.forEach(function(s){
+    if(typeof s==='string'){ h+='<span>'+s+'</span>'; return; }
+    var ord=ordFor(r,key+'d'+j,s.length), cls='dial'; if(cur.ok) cls+=' ok'; if(cur.wd&&cur.wd.indexOf(j)>=0) cls+=' bad'+(FLASH&&FLASH.k==='bad'?' shake':'');
+    h+='<span class="'+cls+'"><button class="dbtn" data-act="dial" data-j="'+j+'" data-dir="-1" aria-label="Dial up"'+(cur.ok?' disabled':'')+'>▲</button><span class="dwin">'+s[ord[cur.d[j]]]+'</span><button class="dbtn" data-act="dial" data-j="'+j+'" data-dir="1" aria-label="Dial down"'+(cur.ok?' disabled':'')+'>▼</button></span>';
+    j++; }); h+='</div>'; });
+  h+='</div>';
+  if(!cur.ok) h+='<button class="btn" style="--c:'+Z.c+'" data-act="dialgo"><span>🔐 Try the lock</span></button>';
+  if(cur.ok) h+=fbGood(st,key)+nextBtn(); else if(cur.bad) h+=fbBad(st,cur.wd&&cur.wd.length===1&&dials.length>1?'One dial is wrong. It is red. '+(st.hint||''):st.hint);
+  return h;
+};
+ACT.dial=function(el){ var c=ctx(); if(c.r.cur.ok) return; var j=+el.getAttribute('data-j'), d=+el.getAttribute('data-dir'), n=dialSegs(c.st)[j].length;
+  c.r.cur.d[j]=(c.r.cur.d[j]+d+n)%n; c.r.cur.wd=(c.r.cur.wd||[]).filter(function(x){ return x!==j; }); sfx('tap'); save(); render(); };
+ACT.dialgo=function(){ var c=ctx(), cur=c.r.cur; if(cur.ok) return; var dials=dialSegs(c.st), bad=[];
+  dials.forEach(function(o,j){ if(c.r.ord[c.key+'d'+j][cur.d[j]]!==0) bad.push(j); });
+  if(!bad.length){ cur.bad=false; cur.wd=[]; right(c); } else { cur.bad=true; cur.wd=bad; c.r.miss++; sfx('bad'); FLASH={k:'bad'}; }
+  save(true); render(); };
+
+/* --- print: a working print box --- */
+var PRINTERS=['Library Printer, Level 1','Library Printer, Level 2','Save as PDF'], PAGES=['All','1 to 2','3 only'], COLOURS=['Colour','Black and white'];
+STEP.print=function(Z,r,key,st,part,cur){
+  if(!cur.p){ var p={pr:hash(key)%3,cp:1,pg:0,co:0}; if(p.pr===st.t.pr&&p.cp===st.t.cp&&p.pg===st.t.pg&&p.co===st.t.co) p.cp=st.t.cp+1; cur.p=p; }
+  var p=cur.p, wf=cur.wf||[];
+  function row(f,label,val,ctl){ return '<div class="prow'+(wf.indexOf(f)>=0?' bad':'')+(cur.ok?' ok':'')+'"><span class="pl">'+label+'</span>'+ctl+'</div>'; }
+  function cyc(f,val){ return '<span class="pctl"><button class="pbtn" data-act="pset" data-f="'+f+'" data-v="-1"'+(cur.ok?' disabled':'')+'>◀</button><span class="pval">'+val+'</span><button class="pbtn" data-act="pset" data-f="'+f+'" data-v="1"'+(cur.ok?' disabled':'')+'>▶</button></span>'; }
+  var h='<div class="slip"><b>📝 Print order</b><br>'+st.slip+'</div>';
+  h+='<div class="pbox'+(FLASH&&FLASH.k==='bad'?' shake':'')+'"><div class="ptitle">🖨️ Print</div><div class="pgrid"><div class="prev'+(p.co?' bw':'')+'"><div class="pp"><b>Listening: Lane Cove</b><i></i><i></i><i></i><span class="pic">🌳🚲</span></div><span class="pcount">'+(p.pg===0?'3 pages':(p.pg===1?'2 pages':'1 page'))+' × '+p.cp+'</span></div><div class="pset">'+
+    row('pr','Printer','',cyc('pr',PRINTERS[p.pr]))+row('cp','Copies','',cyc('cp',p.cp))+row('pg','Pages','',cyc('pg',PAGES[p.pg]))+row('co','Colour','',cyc('co',COLOURS[p.co]))+
+    '</div></div>'+(cur.ok?'<div class="paperout">📄📄</div>':'<div class="pfoot"><button class="btn white" data-act="pcancel"><span>Cancel</span></button><button class="btn" style="--c:#2ee86a" data-act="pgo"><span>🖨️ Print</span></button></div>')+'</div>';
+  if(cur.ok) h+=fbGood(st,key)+nextBtn(); else if(cur.bad) h+=fbBad(st,cur.bad==='cancel'?'You want to print. Do not cancel. Check each setting, then tap Print.':'The red settings are wrong. Read the print order again.');
+  return h;
+};
+ACT.pset=function(el){ var c=ctx(), p=c.r.cur.p; if(c.r.cur.ok) return; var f=el.getAttribute('data-f'), v=+el.getAttribute('data-v');
+  if(f==='cp'){ p.cp=Math.max(1,Math.min(9,p.cp+v)); } else { var n=f==='pr'?3:(f==='pg'?3:2); p[f]=(p[f]+v+n)%n; }
+  c.r.cur.wf=(c.r.cur.wf||[]).filter(function(x){ return x!==f; }); sfx('tap'); save(); render(); };
+ACT.pgo=function(){ var c=ctx(), cur=c.r.cur, p=cur.p, t=c.st.t; if(cur.ok) return; var bad=[];
+  ['pr','cp','pg','co'].forEach(function(f){ if(p[f]!==t[f]) bad.push(f); });
+  if(!bad.length){ cur.bad=false; cur.wf=[]; right(c); } else { cur.bad='wrong'; cur.wf=bad; c.r.miss++; sfx('bad'); FLASH={k:'bad'}; }
+  save(true); render(); };
+ACT.pcancel=function(){ var c=ctx(); if(c.r.cur.ok) return; c.r.cur.bad='cancel'; c.r.miss++; sfx('bad'); FLASH={k:'bad'}; save(true); render(); };
+
+/* --- hot: tap the right thing on a picture --- */
+var PICS={}, HSNAME={};
+function HS(id,cls,inner,o){ var c='hs '+cls; if(o.mark&&o.mark.ok===id) c+=' hok'; if(o.mark&&o.mark.bad===id) c+=' hbad'; return '<span class="'+c+'" data-hs="'+id+'" data-act="hot" role="button" tabindex="0">'+inner+'</span>'; }
+STEP.hot=function(Z,r,key,st,part,cur){
+  var h='<div class="q">👆 '+st.q+'</div>'+PICS[st.pic]({ok:cur.ok?st.a:'',bad:cur.ok?'':cur.last});
+  if(cur.ok) h+=fbGood(st,key)+nextBtn(); else if(cur.last) h+=fbBad(st,'You tapped <b>'+(HSNAME[st.pic][cur.last]||'that')+'</b>. '+(st.hint||'Look again.'));
+  return h;
+};
+ACT.hot=function(el){ var c=ctx(); if(!c.st||c.st.k!=='hot'||c.r.cur.ok) return; var hs=el.getAttribute('data-hs'); if(hs===c.st.a) right(c); else { c.r.cur.last=hs; c.r.miss++; sfx('bad'); } save(true); render(); };
+HSNAME.pc={lock:'the padlock and https 🔒',url:'the web address',tabprize:'the FREE PRIZE!!! tab',closeb:'the x that closes the browser',popx:'the x on the prize pop-up',claim:'the Claim my prize button',dl:'the Download button on the ad',remember:'the Remember me box',logout:'the Log out button',pass:'the Change password link',listen:'the Listen now link'};
+PICS.pc=function(mark){ var o={mark:mark};
+  return '<div class="pc"><div class="pc-tabs"><span class="pc-tab on">📗 My page</span>'+HS('tabprize','pc-tab','🎁 FREE PRIZE!!!',o)+'<span class="sp"></span>'+HS('closeb','pc-x','✕',o)+'</div>'+
+   '<div class="pc-bar">'+HS('lock','pc-lock','🔒 https://',o)+HS('url','pc-url','www.englishcorner.org.au/my-page',o)+'</div>'+
+   '<div class="pc-body"><div class="pc-page"><b>📗 English Corner · My page</b><p>Hi Xia! Your score: 18 / 20 ⭐</p>'+HS('listen','pc-link','▶ Listen now: A trip to Manly',o)+'<div>'+HS('pass','pc-link','Change password',o)+'</div>'+
+   '<div class="pc-row">'+HS('remember','pc-chk','☑ Remember me',o)+HS('logout','pc-btn','Log out',o)+'</div></div>'+
+   '<div class="pop p1"><div class="poph">🎉 Congratulations!'+HS('popx','pop-x','✕',o)+'</div><p>YOU WON A FREE PHONE! 📱</p>'+HS('claim','pop-btn','Claim my prize',o)+'</div>'+
+   '<div class="pop p2"><div class="poph">⚡ Your computer is slow!</div>'+HS('dl','pop-btn dl','Download speed booster',o)+'</div></div></div>';
+};
+
+/* ===== Zone 4: The Dark Stacks ===== */
+function T4(base,o,why,hint){ return {k:'torch',q:'Find the past simple of <b class="vb">'+base+'</b>.',o:o,why:why,hint:hint||'Is the verb regular (-ed) or irregular? Say the sentence: Yesterday I ...'}; }
+var Z4={id:4,name:'The Dark Stacks',emo:'🔦',c:'#9d7bff',letter:'W',w:'w3',skill:'Past simple verbs',
+ parts:[
+  {label:'Irregular verbs',
+   intro:'<h2>The lights are off in the stacks! 🔦</h2><p>Use the torch. Find the book with the <b>past simple</b>.</p><p>Some verbs are <b>irregular</b>. They change:<br>go ➜ went · do ➜ did · find ➜ found</p><p>Drag on the shelf to move the torch. Or tap a book: the torch moves there. Tap a lit book to choose it.</p>',
+   steps:[
+    T4('choose',['chose','choosed','chooses','choosen'],'choose ➜ <b>chose</b>. Julia chose Level 1.'),
+    T4('write',['wrote','writed','writes','writting'],'write ➜ <b>wrote</b>. I wrote an email last night.'),
+    T4('find',['found','finded','fond','finds'],'find ➜ <b>found</b>. Jenny found a good podcast.'),
+    T4('hear',['heard','heared','hears','hard'],'hear ➜ <b>heard</b>. I heard most of the words.'),
+    T4('get',['got','getted','gets','gat'],'get ➜ <b>got</b>. Xia got a new library card.'),
+    T4('read',['read','readed','reads','red'],'read ➜ <b>read</b>. Same spelling! Say it like "red". "red" is a colour.'),
+    T4('speak',['spoke','speaked','speaks','spoken'],'speak ➜ <b>spoke</b>. Linda spoke to the tutor.'),
+    T4('buy',['bought','buyed','brought','buys'],'buy ➜ <b>bought</b>. Careful: brought is the past of bring.')
+   ]},
+  {label:'Spelling rules',
+   intro:'<h2>Regular verbs add -ed. But watch the spelling! ✏️</h2><p><b>try ➜ tried</b>: consonant + y ➜ ied<br><b>play ➜ played</b>: vowel + y ➜ just add -ed<br><b>log ➜ logged</b>, <b>stop ➜ stopped</b>: short word, one vowel, one consonant ➜ double it<br><b>type ➜ typed</b>: ends in e ➜ just add d</p>',
+   steps:[
+    T4('try',['tried','tryed','trys','tryied'],'consonant + y: change y to i, add -ed. <b>tried</b>.','Look at the letter before y.'),
+    T4('log',['logged','loged','logs','loggd'],'Short word, one vowel, one consonant: double the g. <b>logged</b>.','Short word. Double the last letter?'),
+    T4('stop',['stopped','stoped','stops','stopt'],'Double the p: <b>stopped</b>.','Short word. Double the last letter?'),
+    T4('play',['played','plaied','plays','playd'],'vowel + y: just add -ed. <b>played</b>.','Look at the letter before y.'),
+    T4('study',['studied','studyed','studies','studid'],'consonant + y: change y to i. <b>studied</b>.','Look at the letter before y.'),
+    T4('type',['typed','typeed','types','typped'],'It ends in e. Just add d: <b>typed</b>.','The verb already ends in e.')
+   ]}
+ ]};
+
+/* ===== Zone 5: The Archive ===== */
+function D5(l1,l2,why,hint){ return {k:'dial',lines:[l1,l2],why:why,hint:hint||'Find the time words: usually, every, yesterday, last ... Is it a habit or a finished time?'}; }
+var Z5={id:5,name:'The Archive',emo:'🗄️',c:'#ff8a00',letter:'D',w:'w3',skill:'Past or present?',
+ parts:[
+  {label:'Open the drawers',q:'Turn the dials ▲ ▼ to make two correct sentences. Then try the lock.',
+   intro:'<h2>Old drawers with dial locks 🗄️🔐</h2><p><b>Simple present</b>: habits and facts.<br>I usually <b>listen</b> on the train. The app <b>has</b> three levels.</p><p><b>Past simple</b>: one finished time.<br>Yesterday I <b>listened</b> to a podcast.</p><p>Questions and negatives:<br><b>Do</b> you ...? / I <b>don\'t</b> ... (present)<br><b>Did</b> you ...? / I <b>didn\'t</b> ... (past, no -ed after did)</p>',
+   steps:[
+    D5(['Selina usually ',['listens','listened','listen'],' to podcasts on the train.'],['Yesterday, Selina ',['listened','listens','listen'],' to a podcast about Bondi.'],'"usually" is a habit: <b>listens</b>. "Yesterday" is finished: <b>listened</b>.'),
+    D5(['The library app ',['has','had','have'],' a dark mode now.'],['Last year, the app ',['didn\'t have','doesn\'t have','didn\'t had'],' a dark mode.'],'"now": <b>has</b>. "Last year": <b>didn\'t have</b>. After didn\'t, no past form.'),
+    D5([['Did','Do','Does'],' you sign up last week?'],[['Do','Did','Does'],' you usually log out at the end?'],'"last week": <b>Did</b> you ...? "usually": <b>Do</b> you ...?'),
+    D5(['Two days ago, Gang ',['didn\'t print','doesn\'t print','didn\'t printed'],' the answers.'],['Gang usually ',['prints','printed','print'],' them at home.'],'"Two days ago": <b>didn\'t print</b>. "usually": <b>prints</b> (Gang is one person: add -s).'),
+    D5(['Last night, Annie ',['wrote','writes','writed'],' an email to the tutor.'],['Annie ',['writes','wrote','write'],' to the tutor every month.'],'"Last night": <b>wrote</b>. "every month": <b>writes</b>.'),
+    D5([['Did','Does','Do'],' Linda find the listening easy yesterday?'],[['Does','Did','Do'],' Linda use the library on Mondays?'],'"yesterday": <b>Did</b>. "on Mondays" is a habit: <b>Does</b> (Linda is one person).')
+   ]}
+ ]};
+
+/* ===== Zone 6: The Print Corner ===== */
+function P6(slip,t,why){ return {k:'print',slip:slip,t:t,why:why}; }
+var Z6={id:6,name:'The Print Corner',emo:'🖨️',c:'#b6ff00',letter:'O',w:'',skill:'Print it, save it',
+ parts:[
+  {label:'Print it out',
+   intro:'<h2>The printer is waiting. 🖨️</h2><p>Read each print order. Change the settings with ◀ ▶. Then tap <b>Print</b>.</p><p>Printer · Copies · Pages · Colour</p>',
+   steps:[
+    P6('Print <b>2 copies</b> of the listening. <b>Black and white</b>. <b>All</b> pages. Use the printer on <b>Level 1</b>.',{pr:0,cp:2,pg:0,co:1},'2 copies, black and white, all pages, Level 1. 📄📄'),
+    P6('Print <b>page 3 only</b>, in <b>colour</b>. <b>1 copy</b>. Use the printer on <b>Level 2</b>.',{pr:1,cp:1,pg:2,co:0},'Page 3 only, colour, 1 copy, Level 2. 📄'),
+    P6('Jiao wants <b>3 copies</b> of <b>pages 1 to 2</b>. <b>Black and white</b>. <b>Level 1</b> printer.',{pr:0,cp:3,pg:1,co:1},'3 copies of pages 1 to 2, black and white, Level 1. 📄📄📄'),
+    P6('No paper today! Save the page as a file. All pages, 1 copy, colour.',{pr:2,cp:1,pg:0,co:0},'<b>Save as PDF</b> makes a file. You can print it later or email it.')
+   ]},
+  {label:'No printer?',
+   intro:'<h2>No printer? Take a screenshot! 📸</h2><p>A <b>screenshot</b> is a picture of your screen.</p><p>🪟 Windows: Windows key + Shift + S<br>🍎 Mac: Command + Shift + 4<br>📱 Phone: side button + volume up</p><p>Then you can paste it into an email.</p>',
+   steps:[
+    {k:'pick',q:'On a Windows computer, which keys take a screenshot?',o:['Windows key + Shift + S','Alt + F4','Ctrl + Z'],why:'<b>Windows key + Shift + S</b>. Careful: Alt + F4 closes the window!',hint:'Look at the box again.'},
+    {k:'pick',q:'On a Mac, which keys take a screenshot?',o:['Command + Shift + 4','Command + Q','Command + W'],why:'<b>Command + Shift + 4</b>. Command + Q closes the program.',hint:'Find the Mac line.'},
+    {k:'pick',q:'On a phone or tablet, how do you take a screenshot?',o:['Press the side button and volume up together.','Press volume down three times.','Touch the screen with two fingers.'],why:'<b>Side button + volume up</b>, together.',hint:'Two buttons at the same time.'},
+    {k:'pick',q:'You took a screenshot of your answers. What can you do next?',o:['Paste it into an email to the teacher.','Type it in the address bar.','Put it in the Bin.'],why:'Paste the picture into an email or a document. 📧',hint:'How can the teacher see it?'},
+    {k:'pick',q:'Which keys open the print box on a Windows computer?',o:['Ctrl + P','Ctrl + S','Ctrl + Z'],why:'<b>Ctrl + P</b>: P for print. Ctrl + S saves. Ctrl + Z goes back one step.',hint:'P for ...'}
+   ]}
+ ]};
+
+/* ===== Zone 7: The Public Computer ===== */
+function H7(q,a,why){ return {k:'hot',pic:'pc',q:q,a:a,why:why,hint:'Read the question again. Look for the safe choice.'}; }
+function W7(t,e,a,why){ return {k:'swipe',t:t,e:e,a:a,why:why,hint:'Would this put your money, password or account in danger?'}; }
+var Z7={id:7,name:'The Public Computer',emo:'💻',c:'#ff3355',letter:'W',w:'',skill:'Stay safe online',
+ parts:[
+  {label:'Pop-up storm',
+   intro:'<h2>Pop-ups everywhere! 💻⚡</h2><p>Xia is on a library computer. The screen is full of pop-ups and tricks.</p><p>Read each job. Tap the right thing on the screen.</p>',
+   steps:[
+    H7('A prize pop-up opens. Close it safely.','popx','Tap the <b>x</b>. Never click "Claim my prize". You did not enter a competition, so the prize is not real.'),
+    H7('Is this website private? Tap the sign that tells you.','lock','The <b>padlock and https</b> show a private connection. 🔒'),
+    H7('This is a library computer. Tap the box you must NOT tick.','remember','On a public computer, do not tick <b>Remember me</b>. The next person can open your account.'),
+    H7('Xia finished. What does Xia tap first?','logout','First <b>Log out</b>. Then close the browser.'),
+    H7('Xia logged out. Now close everything.','closeb','The <b>x at the top right</b> closes the browser.'),
+    H7('One thing wants you to download a program. It is a trick. Tap it.','dl','"Your computer is slow! Download ..." is a trick ad. Do not download it.'),
+    H7('One tab is not from English Corner. Tap it.','tabprize','<b>FREE PRIZE!!!</b> is not from the website. Close it.')
+   ]},
+  {label:'Safe or not safe?',sides:['Not safe','Safe'],q:'Is it safe? Swipe the card, or tap a button.',
+   intro:'<h2>Safe or not safe? 🛡️</h2><p>👉 Right: <b>safe</b>. 👈 Left: <b>not safe</b>.</p>',
+   steps:[
+    W7('Write your password on a note next to the computer.','📝',0,'Anyone can read the note. Not safe.'),
+    W7('Use a password with 12 letters or more, and numbers.','🔑',1,'A long password with numbers is safe.'),
+    W7('Tick Remember me on a library computer.','☑️',0,'The next person can open your account. Not safe.'),
+    W7('Log out, then close the browser.','🚪',1,'Always log out and close the browser. Safe.'),
+    W7('An email from "English Corner" asks for $20. You pay it.','💸',0,'English Corner is free. The email is fake. Not safe.'),
+    W7('Check for the padlock and https before you log in.','🔒',1,'The padlock shows a private connection. Safe.'),
+    W7('A pop-up asks for your card number. You type it.','💳',0,'Never type your card number in a pop-up. Not safe.'),
+    W7('Tell your classmate your password.','🤫',0,'Keep your password to yourself. Not safe.')
+   ]}
+ ]};
+
+/* ===== Section 3 step types ===== */
+
+/* --- dlock: the librarian's letter dial lock for teacher codes --- */
+var ABC='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+STEP.dlock=function(Z,r,key,st,part,cur){
+  if(!cur.d){ cur.d=[]; for(var i=0;i<st.code.length;i++) cur.d.push(0); }
+  var h='<div class="tcard">'+st.task+'</div><div class="q" style="margin-top:.7rem">🔐 Frances gives you the code. Turn the dials ▲ ▼. Then open the lock.</div>';
+  h+='<div class="dlock'+(FLASH&&FLASH.k==='bad'?' shake':'')+(cur.ok?' open':'')+'">';
+  cur.d.forEach(function(v,j){ h+='<span class="ldial"><button class="dbtn" data-act="dl" data-j="'+j+'" data-dir="-1" aria-label="Back one letter"'+(cur.ok?' disabled':'')+'>▲</button><span class="lwin">'+ABC.charAt(v)+'</span><button class="dbtn" data-act="dl" data-j="'+j+'" data-dir="1" aria-label="Next letter"'+(cur.ok?' disabled':'')+'>▼</button></span>'; });
+  h+='</div>';
+  if(cur.ok) return h+fbGood(st,key)+nextBtn();
+  h+='<button class="btn" style="--c:'+Z.c+'" data-act="dlgo"><span>🔓 Open the lock</span></button>';
+  if(cur.bad) h+='<div class="fb bad"><div class="burst">OOPS!</div><div class="fbt"><b>That is not the code.</b> Show your work to Frances. Frances gives you the code.</div></div>';
+  return h;
+};
+ACT.dl=function(el){ var c=ctx(); if(c.r.cur.ok) return; var j=+el.getAttribute('data-j'), d=+el.getAttribute('data-dir'); c.r.cur.d[j]=(c.r.cur.d[j]+d+26)%26; c.r.cur.bad=false; sfx('tap'); save(); render(); };
+ACT.dlgo=function(){ var c=ctx(), cur=c.r.cur; if(cur.ok) return; var w=cur.d.map(function(v){ return ABC.charAt(v); }).join(''); if(w===c.st.code){ cur.bad=false; right(c); } else { cur.bad=true; sfx('bad'); FLASH={k:'bad'}; } save(true); render(); };
+
+/* --- player: a podcast player read by Libby's voice --- */
+var PLAYER={key:null,i:0,on:false,slow:false};
+function sentences(t){ return t.match(/[^.!?]+[.!?]+/g).map(function(s){ return s.trim(); }); }
+function playerBox(Z,key,text){
+  if(PLAYER.key!==key){ stopSpeech(); PLAYER={key:key,i:0,on:false,slow:PLAYER.slow}; }
+  var ss=sentences(text), pct=Math.round(100*PLAYER.i/ss.length);
+  return '<div class="player" style="--c:'+Z.c+'"><div class="ph">🎙️ <b>Talk Harbour Podcast</b> · A ferry trip to Milsons Point</div><div class="ptrack"><i style="width:'+pct+'%"></i></div>'+
+   '<div class="ptime">Sentence '+Math.min(PLAYER.i+1,ss.length)+' of '+ss.length+'</div><div class="pctl2">'+
+   '<button class="pb" data-act="pl" data-m="back" aria-label="Back one sentence">⏮</button>'+
+   (PLAYER.on?'<button class="pb big" data-act="pl" data-m="pause" aria-label="Pause">⏸</button>':'<button class="pb big" data-act="pl" data-m="play" aria-label="Play">▶</button>')+
+   '<button class="pb" data-act="pl" data-m="restart" aria-label="Start again">↺</button>'+
+   '<button class="pb spd'+(PLAYER.slow?' on':'')+'" data-act="pl" data-m="speed">'+(PLAYER.slow?'0.75x':'1x')+'</button></div></div>';
+}
+var LISTEN9='Last Sunday, I went to Milsons Point with my sister. We caught the ferry from Circular Quay at ten o\'clock. The trip took only ten minutes, but the view was amazing. We saw the Opera House and the Harbour Bridge. At Milsons Point, we walked to Luna Park. It was free to go in, but the rides cost money. We didn\'t go on the rides. We had ice cream and sat near the water. Then we walked across the Harbour Bridge back to the city. It took about forty minutes. My legs were tired, but I was very happy. Next time, I want to take my children.';
+function playOn(){
+  var ss=sentences(LISTEN9);
+  if(PLAYER.i>=ss.length){ PLAYER.on=false; PLAYER.i=ss.length; render(); return; }
+  var k=PLAYER.key;
+  speak(ss[PLAYER.i],PLAYER.slow?0.72:1,function(){ if(!PLAYER.on||PLAYER.key!==k) return; PLAYER.i++; refreshPlayer(); playOn(); });
+}
+function refreshPlayer(){ var c=ctx(); if(S.view!=='zone'||!c.st||!c.st.listen) return; var keepY=window.scrollY; render(); try{ window.scrollTo(0,keepY); }catch(e){} }
+ACT.pl=function(el){ var m=el.getAttribute('data-m'), n=sentences(LISTEN9).length;
+  if(m==='play'){ if(PLAYER.i>=n) PLAYER.i=0; PLAYER.on=true; refreshPlayer(); playOn(); }
+  else if(m==='pause'){ PLAYER.on=false; stopSpeech(); refreshPlayer(); }
+  else if(m==='back'){ PLAYER.i=Math.max(0,PLAYER.i-1); PLAYER.on=true; stopSpeech(); refreshPlayer(); playOn(); }
+  else if(m==='restart'){ PLAYER.i=0; PLAYER.on=true; stopSpeech(); refreshPlayer(); playOn(); }
+  else if(m==='speed'){ PLAYER.slow=!PLAYER.slow; refreshPlayer(); }
+};
+
+/* --- gapfill: tap a word chip or a stamp, then tap the gap --- */
+function gapParse(t){ var segs=[],ans=[],re=/\{([^}]+)\}/g,last=0,m; while((m=re.exec(t))){ segs.push(t.slice(last,m.index)); ans.push(m[1]); last=m.index+m[0].length; } segs.push(t.slice(last)); return {segs:segs,ans:ans}; }
+STEP.gapfill=function(Z,r,key,st,part,cur){
+  var g=gapParse(st.t), bank=st.reuse?st.bank:g.ans.concat(st.extra||[]), ord=ordFor(r,key,bank.length);
+  cur.f=cur.f||{};
+  var h='';
+  if(st.listen) h+=playerBox(Z,key,LISTEN9);
+  h+='<div class="q">'+(st.q||part.q||'Tap a word. Then tap the gap.')+'</div><div class="'+(st.reuse?'msg':'gtext')+'">';
+  g.segs.forEach(function(s,i){ h+=s.replace(/\n/g,'<br>'); if(i<g.ans.length){ var filled=cur.f[i]; var c='gp'+(filled!==undefined?' full':'')+(st.reuse?' sgap':''); if(FLASH&&FLASH.pos===i&&FLASH.k==='bad') c+=' shake';
+    h+='<button class="'+c+'" data-act="gp" data-i="'+i+'"'+(filled!==undefined||cur.ok?' disabled':'')+'>'+(filled!==undefined?(st.reuse?'<span class="ink">'+filled+'</span>':filled):'<small>'+(i+1)+'</small>')+'</button>'; } });
+  h+='</div>';
+  if(!cur.ok){
+    h+='<div class="'+(st.reuse?'pads':'chips')+'">';
+    ord.forEach(function(bi,pos){ var used=!st.reuse&&cur.used&&cur.used.indexOf(pos)>=0; if(used) return; var c=(st.reuse?'pad':'chip')+(cur.sel===pos?' sel':'');
+      h+='<button class="'+c+'" style="--c:'+Z.c+'" data-act="chip" data-i="'+pos+'">'+(st.reuse?'🔖 ':'')+bank[bi]+'</button>'; });
+    h+='</div>';
+    if(cur.need) h+='<p class="mut">👆 Tap a '+(st.reuse?'stamp':'word')+' first. Then tap a gap.</p>';
+  }
+  if(cur.ok) h+=fbGood(st,key)+nextBtn(); else if(cur.bad) h+=fbBad(st,cur.badWhy||st.hint);
+  return h;
+};
+ACT.chip=function(el){ var c=ctx(); if(c.r.cur.ok) return; c.r.cur.sel=+el.getAttribute('data-i'); c.r.cur.need=false; sfx('tap'); save(); var y=window.scrollY; render(); try{ window.scrollTo(0,y); }catch(e){} };
+ACT.gp=function(el){ var c=ctx(), cur=c.r.cur, st=c.st; if(cur.ok) return; var i=+el.getAttribute('data-i'), y=window.scrollY;
+  if(cur.sel===undefined||cur.sel===null){ cur.need=true; render(); try{ window.scrollTo(0,y); }catch(e){} return; }
+  var g=gapParse(st.t), bank=st.reuse?st.bank:g.ans.concat(st.extra||[]), word=bank[c.r.ord[c.key][cur.sel]];
+  if(word===g.ans[i]){ cur.f[i]=word; if(!st.reuse){ cur.used=cur.used||[]; cur.used.push(cur.sel); } cur.sel=null; cur.bad=false; sfx(st.reuse?'stamp':'tap');
+    if(Object.keys(cur.f).length===g.ans.length) right(c); }
+  else { cur.bad=true; cur.badWhy=(st.why2&&st.why2[word])||st.hint; c.r.miss++; sfx('bad'); FLASH={k:'bad',pos:i}; cur.sel=null; }
+  save(true); render(); try{ window.scrollTo(0,y); }catch(e){} };
+
+/* --- reels: the phrasal verb slot machine --- */
+STEP.reels=function(Z,r,key,st,part,cur){
+  if(!cur.d){ cur.d=st.r.map(function(o,j){ var ord=ordFor(r,key+'r'+j,o.length); return ord[0]===0?1:0; }); }
+  var h='<div class="q">🎰 '+(cur.ok?st.s.replace('______','<b class="vb">'+st.r.map(function(o){ return o[0]; }).filter(function(x){ return x!=='–'; }).join(' ')+'</b>'):st.s)+'</div>';
+  h+='<div class="slotm'+(cur.ok?' jackpot':'')+'" style="--c:'+Z.c+'"><div class="slotlights">💡💡💡💡💡</div><div class="reels">';
+  st.r.forEach(function(o,j){ var ord=ordFor(r,key+'r'+j,o.length), n=o.length, v=cur.d[j];
+    var spin=FLASH&&FLASH.k==='spin'&&FLASH.pos===j, bad=cur.wr&&cur.wr.indexOf(j)>=0;
+    h+='<button class="reel'+(spin?' spin':'')+(bad?' bad':'')+'" data-act="reel" data-j="'+j+'"'+(cur.ok?' disabled':'')+' aria-label="Reel '+(j+1)+'"><span class="rprev">'+o[ord[(v-1+n)%n]]+'</span><span class="rcur">'+o[ord[v]]+'</span><span class="rnext">'+o[ord[(v+1)%n]]+'</span></button>'; });
+  h+='</div>'+(cur.ok?'':'<button class="lever" data-act="lever" aria-label="Pull the lever">🕹️ PULL</button>')+'</div>';
+  if(!cur.ok) h+='<p class="mut">Tap a reel to turn it. Then pull the lever. (– means no word.)</p>';
+  if(cur.ok) h+=fbGood(st,key)+nextBtn(); else if(cur.bad) h+=fbBad(st,(cur.wr&&cur.wr.length===1?'One reel is wrong. It is red. ':'')+(st.hint||''));
+  return h;
+};
+ACT.reel=function(el){ var c=ctx(); if(c.r.cur.ok) return; var j=+el.getAttribute('data-j'), n=c.st.r[j].length; c.r.cur.d[j]=(c.r.cur.d[j]+1)%n; c.r.cur.wr=(c.r.cur.wr||[]).filter(function(x){ return x!==j; }); FLASH={k:'spin',pos:j}; sfx('tap'); save(); render(); };
+ACT.lever=function(){ var c=ctx(), cur=c.r.cur; if(cur.ok) return; var bad=[]; c.st.r.forEach(function(o,j){ if(c.r.ord[c.key+'r'+j][cur.d[j]]!==0) bad.push(j); });
+  if(!bad.length){ cur.bad=false; cur.wr=[]; right(c); sfx('win'); } else { cur.bad=true; cur.wr=bad; c.r.miss++; sfx('bad'); }
+  save(true); render(); };
+
+/* ===== Zone 8: The Study Room (Teacher check 1) ===== */
+var Z8={id:8,name:'The Study Room',emo:'📝',c:'#2ee86a',letter:'N',teacher:true,w:'',skill:'Teacher check: a message',
+ parts:[
+  {label:'Warm up: Did you ...?',
+   intro:'<h2>Quiet, please! 🤫📝</h2><p>Questions about the past use <b>Did</b>. After did, the verb has no -ed.</p><p><b>Did</b> you <b>print</b> it? Yes, I did. / No, I didn\'t.<br><b>Do</b> you <b>practise</b> every day? Yes, I do.</p><p>Read the answer. Choose the question.</p>',
+   steps:[
+    {k:'pick',sit:'Answer: "Yes, I did. I printed two pages."',q:'What is the question?',o:['Did you print the page?','Did you printed the page?','Do you print the page every day?'],why:'Did + verb with no -ed: <b>Did you print</b>?',hint:'After did, is there -ed?'},
+    {k:'pick',sit:'Answer: "No, I didn\'t. I chose Level 2."',q:'What is the question?',o:['Did you choose Level 3?','Did you chose Level 3?','Do you choose Level 3?'],why:'<b>Did you choose</b>? Not "chose" after did.',hint:'The answer is about the past. And after did ...'},
+    {k:'pick',sit:'Answer: "Yes, I do. Every evening."',q:'What is the question?',o:['Do you practise English at home?','Did you practise English last night?','Does you practise English at home?'],why:'"Yes, I do" is present. It is a habit: <b>Do you practise</b>?',hint:'Look at "I do". Present or past?'},
+    {k:'pick',sit:'Answer: "No, I didn\'t. I forgot!"',q:'What is the question?',o:['Did you log out?','Did you logged out?','Do you logged out?'],why:'<b>Did you log out</b>? No -ed after did.',hint:'Did + the base verb.'}
+   ]},
+  {label:'Teacher check',
+   steps:[
+    {k:'dlock',code:'DINGO',yes:'The study room is open!',why:'Great message, and great replay questions. 📝✅',
+     task:'<span class="cap">🧑‍🏫 Teacher check 1</span><h2>📝 Write a message in your notebook</h2>'+
+      '<p>Write to a classmate. Tell them about a website or an app you used <b>last week</b> to learn English.</p>'+
+      '<ul class="tick"><li>✔ Hi + your classmate\'s name</li><li>✔ The name of the website or app, and where you found it</li><li>✔ Three things you did. Use the past simple: I chose ... I listened to ... I printed ...</li><li>✔ One problem. Use <b>but</b> or <b>so</b>: It was fast, so I ...</li><li>✔ One expression: It\'s worth a try. / There\'s heaps on there.</li><li>✔ A closing, then your name on a new line</li></ul>'+
+      '<p>Then read your message to Frances. 🗣️ Frances talks fast! Ask for a replay two times: <i>Sorry, I didn\'t catch that.</i> <i>Could you slow down a bit?</i></p>'}
+   ]}
+ ]};
+
+/* ===== Zone 9: The Podcast Studio ===== */
+var Z9={id:9,name:'The Podcast Studio',emo:'🎙️',c:'#ff7ab8',letter:'A',w:'w3',skill:'Listen online',
+ parts:[
+  {label:'Listen and fill',
+   intro:'<h2>On air! 🎙️🔴</h2><p>Yuko made a podcast about a day out. Use the player.</p><p>▶ play · ⏸ pause · ⏮ back one sentence · ↺ start again · <b>0.75x</b> slower</p><p><b>Listen 1:</b> just listen. <b>Listen 2:</b> fill the gaps. <b>Listen 3:</b> check.</p><p>Tap a word. Then tap the gap. Two words are extra in each part.</p>',
+   shuffle:false,
+   steps:[
+    {k:'gapfill',listen:true,t:'Last {Sunday}, I went to Milsons Point with my {sister}. We caught the {ferry} from Circular Quay at ten o\'clock. The trip took only ten {minutes}, but the view was amazing. We saw the Opera House and the Harbour {Bridge}.',extra:['Saturday','train'],why:'Part 1 is complete! 🎧',hint:'Listen again. Use ⏮ to go back one sentence.'},
+    {k:'gapfill',listen:true,t:'At Milsons Point, we walked to Luna Park. It was {free} to go in, but the {rides} cost money. We didn\'t go on the rides. We had {ice cream} and sat near the water. Then we walked across the Harbour Bridge back to the city. It took about {forty} minutes. My legs were {tired}, but I was very happy.',extra:['fourteen','coffee'],why:'Part 2 is complete! 🎧',hint:'Listen again. Try 0.75x.'}
+   ]},
+  {label:'After listening',
+   intro:'<h2>Check your listening 🎧✅</h2><p>Answer the questions. You can play the podcast again.</p>',
+   steps:[
+    {k:'pick',q:'How did Yuko get to Milsons Point?',o:['by ferry','by train','by car'],why:'"We caught the <b>ferry</b> from Circular Quay."',hint:'Listen to sentence 2.'},
+    {k:'pick',q:'How long was the ferry trip?',o:['ten minutes','forty minutes','one hour'],why:'"The trip took only <b>ten minutes</b>." Forty minutes was the walk.',hint:'Be careful. There are two times in the podcast.'},
+    {k:'pick',q:'What did Yuko and the sister do at Luna Park?',o:['They had ice cream and sat near the water.','They went on all the rides.','They paid to go in.'],why:'They didn\'t go on the rides. They had ice cream and sat near the water. 🍦',hint:'Did they go on the rides?'},
+    {k:'pick',q:'How did they get back to the city?',o:['They walked across the Harbour Bridge.','They caught the ferry.','They caught a bus.'],why:'"Then we <b>walked across</b> the Harbour Bridge back to the city."',hint:'Listen to the part after Luna Park.'},
+    {k:'pick',q:'What does Yuko want to do next time?',o:['take the children','go alone','go on the rides'],why:'"Next time, I want to <b>take my children</b>."',hint:'Listen to the last sentence.'}
+   ]}
+ ]};
+/* the player shows on the question panels too */
+Z9.parts[1].steps.forEach(function(s){ s.pre=null; s.withPlayer=true; });
+var _pickPrev=STEP.pick;
+STEP.pick=function(Z,r,key,st,part,cur){ return (st.withPlayer?playerBox(Z,key,LISTEN9):'')+_pickPrev(Z,r,key,st,part,cur); };
+
+/* ===== Zone 10: The Phrasal Verb Machine ===== */
+function R10(s,r,why,hint){ return {k:'reels',s:s,r:r,why:why,hint:hint||'Check the tense, then it / them, then the small word.'}; }
+var Z10={id:10,name:'The Phrasal Verb Machine',emo:'🎰',c:'#4dd0ff',letter:'B',w:'w3',skill:'Phrasal verbs',
+ parts:[
+  {label:'Spin to win',
+   intro:'<h2>Jackpot! 🎰💰</h2><p>Make the phrasal verb. Tap each reel. Then pull the lever.</p>'+
+    '<p><b>log in / log out of</b> (with a password): log out of the website<br><b>print out</b>: print it out, not <s>print out it</s><br><b>fill in</b>: fill them in, not <s>fill in them</s><br><b>sign up for</b>: sign up for a free account</p>',
+   steps:[
+    R10('Nan liked the story, so Nan ______ to read on the bus.',[['printed','print','prints'],['it','them','–'],['out','in','up']],'<b>printed it out</b>: past simple, and "it" goes in the middle.'),
+    R10('Before Gang left the library, Gang ______ the library website.',[['logged','log','loged'],['–','it','them'],['out of','out from','in to']],'<b>logged out of</b> the website. Double the g. We say "out of", not "out from".'),
+    R10('There are five gaps on the page. Please ______.',[['fill','filled','fills'],['them','it','–'],['in','out','up']],'<b>fill them in</b>: five gaps = them. Them goes in the middle.'),
+    R10('Last week, Coco ______ a free English course.',[['signed','sign','signs'],['–','it','them'],['up for','in to','out of']],'<b>signed up for</b> a course: make a new account. Past simple: signed.'),
+    R10('Hideko typed a password and ______ to My page.',[['logged','log','logs'],['–','it','them'],['in','out','up']],'<b>logged in</b> to My page: start with your password.'),
+    R10('Is your printer working? Could you ______ for me, please?',[['print','printed','prints'],['it','them','–'],['out','in','off']],'<b>print it out</b>: after could you, use the base verb.')
+   ]}
+ ]};
+
+/* ===== Zone 11: The Returns Slot ===== */
+var J11=['and','but','or','then','so'];
+var JW={and:'and adds a similar idea.',but:'but shows a difference or a problem.',or:'or gives a choice.',then:'then shows the next step.',so:'so shows the result.'};
+var Z11={id:11,name:'The Returns Slot',emo:'📮',c:'#ffd166',letter:'I',w:'',skill:'and, but, or, then, so',
+ parts:[
+  {label:'Stamp the joining words',q:'Tap a stamp. Then tap a gap. You can use a stamp again.',
+   intro:'<h2>Two messages fell in the returns slot! 📮✉️</h2><p>The joining words are missing. Stamp them in.</p><p><b>and</b> adds: free and easy<br><b>but</b> shows a difference: I tried, but it was fast.<br><b>or</b> gives a choice: print it or take a screenshot<br><b>then</b> shows the next step: choose a level, then press play<br><b>so</b> shows the result: it was fast, so I clicked 0.75x</p>',
+   steps:[
+    {k:'gapfill',reuse:true,bank:J11,t:'Hi Jenny,\n\nLast night I tried the English Corner website. It was easy {and} fun. I chose a podcast, {then} I pressed play. It was fast, {so} I clicked 0.75x. I understood most of it, {but} two words were hard. You can listen online {or} download the podcast.\n\nSee you Friday,\nXia',why:'Message 1 is ready to go! ✉️',why2:JW,hint:'Read the two ideas. Similar, different, a choice, the next step or a result?'},
+    {k:'gapfill',reuse:true,bank:J11,t:'Hi Julia,\n\nThe library has free laptops {and} tablets. You can borrow one for a week {or} use it in the library. I borrowed a tablet last week, {but} the battery was flat. I charged it at home, {then} I did my homework. The library opens at 9 tomorrow, {so} let\'s go together.\n\nCheers,\nAlan',why:'Message 2 is ready to go! ✉️',why2:JW,hint:'Read the two ideas. Similar, different, a choice, the next step or a result?'}
+   ]}
+ ]};
+
+/* ===== Section 4 step types ===== */
+
+/* --- spell: tap the letters from the library card in order --- */
+STEP.spell=function(Z,r,key,st,part,cur){
+  var all=st.tiles, ord=ordFor(r,key,all.length); cur.used=cur.used||[];
+  var h='';
+  if(cur.ok){ line(key,st.done); REVEAL[key]=true; h+=libbyBox(st.done,key,{e:'😌',n:'Libby (slowly now)'}); }
+  else { line(key+'g',st.gab); h+=libbyBox(st.gab,key+'g',{e:'🤖',n:'Libby (very fast!)'}); }
+  h+='<div class="q">'+st.q+'</div><div class="spell">';
+  var n=0; st.groups.forEach(function(g,gi){ h+='<span class="sword">'; for(var i=0;i<g;i++){ var p=cur.used[n]; h+='<span class="sl'+(p===undefined?'':' in')+'">'+(p===undefined?'':all[ord[p]])+'</span>'; n++; } h+='</span>'; });
+  h+='</div>';
+  if(cur.ok) return h+fbGood(st,key)+'<button class="btn" style="--c:#2ee86a" data-act="next"><span>🚪 Walk out of the library!</span></button>';
+  h+='<div class="ltiles">';
+  ord.forEach(function(ai,pos){ var c='ltile'; if(cur.used.indexOf(pos)>=0) c+=' used'; if(FLASH&&FLASH.pos===pos&&FLASH.k==='bad') c+=' shake'; h+='<button class="'+c+'" data-act="lt" data-i="'+pos+'"'+(cur.used.indexOf(pos)>=0?' disabled':'')+'>'+all[ai]+'</button>'; });
+  h+='</div>';
+  if(cur.used.length) h+='<button class="btn white" data-act="ltback"><span>⌫ Take back a letter</span></button>';
+  if(cur.bad) h+=fbBad(st);
+  return h;
+};
+ACT.lt=function(el){ var c=ctx(), cur=c.r.cur; if(cur.ok) return; cur.used=cur.used||[]; var pos=+el.getAttribute('data-i'), want=c.st.tiles[cur.used.length], got=c.st.tiles[c.r.ord[c.key][pos]];
+  if(got===want){ cur.used.push(pos); cur.bad=false; sfx('tap'); if(cur.used.length===c.st.tiles.length){ right(c); setTimeout(function(){ speak(c.st.done,RATE.slow); },300); } }
+  else { cur.bad=true; c.r.miss++; sfx('bad'); FLASH={k:'bad',pos:pos}; }
+  save(true); render(); };
+ACT.ltback=function(){ var c=ctx(); if(c.r.cur.ok) return; c.r.cur.used.pop(); save(); render(); };
+
+/* ===== Zone 12: The Computer Desk (Teacher check 2) ===== */
+function N12(sit,o,why,hint){ return {k:'pick',sit:sit,q:'What does Nan do next?',o:o,why:why,hint:hint}; }
+function F12(sit,o,why,hint){ return {k:'pick',sit:sit,q:'What do you say?',o:o,why:why,hint:hint}; }
+var Z12={id:12,name:'The Computer Desk',emo:'🖱️',c:'#c77dff',letter:'T',teacher:true,w:'w4',skill:'Teacher check: a listening, start to end',
+ parts:[
+  {label:'Next step, please',shuffle:false,
+   intro:'<h2>One last computer is on! 🖱️💡</h2><p>Nan does a listening on English Corner, from start to end.</p><p>Read what Nan did. Choose the next step.</p>',
+   steps:[
+    N12('Nan opened the English Corner home page. Nan can read short texts.',['Click on Level 2.','Click on Level 3.','Click on Log out.'],'Short texts: <b>Level 2</b>.','Which level is for short texts?'),
+    N12('The Level 2 page is open. Nan wants a podcast.',['Click on the Listening tab.','Click on the logo.','Click on Print version.'],'The <b>Listening tab</b> shows the podcasts.','Where are the podcasts?'),
+    N12('Nan chose a podcast. The player is open.',['Press play.','Click on Show the text.','Close the browser.'],'<b>Play</b> starts the podcast. ▶','How do you start it?'),
+    N12('The speaker is too fast for Nan.',['Click on the speed button: 0.75x.','Click on the sound button.','Click on pause and go home.'],'<b>0.75x</b> makes the speaker slower. 🐢','Which button changes the speed?'),
+    N12('Nan wrote the missing words in the gaps.',['Click on Show the text and check the words.','Click on Log out.','Click on the logo.'],'<b>Show the text</b>. Check the words and the spelling.','How can Nan check the words?'),
+    N12('The words are right. Nan wants it on paper, but there is no printer.',['Take a screenshot.','Click on Print five times.','Write the web address.'],'No printer? Take a <b>screenshot</b>. 📸','A picture of your screen ...'),
+    N12('Nan finished. Nan is on a library computer.',['Log out, then close the browser.','Tick Remember me.','Turn off the screen and go home.'],'<b>Log out</b>, then close the browser. 🛡️','Keep your account safe.')
+   ]},
+  {label:'Tell Frances',
+   intro:'<h2>Practise for the teacher check 🗣️</h2><p>Frances asks about your website. Choose the best answer.</p>',
+   steps:[
+    F12('Frances asks: "Who is the website for?"',['It\'s for adults who study English.','It\'s for my bank.','It\'s on Level 2.'],'Say who uses it: <b>It\'s for adults who study English.</b>','Who uses the website?'),
+    F12('Frances asks: "What\'s on there?"',['There\'s heaps on there: podcasts, e-books and grammar.','There\'s a padlock.','It was too fast.'],'<b>There\'s heaps on there</b> = it has a lot of things.','Name the things on the website.'),
+    F12('Frances asks: "Why did you choose Level 2?"',['I can read short texts, so I chose Level 2.','I choosed Level 2 because it is blue.','Level 2 chose me.'],'The reason, then <b>so</b>, then the result. chose, not choosed.','Use so. And check the past simple of choose.'),
+    F12('Frances says the web address very fast. You miss it.',['Sorry, I didn\'t catch the address. Could you say it again?','What?','Fast!'],'Say what you missed. Then ask politely.','Ask for a replay.')
+   ]},
+  {label:'Teacher check',
+   steps:[
+    {k:'dlock',code:'WATTLE',yes:'The computer desk is open!',why:'A listening from start to end. 💻✅',
+     task:'<span class="cap">🧑‍🏫 Teacher check 2</span><h2>💻 Do a listening, from start to end</h2>'+
+      '<p>Open a new tab. Go to an English learning website. Frances tells you which one. Show Frances each step.</p>'+
+      '<ul class="tick"><li>✔ Say who the website is for and two things on it</li><li>✔ Choose a level. Say why: I can ..., so I chose ...</li><li>✔ Open a listening. Use play and pause</li><li>✔ Use 10 seconds back or the speed button</li><li>✔ Write three words you heard in your notebook</li><li>✔ Print the page or take a screenshot</li><li>✔ Log out and close the tab</li></ul>'+
+      '<p>Frances talks fast! Ask for a replay one time: <i>Sorry, I didn\'t catch that.</i> <i>Could you slow down a bit?</i></p>'}
+   ]}
+ ]};
+
+/* ===== Zone 13: The Exit ===== */
+var Z13={id:13,name:'The Exit',emo:'🚪',c:'#2ee86a',exit:true,
+ parts:[
+  {label:'Libby\'s last questions',
+   intro:'<h2>You have 12 stamps! 🎉</h2><p>Libby stands at the exit. Libby asks six last questions. Listen, or tap 👀 Show the words.</p>',
+   steps:[
+    {k:'pick',libby:'What do you say when I talk too fast?',q:'Choose your answer.',o:['Could you slow down a bit?','There\'s heaps on there.','Good to know.'],why:'Ask for a replay: <b>Could you slow down a bit?</b>',hint:'You want Libby to talk more slowly.'},
+    {k:'pick',libby:'Which question goes up at the end?',q:'Choose your answer.',o:['Is it free?','Where is the exit?','What time is it?'],why:'<b>Is it free?</b> is a yes / no question. It goes up ↗.',hint:'Find the yes / no question.'},
+    {k:'pick',libby:'What is the past simple of buy?',q:'Choose your answer.',o:['bought','brought','buyed'],why:'buy ➜ <b>bought</b>. bring ➜ brought.',hint:'Be careful. One answer is the past of bring.'},
+    {k:'pick',libby:'You are on a library computer. Which one is safe?',q:'Choose your answer.',o:['Log out, then close the browser.','Tick Remember me.','Type your card number in a pop-up.'],why:'<b>Log out and close the browser.</b> 🛡️',hint:'Which one keeps your account safe?'},
+    {k:'pick',libby:'I printed the page, blank, I gave it to the teacher. Which word goes in the blank?',q:'Choose your answer.',o:['then','or','but'],why:'The next step: <b>then</b>.',hint:'First I printed. What happened next?'},
+    {k:'pick',libby:'Which sentence is correct?',q:'Choose your answer.',o:['I filled them in.','I filled in them.','I fill in them yesterday.'],why:'<b>them</b> goes in the middle: filled them in.',hint:'Where does "them" go?'}
+   ]},
+  {label:'The door code',shuffle:false,
+   steps:[{k:'spell',groups:[4,4,1,3],tiles:PHRASE.split(''),gab:'Code please code please code please quickly quickly the doors are locked locked locked!',done:'Oh! Thank you. Now I am talking slowly. The doors are open. Goodnight, everyone!',
+     q:'Libby talks too fast! Tap your library card letters in order. Ask Libby politely. 🗣️',why:'<b>Could you SLOW DOWN A BIT?</b> Libby slows down. The doors open! 🚪✨',hint:'Four words: 4 letters, 4 letters, 1 letter, 3 letters. Linda asks Sam this!'}]}
+ ]};
+
+/* ---------- win ---------- */
+viewWin=function(){
+  var miss=0; for(var k in S.zones){ if(S.zones[k]) miss+=S.zones[k].miss||0; }
+  return '<div class="panel cover win2" style="--c:#2ee86a"><div class="em">🚪✨📚</div><div class="t1">YOU\'RE OUT!</div><div><span class="t2">The library doors are open</span></div>'+
+    '<p class="big" style="margin-top:.8rem">🎉 Great work, <b>'+esc(S.team)+'</b>!</p>'+card()+
+    '<div class="wstats"><span>⏱️ Time<br><b>'+fmtTime(S.t1-S.t0)+'</b></span><span>❌ Mistakes<br><b>'+miss+'</b></span><span>⭐ Stars<br><b class="st3">'+(miss<=15?'⭐⭐⭐':(miss<=35?'⭐⭐':'⭐'))+'</b></span></div>'+
+    '<p>Show this screen to Frances. 📸</p><div><button class="btn" style="--c:#ff2bd6" data-act="party"><span>🎊 More confetti!</span></button><button class="btn white" data-act="again"><span>♻️ Play again</span></button></div></div>';
+};
+ACT.party=function(){ sfx('win'); startConfetti(); };
+
+/* ===== Zone list ===== */
+var ZONES=[Z1,Z2,Z3,
+ Z4,
+ Z5,
+ Z6,
+ Z7,
+ Z8,
+ Z9,
+ Z10,
+ Z11,
+ Z12,
+ Z13];
+
+load(); render();
+if(S.view==='win'){ setTimeout(startConfetti,300); }
+})();
+</script>
+</body>
+</html>
